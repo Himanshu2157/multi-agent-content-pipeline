@@ -1,0 +1,153 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Platform {
+  LINKEDIN
+  INSTAGRAM_REEL
+}
+
+enum ProjectStatus {
+  DRAFT
+  RESEARCHING
+  WRITING
+  REVIEWING
+  COMPLETED
+  FAILED
+}
+
+enum AgentType {
+  RESEARCH
+  WRITER
+  CRITIC
+}
+
+enum AgentExecutionStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id        String           @id @default(cuid())
+  email     String           @unique
+  name      String
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  projects  ContentProject[]
+
+  @@map("users")
+}
+
+model ContentProject {
+  id            String              @id @default(cuid())
+  userId        String
+  title         String
+  topic         String
+  platform      Platform
+  tone          String              @default("Professional")
+  audience      String              @default("General Professional")
+  status        ProjectStatus       @default(DRAFT)
+  maxIterations Int                 @default(3)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  generations   ContentGeneration[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("content_projects")
+}
+
+model ContentGeneration {
+  id               String            @id @default(cuid())
+  projectId        String
+  currentIteration Int               @default(1)
+  status           ProjectStatus     @default(RESEARCHING)
+  approved         Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+  completedAt      DateTime?
+  project          ContentProject    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  researchResult   ResearchResult?
+  drafts           ContentDraft[]
+  criticReviews    CriticReview[]
+  agentExecutions  AgentExecution[]
+
+  @@index([projectId])
+  @@index([status])
+  @@map("content_generations")
+}
+
+model ResearchResult {
+  id           String            @id @default(cuid())
+  generationId String            @unique
+  summary      String            @db.Text
+  keyPoints    Json              // string[]
+  facts        Json              // Array<{ claim: string, source: string, confidence: string }>
+  sources      Json              // Array<{ title: string, url: string, publisher?: string, date?: string }>
+  cautions     Json?             // string[]
+  createdAt    DateTime          @default(now())
+  generation   ContentGeneration @relation(fields: [generationId], references: [id], onDelete: Cascade)
+
+  @@map("research_results")
+}
+
+model ContentDraft {
+  id            String            @id @default(cuid())
+  generationId  String
+  iteration     Int
+  content       Json              // WriterOutput (LinkedInOutput or InstagramReelOutput)
+  platform      Platform
+  createdAt     DateTime          @default(now())
+  generation    ContentGeneration @relation(fields: [generationId], references: [id], onDelete: Cascade)
+  criticReviews CriticReview[]
+
+  @@index([generationId, iteration])
+  @@map("content_drafts")
+}
+
+model CriticReview {
+  id              String             @id @default(cuid())
+  draftId         String?
+  generationId    String?
+  iteration       Int
+  approved        Boolean
+  score           Float
+  factualAccuracy Float
+  relevance       Float
+  platformFit     Float
+  clarity         Float
+  originality     Float
+  issues          Json               // Array<{ type: string, severity: string, description: string }>
+  requiredChanges Json               // string[]
+  createdAt       DateTime           @default(now())
+  draft           ContentDraft?      @relation(fields: [draftId], references: [id], onDelete: Cascade)
+  generation      ContentGeneration? @relation(fields: [generationId], references: [id], onDelete: Cascade)
+
+  @@index([generationId, iteration])
+  @@map("critic_reviews")
+}
+
+model AgentExecution {
+  id           String               @id @default(cuid())
+  generationId String
+  agentType    AgentType
+  status       AgentExecutionStatus @default(PENDING)
+  iteration    Int                  @default(1)
+  input        Json?
+  output       Json?
+  startedAt    DateTime             @default(now())
+  completedAt  DateTime?
+  error        String?              @db.Text
+  generation   ContentGeneration    @relation(fields: [generationId], references: [id], onDelete: Cascade)
+
+  @@index([generationId, iteration])
+  @@index([agentType])
+  @@map("agent_executions")
+}
