@@ -14,7 +14,9 @@ enum Platform {
 
 enum ProjectStatus {
   DRAFT
+  ANALYZING
   RESEARCHING
+  STRATEGIZING
   WRITING
   REVIEWING
   COMPLETED
@@ -22,7 +24,9 @@ enum ProjectStatus {
 }
 
 enum AgentType {
+  TOPIC_ANALYZER
   RESEARCH
+  STRATEGIST
   WRITER
   CRITIC
 }
@@ -69,8 +73,10 @@ model ContentGeneration {
   id               String            @id @default(cuid())
   projectId        String
   currentIteration Int               @default(1)
-  status           ProjectStatus     @default(RESEARCHING)
+  status           ProjectStatus     @default(ANALYZING)
   approved         Boolean           @default(false)
+  topicAnalysis    Json?             // TopicAnalysis
+  strategy         Json?             // ContentStrategy
   createdAt        DateTime          @default(now())
   completedAt      DateTime?
   project          ContentProject    @relation(fields: [projectId], references: [id], onDelete: Cascade)
@@ -113,22 +119,26 @@ model ContentDraft {
 }
 
 model CriticReview {
-  id              String             @id @default(cuid())
-  draftId         String?
-  generationId    String?
-  iteration       Int
-  approved        Boolean
-  score           Float
-  factualAccuracy Float
-  relevance       Float
-  platformFit     Float
-  clarity         Float
-  originality     Float
-  issues          Json               // Array<{ type: string, severity: string, description: string }>
-  requiredChanges Json               // string[]
-  createdAt       DateTime           @default(now())
-  draft           ContentDraft?      @relation(fields: [draftId], references: [id], onDelete: Cascade)
-  generation      ContentGeneration? @relation(fields: [generationId], references: [id], onDelete: Cascade)
+  id                     String             @id @default(cuid())
+  draftId                String?
+  generationId           String?
+  iteration              Int
+  approved               Boolean
+  score                  Float
+  topicFidelity          Float              @default(100)
+  factualAccuracy        Float
+  relevance              Float
+  platformFit            Float
+  clarity                Float
+  originality            Float
+  naturalness            Float              @default(90)
+  noFabricatedExperience Boolean            @default(true)
+  noFabricatedStatistics Boolean            @default(true)
+  issues                 Json               // Array<{ type: string, severity: string, description: string }>
+  requiredChanges        Json               // string[]
+  createdAt              DateTime           @default(now())
+  draft                  ContentDraft?      @relation(fields: [draftId], references: [id], onDelete: Cascade)
+  generation             ContentGeneration? @relation(fields: [generationId], references: [id], onDelete: Cascade)
 
   @@index([generationId, iteration])
   @@map("critic_reviews")

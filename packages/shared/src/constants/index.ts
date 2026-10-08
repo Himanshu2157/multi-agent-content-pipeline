@@ -7,7 +7,9 @@ export type PlatformType = (typeof PLATFORMS)[keyof typeof PLATFORMS];
 
 export const PROJECT_STATUSES = {
   DRAFT: 'DRAFT',
+  ANALYZING: 'ANALYZING',
   RESEARCHING: 'RESEARCHING',
+  STRATEGIZING: 'STRATEGIZING',
   WRITING: 'WRITING',
   REVIEWING: 'REVIEWING',
   COMPLETED: 'COMPLETED',
@@ -17,7 +19,9 @@ export const PROJECT_STATUSES = {
 export type ProjectStatusType = (typeof PROJECT_STATUSES)[keyof typeof PROJECT_STATUSES];
 
 export const AGENT_TYPES = {
+  TOPIC_ANALYZER: 'TOPIC_ANALYZER',
   RESEARCH: 'RESEARCH',
+  STRATEGIST: 'STRATEGIST',
   WRITER: 'WRITER',
   CRITIC: 'CRITIC',
 } as const;

@@ -17,40 +17,78 @@ export class CriticAgent {
       CriticReviewSchema,
       {
         systemPrompt: CRITIC_SYSTEM_PROMPT,
-        temperature: 0.1, // Low temperature for consistent, strict evaluation
+        temperature: 0.1, // Strict, deterministic grading
         maxRetries: 2,
       }
     );
 
-    // Apply explicit quality and safety guardrails
+    // Apply strict quality and fidelity guardrails
     const hasHighSeverityIssue = rawReview.issues.some((i) => i.severity === 'high');
+    const isTopicFidelityInsufficient = rawReview.topicFidelity < 90;
     const isFactualAccuracyInsufficient = rawReview.factualAccuracy < 80;
     const isPlatformFitInsufficient = rawReview.platformFit < 75;
+    const hasFabricatedStats = rawReview.noFabricatedStatistics === false;
+    const hasFabricatedExp = rawReview.noFabricatedExperience === false;
 
     let finalApproved = rawReview.approved;
+    const issues = [...rawReview.issues];
+
+    if (isTopicFidelityInsufficient) {
+      finalApproved = false;
+      if (!issues.some((i) => i.type === 'topic_drift')) {
+        issues.push({
+          type: 'topic_drift',
+          severity: 'high',
+          description: `Topic fidelity score is ${rawReview.topicFidelity}/100 (< 90). The content drifts from "${input.topic}". All posts must remain strictly focused on the user topic.`,
+        });
+      }
+    }
+
+    if (hasFabricatedStats) {
+      finalApproved = false;
+      if (!issues.some((i) => i.type === 'fabricated_statistics')) {
+        issues.push({
+          type: 'fabricated_statistics',
+          severity: 'high',
+          description: 'Content contains unverified statistics or fabricated percentages. Remove invented numbers.',
+        });
+      }
+    }
+
+    if (hasFabricatedExp) {
+      finalApproved = false;
+      if (!issues.some((i) => i.type === 'fabricated_experience')) {
+        issues.push({
+          type: 'fabricated_experience',
+          severity: 'high',
+          description: 'Content contains fabricated first-person anecdotes. Replace with objective domain explanations.',
+        });
+      }
+    }
+
     if (hasHighSeverityIssue || isFactualAccuracyInsufficient || isPlatformFitInsufficient) {
       finalApproved = false;
     }
 
     let requiredChanges = [...rawReview.requiredChanges];
     if (!finalApproved && requiredChanges.length === 0) {
-      if (rawReview.issues.length > 0) {
-        requiredChanges = rawReview.issues.map(
-          (iss) => `Address [${iss.severity}] ${iss.type}: ${iss.description}`
+      if (issues.length > 0) {
+        requiredChanges = issues.map(
+          (iss) => `Address [${iss.severity.toUpperCase()}] ${iss.type}: ${iss.description}`
         );
       } else {
         requiredChanges = [
-          'Improve factual grounding with direct source attributions and strengthen opening hooks.',
+          'Maintain 100% topic fidelity, remove any ungrounded assertions or clichés, and strengthen hooks.',
         ];
       }
     } else if (finalApproved) {
-      // Approved content has completed refinement
       requiredChanges = [];
     }
 
     const finalized: CriticReview = {
       ...rawReview,
       approved: finalApproved,
+      issues,
       requiredChanges,
     };
 

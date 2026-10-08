@@ -15,7 +15,9 @@ export const PlatformSchema = z.enum([PLATFORMS.LINKEDIN, PLATFORMS.INSTAGRAM_RE
 // Project Status Schema
 export const ProjectStatusSchema = z.enum([
   PROJECT_STATUSES.DRAFT,
+  PROJECT_STATUSES.ANALYZING,
   PROJECT_STATUSES.RESEARCHING,
+  PROJECT_STATUSES.STRATEGIZING,
   PROJECT_STATUSES.WRITING,
   PROJECT_STATUSES.REVIEWING,
   PROJECT_STATUSES.COMPLETED,
@@ -24,7 +26,9 @@ export const ProjectStatusSchema = z.enum([
 
 // Agent Type Schema
 export const AgentTypeSchema = z.enum([
+  AGENT_TYPES.TOPIC_ANALYZER,
   AGENT_TYPES.RESEARCH,
+  AGENT_TYPES.STRATEGIST,
   AGENT_TYPES.WRITER,
   AGENT_TYPES.CRITIC,
 ]);
@@ -36,14 +40,27 @@ export const AgentExecutionStatusSchema = z.enum([
   AGENT_EXECUTION_STATUSES.FAILED,
 ]);
 
-// Research Fact Schema
+// ==========================================
+// 1. Topic Analyzer Schema
+// ==========================================
+export const TopicAnalysisSchema = z.object({
+  normalizedTopic: z.string().min(3, 'Normalized topic must be at least 3 characters'),
+  coreSubject: z.string().min(2, 'Core subject is required'),
+  userIntent: z.string().min(3, 'User intent is required'),
+  contentGoal: z.string().min(3, 'Content goal is required'),
+  allowedSubtopics: z.array(z.string().min(1)).min(1, 'Must specify at least 1 allowed subtopic'),
+  forbiddenTopicDrift: z.array(z.string().min(1)).min(1, 'Must specify forbidden drift topics'),
+});
+
+// ==========================================
+// 2. Research Schema
+// ==========================================
 export const ResearchFactSchema = z.object({
   claim: z.string().min(1, 'Claim cannot be empty'),
   source: z.string().min(1, 'Source name/title cannot be empty'),
   confidence: z.enum(['high', 'medium', 'low']),
 });
 
-// Research Source Schema
 export const ResearchSourceSchema = z.object({
   title: z.string().min(1, 'Title cannot be empty'),
   url: z.string().url('Source must have a valid URL'),
@@ -51,7 +68,6 @@ export const ResearchSourceSchema = z.object({
   date: z.string().optional(),
 });
 
-// Research Agent Output Schema
 export const ResearchResultSchema = z.object({
   topic: z.string().min(1),
   summary: z.string().min(10, 'Summary must be at least 10 characters'),
@@ -61,7 +77,30 @@ export const ResearchResultSchema = z.object({
   cautions: z.array(z.string()).default([]),
 });
 
-// LinkedIn Post Schema
+// ==========================================
+// 3. Content Strategy Schema
+// ==========================================
+export const ContentAngleSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  description: z.string().min(5),
+  targetTakeaway: z.string().min(5),
+  hookIdea: z.string().min(5),
+  suggestedExampleOrAnalogy: z.string().optional(),
+});
+
+export const ContentStrategySchema = z.object({
+  topic: z.string().min(1),
+  targetAudiencePainPoint: z.string().min(5),
+  coreInsight: z.string().min(5),
+  angles: z.array(ContentAngleSchema).min(3, 'Must have at least 3 distinct angles').max(5),
+  avoidTopics: z.array(z.string().min(1)),
+  keyPointsToEmphasize: z.array(z.string().min(1)),
+});
+
+// ==========================================
+// 4. Writer Output Schemas
+// ==========================================
 export const LinkedInPostSchema = z.object({
   id: z.string().min(1),
   angle: z.string().min(1),
@@ -70,7 +109,6 @@ export const LinkedInPostSchema = z.object({
   cta: z.string().optional(),
 });
 
-// LinkedIn Content Output Schema (4-5 posts)
 export const LinkedInOutputSchema = z.object({
   posts: z
     .array(LinkedInPostSchema)
@@ -78,7 +116,6 @@ export const LinkedInOutputSchema = z.object({
     .max(5, 'Maximum 5 posts'),
 });
 
-// Instagram Reel Section Schema
 export const ReelSectionSchema = z.object({
   timestamp: z.string().min(1, 'Timestamp or section time is required (e.g. 0-3 sec)'),
   visual: z.string().min(3, 'Visual direction is required'),
@@ -86,7 +123,6 @@ export const ReelSectionSchema = z.object({
   onScreenText: z.string().min(1, 'On-screen text is required'),
 });
 
-// Instagram Reel Output Schema
 export const InstagramReelOutputSchema = z.object({
   title: z.string().min(3, 'Reel title is required'),
   estimatedDuration: z.string().min(2, 'Estimated duration (e.g. 30-45 sec)'),
@@ -95,33 +131,39 @@ export const InstagramReelOutputSchema = z.object({
   cta: z.string().optional(),
 });
 
-// Unified Writer Output (discriminated or nullable)
 export const WriterOutputSchema = z.union([
   LinkedInOutputSchema,
   InstagramReelOutputSchema,
 ]);
 
-// Critic Issue Schema
+// ==========================================
+// 5. Critic Review Schema (with Strict Topic Fidelity)
+// ==========================================
 export const CriticIssueSchema = z.object({
   type: z.string().min(1),
   severity: z.enum(['low', 'medium', 'high']),
   description: z.string().min(3),
 });
 
-// Critic Review Output Schema
 export const CriticReviewSchema = z.object({
   approved: z.boolean(),
   score: z.number().min(0).max(100),
+  topicFidelity: z.number().min(0).max(100).default(100),
   factualAccuracy: z.number().min(0).max(100),
   relevance: z.number().min(0).max(100),
   platformFit: z.number().min(0).max(100),
   clarity: z.number().min(0).max(100),
   originality: z.number().min(0).max(100),
+  naturalness: z.number().min(0).max(100).default(90),
+  noFabricatedExperience: z.boolean().default(true),
+  noFabricatedStatistics: z.boolean().default(true),
   issues: z.array(CriticIssueSchema),
   requiredChanges: z.array(z.string()),
 });
 
-// Create Project Request Schema
+// ==========================================
+// 6. Project Creation Schema
+// ==========================================
 export const CreateProjectSchema = z.object({
   topic: z
     .string()
@@ -129,8 +171,8 @@ export const CreateProjectSchema = z.object({
     .min(3, 'Topic must be at least 3 characters long')
     .max(300, 'Topic must be at most 300 characters'),
   platform: PlatformSchema,
-  tone: z.string().trim().max(100).optional().default('Professional'),
-  audience: z.string().trim().max(150).optional().default('General Professional'),
+  tone: z.string().trim().max(100).optional().default('Professional but natural'),
+  audience: z.string().trim().max(150).optional().default('Tech professionals & software developers'),
   maxIterations: z
     .number()
     .int()

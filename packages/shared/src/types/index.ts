@@ -4,9 +4,12 @@ import {
   ProjectStatusSchema,
   AgentTypeSchema,
   AgentExecutionStatusSchema,
+  TopicAnalysisSchema,
   ResearchFactSchema,
   ResearchSourceSchema,
   ResearchResultSchema,
+  ContentAngleSchema,
+  ContentStrategySchema,
   LinkedInPostSchema,
   LinkedInOutputSchema,
   ReelSectionSchema,
@@ -22,9 +25,13 @@ export type ProjectStatus = z.infer<typeof ProjectStatusSchema>;
 export type AgentType = z.infer<typeof AgentTypeSchema>;
 export type AgentExecutionStatus = z.infer<typeof AgentExecutionStatusSchema>;
 
+export type TopicAnalysis = z.infer<typeof TopicAnalysisSchema>;
 export type ResearchFact = z.infer<typeof ResearchFactSchema>;
 export type ResearchSource = z.infer<typeof ResearchSourceSchema>;
 export type ResearchResult = z.infer<typeof ResearchResultSchema>;
+
+export type ContentAngle = z.infer<typeof ContentAngleSchema>;
+export type ContentStrategy = z.infer<typeof ContentStrategySchema>;
 
 export type LinkedInPost = z.infer<typeof LinkedInPostSchema>;
 export type LinkedInOutput = z.infer<typeof LinkedInOutputSchema>;
@@ -47,7 +54,9 @@ export interface ContentAgentState {
   platform: Platform;
   tone?: string;
   audience?: string;
+  topicAnalysis?: TopicAnalysis;
   research?: ResearchResult;
+  strategy?: ContentStrategy;
   draft?: WriterOutput;
   criticReview?: CriticReview;
   iteration: number;
@@ -89,6 +98,8 @@ export interface ContentGenerationDTO {
   approved: boolean;
   createdAt: string;
   completedAt?: string | null;
+  topicAnalysis?: TopicAnalysis | null;
+  strategy?: ContentStrategy | null;
   researchResult?: ResearchResultDTO | null;
   drafts?: ContentDraftDTO[];
   criticReviews?: CriticReviewDTO[];
@@ -122,11 +133,15 @@ export interface CriticReviewDTO {
   iteration: number;
   approved: boolean;
   score: number;
+  topicFidelity: number;
   factualAccuracy: number;
   relevance: number;
   platformFit: number;
   clarity: number;
   originality: number;
+  naturalness?: number;
+  noFabricatedExperience?: boolean;
+  noFabricatedStatistics?: boolean;
   issues: CriticIssue[];
   requiredChanges: string[];
   createdAt: string;

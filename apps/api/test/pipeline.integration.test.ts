@@ -44,10 +44,11 @@ describe('ContentGenerationGraph (End-to-End Pipeline)', () => {
     expect(savedGen?.status).toBe('COMPLETED');
     expect(savedGen?.approved).toBe(true);
     expect(savedGen?.currentIteration).toBe(2);
-    expect(savedGen?.researchResult).toBeDefined();
-    expect(savedGen?.drafts?.length).toBe(2); // iteration 1 and 2 drafts preserved!
+    expect(savedGen?.drafts?.length).toBe(2);
     expect(savedGen?.criticReviews?.length).toBe(2);
-    expect(savedGen?.agentExecutions?.length).toBe(5); // 1 research + 2 writer + 2 critic
+    expect(savedGen?.agentExecutions?.length).toBe(7); // 1 topic analyzer + 1 research + 1 strategist + 2 writer + 2 critic
+    expect(savedGen?.topicAnalysis).toBeDefined();
+    expect(savedGen?.strategy).toBeDefined();
   });
 
   it('Case 1: Critic approves on first iteration when content meets bar', async () => {

@@ -15,11 +15,12 @@ interface CriticReportProps {
 
 export const CriticReport: React.FC<CriticReportProps> = ({ review, iteration }) => {
   const metrics = [
+    { label: 'Topic Fidelity', value: review.topicFidelity ?? 100 },
     { label: 'Factual Accuracy', value: review.factualAccuracy },
     { label: 'Platform Fit', value: review.platformFit },
     { label: 'Relevance', value: review.relevance },
     { label: 'Clarity', value: review.clarity },
-    { label: 'Originality', value: review.originality },
+    { label: 'Natural Voice', value: review.naturalness ?? 90 },
   ];
 
   return (
@@ -31,7 +32,7 @@ export const CriticReport: React.FC<CriticReportProps> = ({ review, iteration })
             <h3 className="font-bold text-white text-base">Critic & Quality Review Report</h3>
           </div>
           <p className="text-xs text-forge-400 mt-0.5">
-            Automated factual verification and platform fitness assessment (Iteration {iteration})
+            Automated topic fidelity verification and platform fitness assessment (Iteration {iteration})
           </p>
         </div>
 
@@ -49,7 +50,7 @@ export const CriticReport: React.FC<CriticReportProps> = ({ review, iteration })
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-6">
         {metrics.map((m) => (
           <div
             key={m.label}

@@ -2,12 +2,17 @@ import {
   ContentAgentState,
   Platform,
   ProjectStatus,
+  AgentType,
   ResearchResult,
   WriterOutput,
   CriticReview,
+  TopicAnalysis,
+  ContentStrategy,
 } from '@contentforge/shared';
 import { db } from '../../services/database.service.js';
+import { TopicAnalyzerAgent } from '../topic-analyzer/topic-analyzer.agent.js';
 import { ResearchAgent } from '../research/research.agent.js';
+import { ContentStrategistAgent } from '../strategy/strategy.agent.js';
 import { WriterAgent } from '../writer/writer.agent.js';
 import { CriticAgent } from '../critic/critic.agent.js';
 import { LLMProvider } from '../../providers/llm/llm.provider.js';
@@ -15,7 +20,7 @@ import { ResearchProvider } from '../../providers/research/research.provider.js'
 
 export interface GraphExecutionOptions {
   onStepChange?: (step: {
-    agentType: 'RESEARCH' | 'WRITER' | 'CRITIC';
+    agentType: AgentType;
     status: 'RUNNING' | 'COMPLETED' | 'FAILED';
     iteration: number;
     state: ContentAgentState;
@@ -23,12 +28,16 @@ export interface GraphExecutionOptions {
 }
 
 export class ContentGenerationGraph {
+  private topicAnalyzerAgent: TopicAnalyzerAgent;
   private researchAgent: ResearchAgent;
+  private strategistAgent: ContentStrategistAgent;
   private writerAgent: WriterAgent;
   private criticAgent: CriticAgent;
 
   constructor(llmProvider?: LLMProvider, researchProvider?: ResearchProvider) {
+    this.topicAnalyzerAgent = new TopicAnalyzerAgent(llmProvider);
     this.researchAgent = new ResearchAgent(llmProvider, researchProvider);
+    this.strategistAgent = new ContentStrategistAgent(llmProvider);
     this.writerAgent = new WriterAgent(llmProvider);
     this.criticAgent = new CriticAgent(llmProvider);
   }
@@ -55,14 +64,20 @@ export class ContentGenerationGraph {
       iteration: 1,
       maxIterations: Math.min(Math.max(initialState.maxIterations || 3, 1), 5),
       approved: false,
-      status: 'RESEARCHING',
+      status: 'ANALYZING',
     };
 
     try {
-      // Step 1: Research Node (Runs ONCE per generation workflow)
+      // Step 1: Topic Analyzer Node (Derives semantic guardrails and authentic intent)
+      await this.executeTopicAnalyzerNode(state, options);
+
+      // Step 2: Research Node (Gathers verifiable, non-hallucinated domain facts)
       await this.executeResearchNode(state, options);
 
-      // Step 2 & 3: Writer <-> Critic Autonomous Refinement Loop
+      // Step 3: Content Strategist Node (Plans distinct angles and audience framing)
+      await this.executeStrategistNode(state, options);
+
+      // Step 4 & 5: Writer <-> Critic Autonomous Refinement Loop
       while (true) {
         // Writer Node
         await this.executeWriterNode(state, options);
@@ -100,9 +115,9 @@ export class ContentGenerationGraph {
           break;
         }
 
-        // Loop continuation: prepare next iteration
+        // Loop continuation: route back to Writer
         console.log(
-          `[Graph] Content rejected on iteration ${state.iteration}. Routing back to Writer Agent for iteration ${state.iteration + 1}.`
+          `[Graph] Content rejected on iteration ${state.iteration} (topicFidelity: ${state.criticReview?.topicFidelity}). Routing back to Writer Agent for iteration ${state.iteration + 1}.`
         );
         state.iteration += 1;
         await db.updateGeneration(state.generationId, {
@@ -128,6 +143,74 @@ export class ContentGenerationGraph {
     }
   }
 
+  private async executeTopicAnalyzerNode(state: ContentAgentState, options?: GraphExecutionOptions) {
+    state.status = 'ANALYZING';
+    await db.updateGeneration(state.generationId, { status: 'ANALYZING' });
+    await db.updateProjectStatus(state.projectId, 'ANALYZING');
+
+    const exec = await db.recordAgentExecution({
+      generationId: state.generationId,
+      agentType: 'TOPIC_ANALYZER',
+      status: 'RUNNING',
+      iteration: 1,
+      input: {
+        topic: state.topic,
+        platform: state.platform,
+        tone: state.tone,
+        audience: state.audience,
+      },
+      startedAt: new Date(),
+    });
+
+    options?.onStepChange?.({
+      agentType: 'TOPIC_ANALYZER',
+      status: 'RUNNING',
+      iteration: 1,
+      state,
+    });
+
+    try {
+      const topicAnalysis = await this.topicAnalyzerAgent.execute({
+        topic: state.topic,
+        platform: state.platform,
+        tone: state.tone,
+        audience: state.audience,
+      });
+
+      state.topicAnalysis = topicAnalysis;
+
+      await db.updateGeneration(state.generationId, {
+        topicAnalysis,
+      });
+
+      await db.updateAgentExecution(exec.id, {
+        status: 'COMPLETED',
+        output: topicAnalysis,
+        completedAt: new Date(),
+      });
+
+      options?.onStepChange?.({
+        agentType: 'TOPIC_ANALYZER',
+        status: 'COMPLETED',
+        iteration: 1,
+        state,
+      });
+    } catch (err: any) {
+      await db.updateAgentExecution(exec.id, {
+        status: 'FAILED',
+        error: err.message,
+        completedAt: new Date(),
+      });
+      options?.onStepChange?.({
+        agentType: 'TOPIC_ANALYZER',
+        status: 'FAILED',
+        iteration: 1,
+        state,
+      });
+      throw err;
+    }
+  }
+
   private async executeResearchNode(state: ContentAgentState, options?: GraphExecutionOptions) {
     state.status = 'RESEARCHING';
     await db.updateGeneration(state.generationId, { status: 'RESEARCHING' });
@@ -138,7 +221,10 @@ export class ContentGenerationGraph {
       agentType: 'RESEARCH',
       status: 'RUNNING',
       iteration: 1,
-      input: { topic: state.topic },
+      input: {
+        topic: state.topic,
+        normalizedTopic: state.topicAnalysis?.normalizedTopic,
+      },
       startedAt: new Date(),
     });
 
@@ -150,7 +236,7 @@ export class ContentGenerationGraph {
     });
 
     try {
-      const research = await this.researchAgent.execute(state.topic);
+      const research = await this.researchAgent.execute(state.topic, state.topicAnalysis);
       state.research = research;
 
       await db.saveResearchResult({
@@ -182,6 +268,74 @@ export class ContentGenerationGraph {
       });
       options?.onStepChange?.({
         agentType: 'RESEARCH',
+        status: 'FAILED',
+        iteration: 1,
+        state,
+      });
+      throw err;
+    }
+  }
+
+  private async executeStrategistNode(state: ContentAgentState, options?: GraphExecutionOptions) {
+    state.status = 'STRATEGIZING';
+    await db.updateGeneration(state.generationId, { status: 'STRATEGIZING' });
+    await db.updateProjectStatus(state.projectId, 'STRATEGIZING');
+
+    const exec = await db.recordAgentExecution({
+      generationId: state.generationId,
+      agentType: 'STRATEGIST',
+      status: 'RUNNING',
+      iteration: 1,
+      input: {
+        topic: state.topic,
+        platform: state.platform,
+      },
+      startedAt: new Date(),
+    });
+
+    options?.onStepChange?.({
+      agentType: 'STRATEGIST',
+      status: 'RUNNING',
+      iteration: 1,
+      state,
+    });
+
+    try {
+      const strategy = await this.strategistAgent.execute({
+        topic: state.topic,
+        platform: state.platform,
+        tone: state.tone,
+        audience: state.audience,
+        topicAnalysis: state.topicAnalysis!,
+        research: state.research!,
+      });
+
+      state.strategy = strategy;
+
+      await db.updateGeneration(state.generationId, {
+        strategy,
+      });
+
+      await db.updateAgentExecution(exec.id, {
+        status: 'COMPLETED',
+        output: strategy,
+        completedAt: new Date(),
+      });
+
+      options?.onStepChange?.({
+        agentType: 'STRATEGIST',
+        status: 'COMPLETED',
+        iteration: 1,
+        state,
+      });
+    } catch (err: any) {
+      await db.updateAgentExecution(exec.id, {
+        status: 'FAILED',
+        error: err.message,
+        completedAt: new Date(),
+      });
+      options?.onStepChange?.({
+        agentType: 'STRATEGIST',
         status: 'FAILED',
         iteration: 1,
         state,
@@ -223,6 +377,8 @@ export class ContentGenerationGraph {
         platform: state.platform,
         tone: state.tone,
         audience: state.audience,
+        topicAnalysis: state.topicAnalysis,
+        strategy: state.strategy,
         research: state.research!,
         previousDraft: state.draft || null,
         criticFeedback: state.criticReview || null,
@@ -296,6 +452,8 @@ export class ContentGenerationGraph {
         platform: state.platform,
         tone: state.tone,
         audience: state.audience,
+        topicAnalysis: state.topicAnalysis,
+        strategy: state.strategy,
         research: state.research!,
         draft: state.draft!,
         iteration: state.iteration,
@@ -309,11 +467,15 @@ export class ContentGenerationGraph {
         iteration: state.iteration,
         approved: review.approved,
         score: review.score,
+        topicFidelity: review.topicFidelity,
         factualAccuracy: review.factualAccuracy,
         relevance: review.relevance,
         platformFit: review.platformFit,
         clarity: review.clarity,
         originality: review.originality,
+        naturalness: review.naturalness,
+        noFabricatedExperience: review.noFabricatedExperience,
+        noFabricatedStatistics: review.noFabricatedStatistics,
         issues: review.issues,
         requiredChanges: review.requiredChanges,
       });

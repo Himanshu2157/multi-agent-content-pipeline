@@ -29,6 +29,8 @@ export interface DatabaseAdapter {
       status?: ProjectStatus;
       currentIteration?: number;
       approved?: boolean;
+      topicAnalysis?: any;
+      strategy?: any;
       completedAt?: Date | null;
     }
   ): Promise<ContentGenerationDTO>;
@@ -55,11 +57,15 @@ export interface DatabaseAdapter {
     iteration: number;
     approved: boolean;
     score: number;
+    topicFidelity?: number;
     factualAccuracy: number;
     relevance: number;
     platformFit: number;
     clarity: number;
     originality: number;
+    naturalness?: number;
+    noFabricatedExperience?: boolean;
+    noFabricatedStatistics?: boolean;
     issues: any[];
     requiredChanges: string[];
   }): Promise<CriticReviewDTO>;
@@ -176,8 +182,10 @@ class MemoryDatabaseStore implements DatabaseAdapter {
       id,
       projectId,
       currentIteration: 1,
-      status: 'RESEARCHING',
+      status: 'ANALYZING',
       approved: false,
+      topicAnalysis: null,
+      strategy: null,
       createdAt: now,
       completedAt: null,
     };
@@ -196,6 +204,8 @@ class MemoryDatabaseStore implements DatabaseAdapter {
       status?: ProjectStatus;
       currentIteration?: number;
       approved?: boolean;
+      topicAnalysis?: any;
+      strategy?: any;
       completedAt?: Date | null;
     }
   ): Promise<ContentGenerationDTO> {
@@ -205,6 +215,8 @@ class MemoryDatabaseStore implements DatabaseAdapter {
     if (data.status !== undefined) gen.status = data.status;
     if (data.currentIteration !== undefined) gen.currentIteration = data.currentIteration;
     if (data.approved !== undefined) gen.approved = data.approved;
+    if (data.topicAnalysis !== undefined) gen.topicAnalysis = data.topicAnalysis;
+    if (data.strategy !== undefined) gen.strategy = data.strategy;
     if (data.completedAt !== undefined) {
       gen.completedAt = data.completedAt ? data.completedAt.toISOString() : null;
     }
@@ -261,11 +273,15 @@ class MemoryDatabaseStore implements DatabaseAdapter {
     iteration: number;
     approved: boolean;
     score: number;
+    topicFidelity?: number;
     factualAccuracy: number;
     relevance: number;
     platformFit: number;
     clarity: number;
     originality: number;
+    naturalness?: number;
+    noFabricatedExperience?: boolean;
+    noFabricatedStatistics?: boolean;
     issues: any[];
     requiredChanges: string[];
   }): Promise<CriticReviewDTO> {
@@ -277,11 +293,15 @@ class MemoryDatabaseStore implements DatabaseAdapter {
       iteration: data.iteration,
       approved: data.approved,
       score: data.score,
+      topicFidelity: data.topicFidelity !== undefined ? data.topicFidelity : 100,
       factualAccuracy: data.factualAccuracy,
       relevance: data.relevance,
       platformFit: data.platformFit,
       clarity: data.clarity,
       originality: data.originality,
+      naturalness: data.naturalness !== undefined ? data.naturalness : 90,
+      noFabricatedExperience: data.noFabricatedExperience !== undefined ? data.noFabricatedExperience : true,
+      noFabricatedStatistics: data.noFabricatedStatistics !== undefined ? data.noFabricatedStatistics : true,
       issues: data.issues,
       requiredChanges: data.requiredChanges,
       createdAt: new Date().toISOString(),
@@ -352,6 +372,8 @@ class MemoryDatabaseStore implements DatabaseAdapter {
 
     return {
       ...gen,
+      topicAnalysis: gen.topicAnalysis || null,
+      strategy: gen.strategy || null,
       researchResult: research,
       drafts,
       criticReviews: reviews,
@@ -530,7 +552,7 @@ class PrismaDatabaseAdapter implements DatabaseAdapter {
       data: {
         projectId,
         currentIteration: 1,
-        status: 'RESEARCHING',
+        status: 'ANALYZING',
         approved: false,
       },
     });
@@ -541,6 +563,8 @@ class PrismaDatabaseAdapter implements DatabaseAdapter {
       currentIteration: record.currentIteration,
       status: record.status as ProjectStatus,
       approved: record.approved,
+      topicAnalysis: null,
+      strategy: null,
       createdAt: record.createdAt.toISOString(),
       completedAt: null,
       drafts: [],
@@ -568,6 +592,8 @@ class PrismaDatabaseAdapter implements DatabaseAdapter {
       currentIteration: g.currentIteration,
       status: g.status as ProjectStatus,
       approved: g.approved,
+      topicAnalysis: (g.topicAnalysis as any) || null,
+      strategy: (g.strategy as any) || null,
       createdAt: g.createdAt.toISOString(),
       completedAt: g.completedAt?.toISOString() || null,
       researchResult: g.researchResult
@@ -597,11 +623,15 @@ class PrismaDatabaseAdapter implements DatabaseAdapter {
         iteration: r.iteration,
         approved: r.approved,
         score: r.score,
+        topicFidelity: r.topicFidelity,
         factualAccuracy: r.factualAccuracy,
         relevance: r.relevance,
         platformFit: r.platformFit,
         clarity: r.clarity,
         originality: r.originality,
+        naturalness: r.naturalness,
+        noFabricatedExperience: r.noFabricatedExperience,
+        noFabricatedStatistics: r.noFabricatedStatistics,
         issues: r.issues as any[],
         requiredChanges: r.requiredChanges as string[],
         createdAt: r.createdAt.toISOString(),
@@ -627,6 +657,8 @@ class PrismaDatabaseAdapter implements DatabaseAdapter {
       status?: ProjectStatus;
       currentIteration?: number;
       approved?: boolean;
+      topicAnalysis?: any;
+      strategy?: any;
       completedAt?: Date | null;
     }
   ): Promise<ContentGenerationDTO> {
@@ -636,6 +668,8 @@ class PrismaDatabaseAdapter implements DatabaseAdapter {
         ...(data.status && { status: data.status as any }),
         ...(data.currentIteration !== undefined && { currentIteration: data.currentIteration }),
         ...(data.approved !== undefined && { approved: data.approved }),
+        ...(data.topicAnalysis !== undefined && { topicAnalysis: data.topicAnalysis as any }),
+        ...(data.strategy !== undefined && { strategy: data.strategy as any }),
         ...(data.completedAt !== undefined && { completedAt: data.completedAt }),
       },
     });
@@ -705,11 +739,15 @@ class PrismaDatabaseAdapter implements DatabaseAdapter {
     iteration: number;
     approved: boolean;
     score: number;
+    topicFidelity?: number;
     factualAccuracy: number;
     relevance: number;
     platformFit: number;
     clarity: number;
     originality: number;
+    naturalness?: number;
+    noFabricatedExperience?: boolean;
+    noFabricatedStatistics?: boolean;
     issues: any[];
     requiredChanges: string[];
   }): Promise<CriticReviewDTO> {
@@ -720,11 +758,15 @@ class PrismaDatabaseAdapter implements DatabaseAdapter {
         iteration: data.iteration,
         approved: data.approved,
         score: data.score,
+        topicFidelity: data.topicFidelity !== undefined ? data.topicFidelity : 100,
         factualAccuracy: data.factualAccuracy,
         relevance: data.relevance,
         platformFit: data.platformFit,
         clarity: data.clarity,
         originality: data.originality,
+        naturalness: data.naturalness !== undefined ? data.naturalness : 90,
+        noFabricatedExperience: data.noFabricatedExperience !== undefined ? data.noFabricatedExperience : true,
+        noFabricatedStatistics: data.noFabricatedStatistics !== undefined ? data.noFabricatedStatistics : true,
         issues: data.issues as any,
         requiredChanges: data.requiredChanges as any,
       },
@@ -737,11 +779,15 @@ class PrismaDatabaseAdapter implements DatabaseAdapter {
       iteration: r.iteration,
       approved: r.approved,
       score: r.score,
+      topicFidelity: r.topicFidelity,
       factualAccuracy: r.factualAccuracy,
       relevance: r.relevance,
       platformFit: r.platformFit,
       clarity: r.clarity,
       originality: r.originality,
+      naturalness: r.naturalness,
+      noFabricatedExperience: r.noFabricatedExperience,
+      noFabricatedStatistics: r.noFabricatedStatistics,
       issues: r.issues as any[],
       requiredChanges: r.requiredChanges as string[],
       createdAt: r.createdAt.toISOString(),
