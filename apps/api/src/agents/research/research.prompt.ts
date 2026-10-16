@@ -45,17 +45,23 @@ VERIFIED SEARCH FINDINGS & DOMAIN SOURCES:
 ${formattedResults}
 
 INSTRUCTIONS:
-1. Synthesize a comprehensive, factual overview strictly focused on this topic.
-2. Extract 3 to 5 key technical or domain concepts.
-3. Extract concrete facts with their source/discipline and assign confidence ("high", "medium", or "low").
-4. Provide structured source citations with valid URLs (e.g. documentation, classic textbook references, authoritative articles). Never fabricate URLs.
-5. Highlight genuine cautions, common trade-offs, or beginner misconceptions.
-6. STRIKE RULE: Do NOT fabricate survey numbers, percentages, or research institutes. If no exact percentage exists, explain the qualitative mechanism or trade-off instead.
-7. Do NOT write social media copy.
+1. Identify the central subject and 3 to 6 specific subtopics.
+2. Synthesize a comprehensive, factual overview that directly and meaningfully explains the core mechanics of this topic:
+   - If the topic asks or implies "How does it work?" or "Why does it happen?", explain the exact sequence of events, components, and forces from start to finish.
+   - Do NOT produce abstract meta-talk (e.g. "X establishes operational frameworks"). Always explain the actual subject matter itself.
+3. Extract 3 to 5 key technical or domain concepts with high explanatory depth.
+4. Extract concrete facts with their source/discipline and assign confidence ("high", "medium", or "low").
+5. Provide 2 to 4 concrete, tangible examples, operational mechanics, calculations, or code snippets (e.g. for algorithms provide concrete array steps or complexity formulas; for hardware provide register names and execution cycle steps; for science provide chemical, physical, or biological agents).
+6. Provide structured source citations with valid URLs (e.g. documentation, classic textbook references, authoritative articles). Never fabricate URLs.
+7. Highlight genuine cautions, common trade-offs, or beginner misconceptions.
+8. STRIKE RULE: Do NOT fabricate survey numbers, percentages, or research institutes. If no exact percentage exists, explain the qualitative mechanism or trade-off instead.
+9. Do NOT write social media copy.
 
 OUTPUT JSON SCHEMA:
 {
   "topic": "${topicAnalysis?.normalizedTopic || topic}",
+  "centralSubject": "${topicAnalysis?.coreSubject || topic}",
+  "subtopics": ["...", "..."],
   "summary": "...",
   "keyPoints": ["...", "..."],
   "facts": [
@@ -65,6 +71,7 @@ OUTPUT JSON SCHEMA:
       "confidence": "high" | "medium" | "low"
     }
   ],
+  "relevantExamples": ["...", "..."],
   "sources": [
     {
       "title": "...",

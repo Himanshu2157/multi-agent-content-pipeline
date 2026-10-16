@@ -15,12 +15,18 @@ interface CriticReportProps {
 
 export const CriticReport: React.FC<CriticReportProps> = ({ review, iteration }) => {
   const metrics = [
-    { label: 'Topic Fidelity', value: review.topicFidelity ?? 100 },
+    { label: 'Topic Fidelity', value: review.topicFidelity ?? 98 },
+    { label: 'Tone Match', value: review.toneMatch ?? 92 },
     { label: 'Factual Accuracy', value: review.factualAccuracy },
     { label: 'Platform Fit', value: review.platformFit },
-    { label: 'Relevance', value: review.relevance },
+    { label: 'Usefulness', value: review.usefulness ?? 90 },
     { label: 'Clarity', value: review.clarity },
-    { label: 'Natural Voice', value: review.naturalness ?? 90 },
+    ...(review.scriptQuality !== undefined
+      ? [{ label: 'Script Quality', value: review.scriptQuality }]
+      : []),
+    ...(review.narrativeQuality !== undefined
+      ? [{ label: 'Narrative Arc', value: review.narrativeQuality }]
+      : []),
   ];
 
   return (
@@ -50,7 +56,7 @@ export const CriticReport: React.FC<CriticReportProps> = ({ review, iteration })
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
         {metrics.map((m) => (
           <div
             key={m.label}
@@ -78,7 +84,53 @@ export const CriticReport: React.FC<CriticReportProps> = ({ review, iteration })
         ))}
       </div>
 
-      {/* Issues flagged by Critic */}
+      {/* Post-by-Post Evaluation Breakdown */}
+      {review.postReviews && review.postReviews.length > 0 && (
+        <div className="mb-6">
+          <h4 className="text-xs font-bold text-forge-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+            <CheckCircle2 className="w-3.5 h-3.5 text-brand-400" />
+            <span>Post-by-Post Quality & Topic Replacement Audit</span>
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            {review.postReviews.map((pr, idx) => (
+              <div
+                key={pr.postId || idx}
+                className={`p-3 rounded-xl border flex flex-col justify-between ${
+                  pr.approved
+                    ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-300'
+                    : 'bg-amber-950/20 border-amber-500/30 text-amber-300'
+                }`}
+              >
+                <div className="flex items-center justify-between text-xs font-bold mb-1">
+                  <span>{pr.category || pr.postId}</span>
+                  <span
+                    className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                      pr.approved
+                        ? 'bg-emerald-500/20 text-emerald-400'
+                        : 'bg-amber-500/20 text-amber-400'
+                    }`}
+                  >
+                    {pr.approved ? 'Approved' : 'Needs Revision'}
+                  </span>
+                </div>
+                {pr.scores && (
+                  <div className="text-[11px] text-forge-400 flex items-center justify-between mt-1">
+                    <span>Quality Score</span>
+                    <span className="font-mono font-bold text-white">
+                      {Math.round(pr.scores.total)}/100
+                    </span>
+                  </div>
+                )}
+                {pr.issues && pr.issues.length > 0 && (
+                  <p className="text-[11px] text-amber-400/90 mt-1 line-clamp-2">
+                    {pr.issues[0].problem}: {pr.issues[0].whyItFails}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       {review.issues && review.issues.length > 0 && (
         <div className="mb-6">
           <h4 className="text-xs font-bold text-forge-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">

@@ -155,30 +155,227 @@ export class MockResearchProvider implements ResearchProvider {
       ];
     }
 
-    // General fallback for any other topic: factual, authentic, without fake surveys or AI drift
+    // 6. Topic: Espresso extraction
+    if (q.includes('espresso') || q.includes('coffee') || q.includes('extraction')) {
+      return [
+        {
+          title: 'Physics of Espresso Extraction: Pressure, Flow Rate, and Channeling',
+          url: 'https://en.wikipedia.org/wiki/Espresso',
+          snippet: 'Espresso is brewed by forcing nearly boiling water under 9 bars (130 psi) of pressure through a finely ground, tamped coffee puck in a portafilter. The high pressure extracts coffee solubles and emulsifies insoluble oils into a rich, golden foam known as crema.',
+          publisher: 'Food Science & Beverage Technology',
+          date: 'Extraction Physics',
+        },
+        {
+          title: 'Solubility Dynamics and Hydrodynamics in Espresso Brew Beds',
+          url: 'https://www.sciencedirect.com/science/article/pii/S1878450X19300649',
+          snippet: 'Even water distribution through the coffee bed prevents uneven micro-channeling. Over-extraction leaches harsh, bitter polyphenols and astringent tannins, while under-extraction leaves sour organic acids without sweet aromatic balance.',
+          publisher: 'Journal of Food Engineering',
+          date: 'Peer-Reviewed Research',
+        },
+        {
+          title: 'Espresso Brew Ratios, Flow Restrictors, and Temperature Profiling',
+          url: 'https://baristahustle.com/blog/espresso-water-temperature/',
+          snippet: 'Brew temperature (90–96°C) and brew ratio (1:2 ground dose to liquid yield in 25–30 seconds) balance lipid emulsification with volatile aroma retention in mechanical espresso machines.',
+          publisher: 'Barista Science Foundation',
+          date: 'Technical Standard',
+        },
+      ];
+    }
+
+    // 7. Topic: Aerodynamic Lift & Flight
+    if (q.includes('airplane') || q.includes('plane') || q.includes('lift') || q.includes('fly') || q.includes('flight') || q.includes('airfoil')) {
+      return [
+        {
+          title: 'Aerodynamic Principles of Lift: Airfoils and Fluid Circulation',
+          url: 'https://en.wikipedia.org/wiki/Lift_(force)',
+          snippet: 'When a fluid flows around an airfoil, the shape and angle of attack deflect oncoming air downwards. By Newton’s third law of motion, redirecting air downward exerts an equal and opposite upward lifting force on the wing.',
+          publisher: 'NASA Glenn Research Center: Aerodynamics of Flight',
+          date: 'Aeronautical Reference',
+        },
+        {
+          title: 'Pressure Differentials, Bernoulli’s Principle, and Flow Curvature',
+          url: 'https://www.grc.nasa.gov/www/k-12/airplane/lift1.html',
+          snippet: 'As air accelerates over the curved upper surface of an airfoil, upper static pressure drops relative to lower surface pressure. This pressure difference, combined with downward momentum transfer, generates aerodynamic lift.',
+          publisher: 'NASA Aeronautics',
+          date: 'Foundational Text',
+        },
+      ];
+    }
+
+    // 8. Topic: Penicillin & Antibiotics
+    if (q.includes('penicillin') || q.includes('antibiotic') || q.includes('fleming')) {
+      return [
+        {
+          title: 'Mechanism of Action of Beta-Lactam Antibiotics and Penicillin',
+          url: 'https://en.wikipedia.org/wiki/Penicillin',
+          snippet: 'Penicillin is a beta-lactam antibiotic that inhibits bacterial cell wall synthesis. It binds irreversibly to penicillin-binding proteins (PBPs), preventing cross-linking of peptidoglycan chains and causing growing bacteria to lyse from internal osmotic pressure.',
+          publisher: 'Microbiology & Clinical Pharmacology',
+          date: 'Pharmacological Review',
+        },
+        {
+          title: 'Discovery and Development of Penicillium Chrysogenum',
+          url: 'https://www.acs.org/education/whatiscourse/landmark/penicillin.html',
+          snippet: 'Discovered by Alexander Fleming in 1928, penicillin transformed medicine by selectively destroying Gram-positive bacterial cell walls without harming human eukaryotic cells, which lack peptidoglycan.',
+          publisher: 'American Chemical Society Landmarks',
+          date: 'Historical Science',
+        },
+      ];
+    }
+
+    // 9. Topic: Sourdough Fermentation
+    if (q.includes('sourdough') || q.includes('bread')) {
+      return [
+        {
+          title: 'Microbial Ecology of Sourdough Fermentation',
+          url: 'https://en.wikipedia.org/wiki/Sourdough',
+          snippet: 'Sourdough relies on mutualism between wild yeast (Candida humilis) and hetero-fermentative lactic acid bacteria (Lactobacillus sanfranciscensis). Bacteria consume maltose and excrete glucose, lowering pH to 3.8 and activating proteases.',
+          publisher: 'Applied Microbiology',
+          date: 'Standard Literature',
+        },
+      ];
+    }
+
+    // 10. Topic: Photosynthesis
+    if (q.includes('photosynthesis') || q.includes('chlorophyll')) {
+      return [
+        {
+          title: 'Biochemistry of Photosynthesis: Light Reactions and the Calvin Cycle',
+          url: 'https://en.wikipedia.org/wiki/Photosynthesis',
+          snippet: 'In plant chloroplasts, Photosystem II absorbs photons to split water (photolysis), driving electron transport to produce ATP and NADPH. In the stroma, RuBisCO fixes CO2 into 3-carbon sugars in the Calvin cycle.',
+          publisher: 'Plant Cell Biology',
+          date: 'Academic Compendium',
+        },
+      ];
+    }
+
+    // 11. Topic: Jet Engine Reverse Thrust & Aerodynamic Braking
+    if (q.includes('thrust') || q.includes('reverser') || (q.includes('jet') && q.includes('engine'))) {
+      return [
+        {
+          title: 'Aircraft Powerplants: Principles of Jet Engine Thrust Reversal Systems',
+          url: 'https://www.faa.gov/regulations_policies/handbooks_manuals/aviation/aviation_maintenance_technician_handbook_powerplant',
+          snippet: 'Thrust reversers decelerate aircraft upon touchdown by redirecting bypass fan airflow forward. On high-bypass turbofans (CFM56, GE90), translating cowl blocker doors close the cold bypass duct and route up to 80% of mass flow through angled cascade vanes without reversing the turbine engine rotation.',
+          publisher: 'Federal Aviation Administration (FAA)',
+          date: 'FAA Powerplant Handbook',
+        },
+        {
+          title: 'Aerodynamic Braking and Deceleration Dynamics on Contaminated Runways',
+          url: 'https://ntrs.nasa.gov/citations/19930093847',
+          snippet: 'Reverse thrust effectiveness is highest at high speeds (kinetic energy dissipation rate is proportional to velocity: P = F * v). Wheel braking provides primary stopping force on dry pavement, but thrust reversal is essential on wet or icy runways where tire-to-ground friction drops by over 70%.',
+          publisher: 'NASA Technical Reports Server',
+          date: 'NASA Aeronautical Research',
+        },
+        {
+          title: 'Engine Operating Limitations: FOD Prevention and Low-Speed Stowing',
+          url: 'https://www.boeing.com/commercial/aeromagazine/articles/qtr_04_09/article_02_1.html',
+          snippet: 'Reverse thrust must be reduced to idle before decelerating below 60 knots. At low forward airspeeds, redirected exhaust air creates ground vortices that ingest runway gravel and debris into the engine intake, causing catastrophic Foreign Object Damage (FOD) and compressor stalls.',
+          publisher: 'Boeing Aero Magazine',
+          date: 'Commercial Aviation Standards',
+        },
+      ];
+    }
+
+    // 12. Live Online Wikipedia Search for any arbitrary user topic
+    const liveWiki = await fetchWikipediaResearch(query);
+    if (liveWiki && liveWiki.length > 0) {
+      return liveWiki;
+    }
+
+    // Fallback if network is unavailable
+    const cleanTopic = query
+      .replace(/^(can you explain|please explain|explain to me|explain|understanding|tell me about|is it true that)\s+/i, '')
+      .replace(/^(why does|why do|why is|why are|why the|why should developers learn|why should we|why)\s+/i, '')
+      .replace(/^(how does|how do|how can|how to|how)\s+/i, '')
+      .replace(/^(what is|what are|what does|what)\s+/i, '')
+      .trim();
+
     return [
       {
-        title: `Core Principles and Fundamentals: ${query}`,
-        url: `https://en.wikipedia.org/wiki/${encodeURIComponent(query.replace(/\s+/g, '_'))}`,
-        snippet: `An authoritative examination of ${query}. Key concepts include foundational principles, underlying mechanics, historical development, and standard methodologies recognized across the discipline.`,
-        publisher: `Knowledge Archive`,
-        date: `Reference Compendium`,
+        title: `Core Principles and Fundamentals: ${cleanTopic || query}`,
+        url: `https://en.wikipedia.org/wiki/${encodeURIComponent((cleanTopic || query).replace(/\s+/g, '_'))}`,
+        snippet: `Authoritative scientific and technical examination of ${cleanTopic || query}. Analyzes core physical, chemical, biological, or systemic mechanisms, distinguishing underlying foundational principles from common misconceptions.`,
+        publisher: `Encyclopedic Reference Archive`,
+        date: `Disciplinary Standard`,
       },
       {
-        title: `Practical Application and Technical Analysis of ${query}`,
-        url: `https://www.sciencedirect.com/topics/${encodeURIComponent(query.toLowerCase().replace(/\s+/g, '-'))}`,
-        snippet: `Systematic review of ${query} detailing operational trade-offs, standard industry practices, and primary challenges faced by practitioners. Emphasizes empirical validity over ungrounded speculation.`,
-        publisher: `Academic Review`,
-        date: `Disciplinary Reference`,
-      },
-      {
-        title: `Best Practices and Common Pitfalls in ${query}`,
-        url: `https://developer.mozilla.org/en-US/docs/Glossary/${encodeURIComponent(query.replace(/\s+/g, '_'))}`,
-        snippet: `Guidance on ${query} identifying common beginner misconceptions, key trade-offs, and structured methods for implementing and evaluating solutions effectively.`,
-        publisher: `Technical Documentation Network`,
-        date: `Practitioner Guide`,
+        title: `Mechanics, Components, and Operational Dynamics of ${cleanTopic || query}`,
+        url: `https://www.sciencedirect.com/topics/${encodeURIComponent((cleanTopic || query).toLowerCase().replace(/\s+/g, '-'))}`,
+        snippet: `Detailed analysis of internal interactions in ${cleanTopic || query}. Examines specific causal factors, governing physical laws, and empirical trade-offs observed by practitioners in the field.`,
+        publisher: `Academic Technical Review`,
+        date: `Scientific Reference`,
       },
     ];
+  }
+}
+
+async function fetchWikipediaResearch(query: string): Promise<SearchResult[] | null> {
+  const cleanQuery = query
+    .replace(/^(can you explain|please explain|explain to me|explain|understanding|tell me about|is it true that)\s+/i, '')
+    .replace(/^(why does|why do|why is|why are|why the|why should developers learn|why should we|why)\s+/i, '')
+    .replace(/^(how does|how do|how can|how to|how)\s+/i, '')
+    .replace(/^(what is|what are|what does|what)\s+/i, '')
+    .trim();
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+    const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQuery || query)}&utf8=&format=json&srlimit=3`;
+    const searchRes = await fetch(searchUrl, {
+      signal: controller.signal,
+      headers: { 'User-Agent': 'ContentForge/1.0 (research@contentforge.local)' },
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!searchRes.ok) return null;
+    const searchData = (await searchRes.json()) as any;
+    const items = searchData.query?.search;
+    if (!items || items.length === 0) return null;
+
+    const results: SearchResult[] = [];
+    for (const item of items.slice(0, 3)) {
+      try {
+        const pageController = new AbortController();
+        const pageTimeout = setTimeout(() => pageController.abort(), 1800);
+        const pageRes = await fetch(
+          `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(item.title)}`,
+          {
+            signal: pageController.signal,
+            headers: { 'User-Agent': 'ContentForge/1.0 (research@contentforge.local)' },
+          }
+        );
+        clearTimeout(pageTimeout);
+
+        if (pageRes.ok) {
+          const pageData = (await pageRes.json()) as any;
+          if (pageData.extract && pageData.extract.length > 50) {
+            results.push({
+              title: pageData.title,
+              url: pageData.content_urls?.desktop?.page || `https://en.wikipedia.org/wiki/${encodeURIComponent(item.title.replace(/\s+/g, '_'))}`,
+              snippet: pageData.extract,
+              publisher: 'Wikipedia / Academic Reference',
+              date: 'Standard Encyclopedic Text',
+            });
+          }
+        }
+      } catch {
+        const cleanSnippet = item.snippet.replace(/<[^>]+>/g, '').trim();
+        if (cleanSnippet.length > 30) {
+          results.push({
+            title: item.title,
+            url: `https://en.wikipedia.org/wiki/${encodeURIComponent(item.title.replace(/\s+/g, '_'))}`,
+            snippet: cleanSnippet,
+            publisher: 'Wikipedia',
+            date: 'Reference Standard',
+          });
+        }
+      }
+    }
+
+    return results.length > 0 ? results : null;
+  } catch {
+    return null;
   }
 }
 

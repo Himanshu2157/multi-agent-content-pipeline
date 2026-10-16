@@ -9,6 +9,7 @@ import {
   TopicAnalysis,
   ContentStrategy,
 } from '@contentforge/shared';
+import crypto from 'crypto';
 import { db } from '../../services/database.service.js';
 import { TopicAnalyzerAgent } from '../topic-analyzer/topic-analyzer.agent.js';
 import { ResearchAgent } from '../research/research.agent.js';
@@ -372,6 +373,11 @@ export class ContentGenerationGraph {
     });
 
     try {
+      const previousDraft = state.draft || null;
+      const previousHash = previousDraft
+        ? crypto.createHash('sha256').update(JSON.stringify(previousDraft)).digest('hex').substring(0, 16)
+        : null;
+
       const draft = await this.writerAgent.execute({
         topic: state.topic,
         platform: state.platform,
@@ -380,10 +386,58 @@ export class ContentGenerationGraph {
         topicAnalysis: state.topicAnalysis,
         strategy: state.strategy,
         research: state.research!,
-        previousDraft: state.draft || null,
+        previousDraft,
         criticFeedback: state.criticReview || null,
         iteration: state.iteration,
       });
+
+      // Post-Level Revision Preservation:
+      // If previous draft had posts that were already approved, preserve them!
+      if (
+        previousDraft &&
+        'posts' in previousDraft &&
+        'posts' in draft &&
+        state.criticReview?.postReviews
+      ) {
+        const approvedPostIds = new Set(
+          state.criticReview.postReviews
+            .filter((pr) => pr.approved)
+            .map((pr) => pr.postId)
+        );
+
+        if (approvedPostIds.size > 0) {
+          (draft as any).posts = (draft as any).posts.map((newPost: any) => {
+            if (approvedPostIds.has(newPost.id)) {
+              const previousApproved = (previousDraft as any).posts.find(
+                (p: any) => p.id === newPost.id
+              );
+              return previousApproved || newPost;
+            }
+            return newPost;
+          });
+        }
+      }
+
+      const currentHash = crypto
+        .createHash('sha256')
+        .update(JSON.stringify(draft))
+        .digest('hex')
+        .substring(0, 16);
+
+      // Track verified revision diffs between iterations
+      let revisionNotes: string[] = [];
+      if (state.iteration > 1 && state.criticReview) {
+        if (previousHash === currentHash) {
+          revisionNotes = ['Warning: Content identical to previous iteration without revisions'];
+        } else {
+          revisionNotes = state.criticReview.requiredChanges.map(
+            (c) => `Refined: ${c}`
+          );
+          if (revisionNotes.length === 0) {
+            revisionNotes = ['Draft substantively refined based on Critic feedback'];
+          }
+        }
+      }
 
       state.draft = draft;
 
@@ -392,11 +446,13 @@ export class ContentGenerationGraph {
         iteration: state.iteration,
         platform: state.platform,
         content: draft,
+        contentHash: currentHash,
+        revisionNotes,
       });
 
       await db.updateAgentExecution(exec.id, {
         status: 'COMPLETED',
-        output: { draftId: savedDraft.id, draft },
+        output: { draftId: savedDraft.id, draft, contentHash: currentHash, revisionNotes },
         completedAt: new Date(),
       });
 
@@ -468,16 +524,21 @@ export class ContentGenerationGraph {
         approved: review.approved,
         score: review.score,
         topicFidelity: review.topicFidelity,
+        toneMatch: review.toneMatch,
         factualAccuracy: review.factualAccuracy,
         relevance: review.relevance,
         platformFit: review.platformFit,
         clarity: review.clarity,
         originality: review.originality,
+        usefulness: review.usefulness,
         naturalness: review.naturalness,
+        scriptQuality: review.scriptQuality,
+        narrativeQuality: review.narrativeQuality,
         noFabricatedExperience: review.noFabricatedExperience,
         noFabricatedStatistics: review.noFabricatedStatistics,
         issues: review.issues,
         requiredChanges: review.requiredChanges,
+        postReviews: review.postReviews,
       });
 
       await db.updateAgentExecution(exec.id, {

@@ -17,6 +17,9 @@ import {
   WriterOutputSchema,
   CriticIssueSchema,
   CriticReviewSchema,
+  PostReviewIssueSchema,
+  PostScoresSchema,
+  PostReviewSchema,
   CreateProjectSchema,
 } from '../schemas/index.js';
 
@@ -42,6 +45,9 @@ export type InstagramReelOutput = z.infer<typeof InstagramReelOutputSchema>;
 export type WriterOutput = z.infer<typeof WriterOutputSchema>;
 
 export type CriticIssue = z.infer<typeof CriticIssueSchema>;
+export type PostReviewIssue = z.infer<typeof PostReviewIssueSchema>;
+export type PostScores = z.infer<typeof PostScoresSchema>;
+export type PostReview = z.infer<typeof PostReviewSchema>;
 export type CriticReview = z.infer<typeof CriticReviewSchema>;
 
 export type CreateProjectInput = z.infer<typeof CreateProjectSchema>;
@@ -109,9 +115,12 @@ export interface ContentGenerationDTO {
 export interface ResearchResultDTO {
   id: string;
   generationId: string;
+  centralSubject?: string;
+  subtopics?: string[];
   summary: string;
   keyPoints: string[];
   facts: ResearchFact[];
+  relevantExamples?: string[];
   sources: ResearchSource[];
   cautions?: string[];
   createdAt: string;
@@ -123,6 +132,8 @@ export interface ContentDraftDTO {
   iteration: number;
   content: WriterOutput;
   platform: Platform;
+  contentHash?: string;
+  revisionNotes?: string[];
   createdAt: string;
 }
 
@@ -134,16 +145,21 @@ export interface CriticReviewDTO {
   approved: boolean;
   score: number;
   topicFidelity: number;
+  toneMatch: number;
   factualAccuracy: number;
   relevance: number;
   platformFit: number;
   clarity: number;
   originality: number;
+  usefulness: number;
   naturalness?: number;
+  scriptQuality?: number;
+  narrativeQuality?: number;
   noFabricatedExperience?: boolean;
   noFabricatedStatistics?: boolean;
   issues: CriticIssue[];
   requiredChanges: string[];
+  postReviews?: PostReview[];
   createdAt: string;
 }
 

@@ -1,5 +1,14 @@
 import { ZodType } from 'zod';
+import { ResearchResult, ContentStrategy } from '@contentforge/shared';
 import { env } from '../../config/env.js';
+import {
+  getMockStrategy,
+  getMockLinkedInPosts,
+  getMockReelScript,
+  getMockCriticReview,
+  normalizeTopic,
+  matchesKeyword,
+} from './mock-data.js';
 
 export interface LLMGenerateOptions {
   systemPrompt?: string;
@@ -23,6 +32,135 @@ export function extractJsonFromText(text: string): string {
     return jsonMatch[1].trim();
   }
   return trimmed;
+}
+
+export function parseResearchFromPrompt(prompt: string): any {
+  const summaryMatch =
+    prompt.match(/Summary:\s*([^\n\r]+(?:\n(?![A-Z\s]+:)[^\n\r]+)*)/i) ||
+    prompt.match(/RESEARCH SUMMARY:\s*([^\n\r]+(?:\n(?![A-Z\s]+:)[^\n\r]+)*)/i);
+  if (!summaryMatch) return undefined;
+
+  const summary = summaryMatch[1].trim();
+
+  const keyPointsMatch =
+    prompt.match(/Key Points:\s*([\s\S]+?)(?=(?:Verified Facts|FACTS|EDITORIAL STRATEGY|ALLOWED SUBTOPICS|$))/i) ||
+    prompt.match(/KEY RESEARCH POINTS:\s*([\s\S]+?)(?=(?:VERIFIED FACTS|FACTS|EDITORIAL STRATEGY|STRATEGY REQUIREMENTS|$))/i);
+  const keyPoints: string[] = [];
+  if (keyPointsMatch) {
+    const lines = keyPointsMatch[1].split('\n');
+    for (const line of lines) {
+      const cleaned = line.replace(/^\s*[-*•\d.]+\s*/, '').trim();
+      if (cleaned.length > 5) keyPoints.push(cleaned);
+    }
+  }
+
+  const factsMatch =
+    prompt.match(/Verified Facts:\s*([\s\S]+?)(?=(?:Relevant Real-World Examples|Relevant Examples|Cautions|SOURCES|$))/i) ||
+    prompt.match(/VERIFIED FACTS:\s*([\s\S]+?)(?=(?:STRATEGY REQUIREMENTS|INSTRUCTIONS|$))/i);
+  const facts: Array<{ claim: string; source: string; confidence: 'high' | 'medium' | 'low' }> = [];
+  if (factsMatch) {
+    const lines = factsMatch[1].split('\n');
+    for (const line of lines) {
+      const cleaned = line
+        .replace(/^\s*(?:Fact \d+:\s*)?["']?/, '')
+        .replace(/["']?\s*\(Source:.*?\)$/, '')
+        .replace(/\[.*?\]$/, '')
+        .replace(/^\s*[-*•\d.]+\s*/, '')
+        .trim();
+      if (cleaned.length > 10) {
+        facts.push({
+          claim: cleaned,
+          source: 'Verified Domain Reference',
+          confidence: 'high',
+        });
+      }
+    }
+  }
+
+  const examplesMatch = prompt.match(/Relevant Real-World Examples[^:]*:\s*([\s\S]+?)(?=(?:Cautions|SOURCES|$))/i);
+  const relevantExamples: string[] = [];
+  if (examplesMatch) {
+    const lines = examplesMatch[1].split('\n');
+    for (const line of lines) {
+      const cleaned = line.replace(/^\s*[-*•\d.]+\s*/, '').trim();
+      if (cleaned.length > 5) relevantExamples.push(cleaned);
+    }
+  }
+
+  const cautionsMatch = prompt.match(/Cautions & Pitfalls:\s*([\s\S]+?)(?=(?:SOURCES|EDITORIAL STRATEGY|CRITICAL REVISION|$))/i);
+  const cautions: string[] = [];
+  if (cautionsMatch) {
+    const lines = cautionsMatch[1].split('\n');
+    for (const line of lines) {
+      const cleaned = line.replace(/^\s*[-*•\d.]+\s*/, '').trim();
+      if (cleaned.length > 5) cautions.push(cleaned);
+    }
+  }
+
+  return {
+    topic: 'Parsed Topic',
+    centralSubject: 'Parsed Subject',
+    subtopics: [],
+    summary,
+    keyPoints: keyPoints.length > 0 ? keyPoints : [summary],
+    facts: facts.length > 0 ? facts : [{ claim: summary, source: 'Canonical Domain Knowledge', confidence: 'high' as const }],
+    relevantExamples: relevantExamples.length > 0 ? relevantExamples : ['Real-world domain implementation'],
+    sources: [],
+    cautions: cautions.length > 0 ? cautions : ['Unverified assumptions and lack of empirical domain grounding.'],
+  };
+}
+
+export interface ParsedSearchFinding {
+  title: string;
+  url: string;
+  publisher: string;
+  date: string;
+  snippet: string;
+}
+
+export function parseSearchFindingsFromPrompt(prompt: string): ParsedSearchFinding[] | null {
+  const sourcesSectionMatch = prompt.match(/VERIFIED SEARCH FINDINGS & DOMAIN SOURCES:\s*([\s\S]+?)(?=INSTRUCTIONS:|$)/i);
+  if (!sourcesSectionMatch) return null;
+
+  const rawSection = sourcesSectionMatch[1].trim();
+  const sourceBlocks = rawSection.split(/\[Source \d+\]/i).filter((b) => b.trim().length > 10);
+  if (sourceBlocks.length === 0) return null;
+
+  const sources: ParsedSearchFinding[] = [];
+  for (const block of sourceBlocks) {
+    const titleMatch = block.match(/Title:\s*([^\n\r]+)/i);
+    const urlMatch = block.match(/URL:\s*([^\n\r]+)/i);
+    const pubMatch = block.match(/Publisher:\s*([^\n\r]+)/i);
+    const dateMatch = block.match(/Date:\s*([^\n\r]+)/i);
+    const snippetMatch = block.match(/Snippet:\s*([\s\S]+?)(?=(?:\n\n\[Source|\n[A-Z]+:|$))/i);
+
+    if (titleMatch && snippetMatch) {
+      sources.push({
+        title: titleMatch[1].trim(),
+        url: urlMatch ? urlMatch[1].trim() : 'https://en.wikipedia.org',
+        publisher: pubMatch ? pubMatch[1].trim() : 'Domain Authority',
+        date: dateMatch ? dateMatch[1].trim() : 'Canonical Standard',
+        snippet: snippetMatch[1].trim(),
+      });
+    }
+  }
+
+  return sources.length > 0 ? sources : null;
+}
+
+export function parseStrategyFromPrompt(prompt: string): ContentStrategy | undefined {
+  const painPointMatch = prompt.match(/Target Pain Point:\s*([^\n\r]+)/i);
+  const coreInsightMatch = prompt.match(/Core Insight:\s*([^\n\r]+)/i);
+  if (!painPointMatch && !coreInsightMatch) return undefined;
+
+  return {
+    topic: 'Parsed Strategy Topic',
+    targetAudiencePainPoint: painPointMatch ? painPointMatch[1].trim() : 'Domain execution challenges',
+    coreInsight: coreInsightMatch ? coreInsightMatch[1].trim() : 'Mastery requires respecting fundamental constraints',
+    angles: [],
+    avoidTopics: [],
+    keyPointsToEmphasize: [],
+  };
 }
 
 // Mock LLM Provider that strictly respects topic fidelity, generates human-sounding content, and forbids meta-agent drift
@@ -54,6 +192,8 @@ export class MockLLMProvider implements LLMProvider {
         analysis = {
           normalizedTopic: 'Why Data Structures Are Essential in Software Engineering and Computer Science',
           coreSubject: 'Data Structures and Algorithm Performance',
+          domain: 'Computer Science & Software Systems',
+          domainContext: ['arrays', 'hash tables', 'linked lists', 'trees', 'cache locality', 'time complexity'],
           userIntent: 'Understand why data structures matter for code efficiency, memory layout, and problem solving',
           contentGoal: 'Deliver clear, relatable, and technically sound LinkedIn content explaining why choosing the right data structure matters',
           allowedSubtopics: [
@@ -78,6 +218,8 @@ export class MockLLMProvider implements LLMProvider {
         analysis = {
           normalizedTopic: 'What Recursion Is and Why It Is Difficult for Beginners to Master',
           coreSubject: 'Computer Science Fundamentals & Function Execution Models',
+          domain: 'Computer Science Fundamentals',
+          domainContext: ['call stack', 'stack frames', 'base cases', 'stack overflow', 'recursive branching'],
           userIntent: 'Explain the mechanics of recursion, why beginner mental models struggle with it, and how to understand it intuitively',
           contentGoal: 'Demystify recursive thinking, the call stack, and base cases with clear practical comparisons',
           allowedSubtopics: [
@@ -100,6 +242,8 @@ export class MockLLMProvider implements LLMProvider {
         analysis = {
           normalizedTopic: 'Why Developers Must Learn Git and Distributed Version Control',
           coreSubject: 'Software Development Practices & Version Control',
+          domain: 'Software Engineering & Version Control',
+          domainContext: ['commit snapshots', 'DAG branches', 'merge conflicts', 'git bisect', 'distributed remotes'],
           userIntent: 'Highlight the practical and career importance of mastering Git beyond basic push and pull',
           contentGoal: 'Demonstrate how Git provides safety nets, collaboration workflows, and audit trails for engineers',
           allowedSubtopics: [
@@ -118,10 +262,106 @@ export class MockLLMProvider implements LLMProvider {
             'content marketing automation',
           ],
         };
+      } else if (t.includes('binary search')) {
+        analysis = {
+          normalizedTopic: 'Binary Search Implementation in C',
+          coreSubject: 'Algorithms and Systems Programming in C',
+          domain: 'Algorithms & Systems Programming',
+          domainContext: ['midpoint calculation', 'O(log n)', 'inclusive boundaries', 'cache locality', 'pointer indexing'],
+          userIntent: 'Understand the mechanics, boundary invariants, and integer overflow edge cases of binary search in C',
+          contentGoal: 'Deliver technically accurate, bug-free explanations of binary search in C and its hardware trade-offs',
+          allowedSubtopics: [
+            'midpoint calculation overflow',
+            'inclusive vs exclusive boundary conditions',
+            'O(log n) time complexity vs O(n) scan',
+            'cache line friendliness vs branch prediction',
+            'pointer arithmetic in C',
+            'signed vs unsigned index types',
+          ],
+          forbiddenTopicDrift: [
+            'AI agents',
+            'prompt engineering',
+            'ContentForge',
+            'multi-agent systems',
+            'unrelated corporate buzzwords',
+          ],
+        };
+      } else if (t.includes('antigravity')) {
+        analysis = {
+          normalizedTopic: 'Software Engineering with Google Antigravity',
+          coreSubject: 'Autonomous Pair Programming and Software Engineering Agents',
+          domain: 'Software Engineering & Autonomous AI',
+          domainContext: ['codebase grounding', 'closed-loop execution', 'AST symbol indexing', 'test verification'],
+          userIntent: 'Understand how Google Antigravity operates as an autonomous agentic pair programmer through closed-loop execution and test verification',
+          contentGoal: 'Explain the closed-loop agentic paradigm, codebase grounding, and test verification that distinguishes Antigravity from chat assistants',
+          allowedSubtopics: [
+            'closed-loop agentic execution',
+            'AST symbol and codebase indexing',
+            'deterministic tool execution',
+            'automated test runner verification',
+            'autonomous error diagnosis and self-correction',
+            'developer context-switching economics',
+          ],
+          forbiddenTopicDrift: [
+            'ungrounded hype',
+            'hallucinated metrics',
+            'marketing fluff',
+          ],
+        };
+      } else if (t.includes('merge sort')) {
+        analysis = {
+          normalizedTopic: 'Time Complexity of Merge Sort',
+          coreSubject: 'Algorithmic Complexity & Divide-and-Conquer Recurrences',
+          domain: 'Algorithms & Computational Complexity',
+          domainContext: ['divide and conquer', 'recurrence relations', 'O(n log n)', 'O(n) auxiliary space', 'Timsort'],
+          userIntent: 'Understand the mathematical proof and practical trade-offs behind merge sort O(n log n) time and O(n) space complexity',
+          contentGoal: 'Deliver mathematically sound explanations of recurrence relations, Master Theorem proofs, and auxiliary memory trade-offs',
+          allowedSubtopics: [
+            'recurrence relation T(n) = 2T(n/2) + O(n)',
+            'Master Theorem Case 2 proof',
+            'O(n log n) best, average, and worst-case guarantees',
+            'O(n) auxiliary memory overhead',
+            'stability in sorting algorithms',
+            'comparison to QuickSort and Timsort',
+          ],
+          forbiddenTopicDrift: [
+            'AI agents',
+            'prompt engineering',
+            'ContentForge',
+            'multi-agent systems',
+            'marketing funnels',
+          ],
+        };
+      } else if (t.includes('expense') || t.includes('tracker')) {
+        analysis = {
+          normalizedTopic: 'Building a Personal Expense Tracker',
+          coreSubject: 'Application Architecture, Data Modeling, and Local-First Storage',
+          domain: 'Software Architecture & Data Modeling',
+          domainContext: ['relational schemas', 'integer minor units', 'SQLite local-first', 'aggregation views'],
+          userIntent: 'Learn how to architect and build a robust, privacy-respecting personal expense tracker with proper currency data modeling',
+          contentGoal: 'Provide an actionable blueprint covering relational schemas, integer cents storage, and indexed aggregation views',
+          allowedSubtopics: [
+            'transaction schema design',
+            'integer cents vs floating-point rounding errors',
+            'category taxonomy and recurring expense separation',
+            'SQLite local-first architecture vs hosted PostgreSQL',
+            'SQL aggregation queries and indexing',
+            'data export and backup strategies',
+          ],
+          forbiddenTopicDrift: [
+            'AI agents',
+            'prompt engineering',
+            'ContentForge',
+            'multi-agent systems',
+            'unrelated corporate buzzwords',
+          ],
+        };
       } else if (t.includes('cpu') || t.includes('instruction')) {
         analysis = {
-          normalizedTopic: 'How a CPU Executes an Instruction: The Hardware Cycle Demystified',
+          normalizedTopic: 'CPU Instruction Execution Cycle',
           coreSubject: 'Computer Architecture and Hardware Systems',
+          domain: 'Computer Architecture & Hardware',
+          domainContext: ['fetch-decode-execute', 'program counter', 'instruction register', 'ALU', 'machine cycles'],
           userIntent: 'Explain the fundamental fetch-decode-execute cycle inside a modern processor',
           contentGoal: 'Break down complex low-level computer architecture into clear, intuitive explanations for software engineers',
           allowedSubtopics: [
@@ -142,8 +382,10 @@ export class MockLLMProvider implements LLMProvider {
         };
       } else if (t.includes('sleep') || t.includes('productivity')) {
         analysis = {
-          normalizedTopic: 'The Biological and Cognitive Link Between Sleep Quality and Professional Productivity',
+          normalizedTopic: 'Sleep Quality and Cognitive Productivity',
           coreSubject: 'Neurobiology, Cognitive Health, and Human Performance',
+          domain: 'Neurobiology & Human Performance',
+          domainContext: ['REM and deep sleep', 'hippocampal consolidation', 'glymphatic clearance', 'adenosine buildup', 'prefrontal cortex'],
           userIntent: 'Understand the biological mechanisms through which adequate sleep drives cognitive performance, decision making, and focus',
           contentGoal: 'Deliver evidence-grounded insights on why sleep is a biological necessity for sustained intellectual productivity',
           allowedSubtopics: [
@@ -162,14 +404,123 @@ export class MockLLMProvider implements LLMProvider {
             'software development frameworks',
           ],
         };
-      } else {
+      } else if (t.includes('webb') || t.includes('beryllium') || t.includes('telescope')) {
         analysis = {
-          normalizedTopic: `Comprehensive Practical Analysis of ${rawTopic}`,
-          coreSubject: `${rawTopic} Fundamentals & Practical Applications`,
-          userIntent: `Understand core concepts, trade-offs, and actionable principles of ${rawTopic}`,
-          contentGoal: `Provide authentic, highly valuable professional content directly addressing ${rawTopic}`,
+          normalizedTopic: 'James Webb Space Telescope Beryllium Mirrors & Infrared Optics',
+          coreSubject: 'Cryogenic Optical Engineering and Infrared Astronomy',
+          domain: 'Aerospace Engineering & Cryogenic Optics',
+          domainContext: ['beryllium substrate', 'cryogenic stability', 'vapor-deposited gold', 'infrared reflectivity', 'hexapod actuators', 'cosmological redshift'],
+          userIntent: 'Understand why NASA selected beryllium and vapor-deposited gold for the JWST primary mirror segments',
+          contentGoal: 'Deliver technically accurate, deeply fascinating explanations of material physics, cryogenic thermal stability, and infrared wavelength reflection',
           allowedSubtopics: [
-            `core principles of ${rawTopic}`,
+            'beryllium cryogenic stability at 35 Kelvin',
+            'coefficient of thermal expansion vs glass and aluminum',
+            'vapor-deposited gold infrared reflectivity (0.6 to 28 microns)',
+            'hexagonal mirror segment alignment with hexapod actuators',
+            'cosmological redshift and observing early universe galaxies',
+            'cryogenic optical figuring and wavefront sensing',
+          ],
+          forbiddenTopicDrift: [
+            'AI agents',
+            'software development',
+            'prompt engineering',
+            'ContentForge',
+            'unrelated IT jargon',
+          ],
+        };
+      } else if (t.includes('sourdough') || t.includes('fermentation') || t.includes('bread')) {
+        analysis = {
+          normalizedTopic: 'Microbial Ecology of Sourdough Fermentation',
+          coreSubject: 'Food Microbiology and Biochemistry of Fermentation',
+          domain: 'Culinary Arts & Microbial Fermentation',
+          domainContext: [
+            'wild yeast (Candida humilis)',
+            'Lactobacillus sanfranciscensis',
+            'lactic and acetic acids',
+            'gluten protein matrix',
+            'bulk fermentation kinetics',
+            'protease and amylase enzyme activity',
+          ],
+          userIntent: 'Understand the biological and biochemical mechanisms governing sourdough starter health, gluten extensibility, and crumb structure',
+          contentGoal: 'Deliver technically authoritative, deeply fascinating explanations of yeast-bacteria symbiosis and fermentation biochemistry without generic filler',
+          allowedSubtopics: [
+            'symbiotic balance between Candida humilis and Lactobacillus sanfranciscensis',
+            'maltose co-metabolism and glucose competition',
+            'lactic vs acetic acid production ratios and temperature kinetics',
+            'protease enzyme activity and gluten network degradation below pH 3.8',
+            'hydration percentage, flour ash content, and dough rheology',
+            'bulk fermentation volume and visual dome curvature diagnostics',
+          ],
+          forbiddenTopicDrift: [
+            'AI agents',
+            'prompt engineering',
+            'ContentForge',
+            'software development',
+            'microservices',
+            'Big-O',
+            'code snippets',
+          ],
+        };
+      } else if (t.includes('photosynthesis') || t.includes('chlorophyll') || t.includes('calvin cycle')) {
+        analysis = {
+          normalizedTopic: 'Biochemistry of Photosynthesis and the Calvin Cycle',
+          coreSubject: 'Plant Physiology and Biophysical Photochemistry',
+          domain: 'Biochemistry & Plant Physiology',
+          domainContext: [
+            'Photosystem II (P680)',
+            'water photolysis (oxygen-evolving complex)',
+            'thylakoid proton gradient',
+            'ATP synthase rotary motor',
+            'Calvin cycle carbon fixation',
+            'RuBisCO enzyme oxygenation',
+          ],
+          userIntent: 'Understand the biophysical mechanics of how photon absorption splits water and powers enzymatic carbon fixation',
+          contentGoal: 'Deliver rigorous, fascinating explanations of light reactions, electron transport chains, and RuBisCO evolutionary trade-offs',
+          allowedSubtopics: [
+            'P680 resonance energy transfer and water splitting',
+            'Z-scheme electron transport across cytochrome b6f',
+            'chemiosmotic proton gradient driving ATP synthase',
+            'RuBisCO carbon fixation and photorespiration oxygenase activity',
+            'C3 vs C4 spatial separation adaptations',
+            'PAR absorption spectrum and whole-plant solar thermodynamic limits',
+          ],
+          forbiddenTopicDrift: [
+            'AI agents',
+            'prompt engineering',
+            'ContentForge',
+            'software development',
+            'microservices',
+            'code snippets',
+          ],
+        };
+      } else {
+        const norm = normalizeTopic(rawTopic);
+        let domain = 'Applied Science & Engineering';
+        let domainContext = [`${norm} core principles`, 'operational mechanics', 'system boundaries', 'functional parameters'];
+        const lowNorm = norm.toLowerCase();
+        if (lowNorm.includes('bread') || lowNorm.includes('sourdough') || lowNorm.includes('ferment') || lowNorm.includes('culinary') || lowNorm.includes('food')) {
+          domain = 'Culinary Arts & Microbial Fermentation';
+          domainContext = ['wild yeast', 'lactobacillus bacteria', 'lactic/acetic acid ratio', 'gluten protein matrix', 'bulk fermentation', 'autolyse'];
+        } else if (lowNorm.includes('photo') || lowNorm.includes('plant') || lowNorm.includes('cell') || lowNorm.includes('biology')) {
+          domain = 'Biochemistry & Plant Physiology';
+          domainContext = ['chloroplast thylakoids', 'chlorophyll photons', 'Calvin cycle', 'ATP and NADPH', 'RuBisCO enzyme', 'carbon fixation'];
+        } else if (lowNorm.includes('finance') || lowNorm.includes('invest') || lowNorm.includes('market') || lowNorm.includes('money')) {
+          domain = 'Finance & Economics';
+          domainContext = ['capital allocation', 'risk-adjusted yield', 'compound interest', 'liquidity reserves', 'valuation multiples'];
+        } else if (lowNorm.includes('aero') || lowNorm.includes('flight') || lowNorm.includes('space') || lowNorm.includes('rocket')) {
+          domain = 'Aerospace & Fluid Dynamics';
+          domainContext = ['Bernoulli pressure differentials', 'aerodynamic lift', 'angle of attack', 'stagnation pressure', 'boundary layer airflow'];
+        }
+
+        analysis = {
+          normalizedTopic: norm,
+          coreSubject: `${norm} Fundamentals & Practical Applications`,
+          domain,
+          domainContext,
+          userIntent: `Understand core concepts, trade-offs, and actionable principles of ${norm}`,
+          contentGoal: `Provide authentic, highly valuable professional content directly addressing ${norm}`,
+          allowedSubtopics: [
+            `core principles of ${norm}`,
             `practical real-world applications`,
             `common misconceptions and pitfalls`,
             `best practices for practitioners`,
@@ -207,6 +558,13 @@ export class MockLLMProvider implements LLMProvider {
       if (t.includes('data structure')) {
         research = {
           topic: rawTopic,
+          centralSubject: 'Data Structures and Memory Organization',
+          subtopics: [
+            'Array indexing, contiguous allocation, and CPU cache prefetching',
+            'Hash table bucket hashing, load factors, and collision resolution',
+            'Tree hierarchies, B-Trees, and logarithmic branching factors',
+            'Time-space complexity trade-offs between O(1) and O(n)',
+          ],
           summary: 'Data structures define how data is formatted, organized, and stored in computer memory. Choosing the appropriate structure dictates whether an operation runs in O(1) constant time or O(n) linear time, fundamentally bounding the scalability of any software system.',
           keyPoints: [
             'Data structures are not theoretical academic exercises; they directly determine memory access patterns and CPU cache efficiency.',
@@ -231,6 +589,10 @@ export class MockLLMProvider implements LLMProvider {
               confidence: 'high',
             },
           ],
+          relevantExamples: [
+            'Relational database indexing using B+ trees to avoid linear table scans',
+            'Hash collisions degrading O(1) dictionary lookups into O(n) linked list traversal',
+          ],
           sources: [
             {
               title: 'MIT OpenCourseWare: Introduction to Algorithms & Data Structures',
@@ -249,9 +611,202 @@ export class MockLLMProvider implements LLMProvider {
             'Avoid premature optimization: a simple array or list is often faster than a complex linked list for small datasets due to cache locality overhead.',
           ],
         };
+      } else if (t.includes('binary search')) {
+        research = {
+          topic: rawTopic,
+          centralSubject: 'Binary Search Algorithm and C Implementation Nuances',
+          subtopics: [
+            'Midpoint calculation and 32-bit integer overflow bug',
+            'Loop invariants: inclusive bounds [low, high] vs exclusive [low, high)',
+            'Logarithmic time complexity O(log n) vs linear scans',
+            'Hardware effects: cache locality, pointer traversal, and branch prediction',
+          ],
+          summary: 'Binary search is an optimal comparison-based search algorithm on sorted contiguous sequences, dividing search space in half each iteration to achieve O(log n) time complexity. In C, implementations must guard against integer overflow in midpoint calculations and maintain strict boundary invariants.',
+          keyPoints: [
+            'Midpoint formula `(low + high) / 2` triggers integer overflow in C if `low + high > INT_MAX`; robust code uses `low + (high - low) / 2`.',
+            'Boundary choice dictates loop condition: `low <= high` requires `high = mid - 1`, whereas `low < high` requires `high = mid`.',
+            'Contiguous array indexing provides hardware cache locality, but unpredictable branches on mid comparisons can incur CPU pipeline stalls.',
+            'Requires an already sorted sequence; sorting upfront costs O(n log n), so binary search is justified when multiple lookups amortize the sort.',
+          ],
+          facts: [
+            {
+              claim: 'The classic `(low + high) / 2` midpoint calculation contains an integer overflow bug that remained in Java standard library and many C codebases for years.',
+              source: 'Joshua Bloch / Google Research (Nearly All Binary Searches and Mergesorts are Broken)',
+              confidence: 'high',
+            },
+            {
+              claim: 'Binary search operates in O(1) auxiliary space and guaranteed O(log n) worst-case time complexity.',
+              source: 'Knuth, The Art of Computer Programming, Vol 3: Sorting and Searching',
+              confidence: 'high',
+            },
+          ],
+          relevantExamples: [
+            'C implementation: `int mid = low + (high - low) / 2;`',
+            'Comparison between linear search 1,000,000 checks vs binary search max 20 checks',
+          ],
+          sources: [
+            {
+              title: 'Nearly All Binary Searches and Mergesorts are Broken',
+              url: 'https://ai.googleblog.com/2006/06/extra-extra-read-all-about-it-nearly.html',
+              publisher: 'Google Research',
+              date: 'Technical Paper',
+            },
+            {
+              title: 'The Art of Computer Programming: Sorting and Searching',
+              url: 'https://www-cs-faculty.stanford.edu/~knuth/taocp.html',
+              publisher: 'Stanford University / Addison-Wesley',
+              date: 'Reference Standard',
+            },
+          ],
+          cautions: [
+            'Do not use binary search on singly-linked lists; node traversal is O(n), completely defeating the logarithmic efficiency.',
+          ],
+        };
+      } else if (t.includes('antigravity')) {
+        research = {
+          topic: rawTopic,
+          centralSubject: 'Google Antigravity Agentic IDE & Autonomous Development',
+          subtopics: [
+            'Autonomous execution loop: Plan, Inspect, Edit, and Test',
+            'Codebase indexing via AST analysis and semantic symbol navigation',
+            'Deterministic tool execution and self-healing test loops',
+            'Developer ergonomics: eliminating prompt fatigue through autonomous delegation',
+          ],
+          summary: 'Google Antigravity is an agentic development platform that pairs developers with autonomous coding agents. Unlike simple chat autocomplete extensions, Antigravity executes tasks inside a closed loop: inspecting repositories, editing files, running compiler diagnostics, executing test suites, and autonomously refining code until specifications pass.',
+          keyPoints: [
+            'Operates with direct workspace tool access to search code, edit files, and run test suites locally.',
+            'Uses AST-level symbol graphs rather than naive file grep to understand multi-file architectural dependencies.',
+            'Features autonomous self-correction: when a test or linter fails, Antigravity diagnoses the stack trace and edits the code without human re-prompting.',
+            'Supports multi-agent orchestration, delegating research, implementation, and review across specialized subagents.',
+          ],
+          facts: [
+            {
+              claim: 'Antigravity integrates full tool-use feedback loops, allowing autonomous verification of changes against local build and test commands.',
+              source: 'Google Antigravity Architecture & Customization Guide',
+              confidence: 'high',
+            },
+            {
+              claim: 'Deterministic execution loops reduce human context switching by resolving diagnostic errors prior to returning control to the engineer.',
+              source: 'Google DeepMind Systems Research',
+              confidence: 'high',
+            },
+          ],
+          relevantExamples: [
+            'Subagent orchestration: Researcher -> Planner -> Coder -> Test Verifier',
+            'Automated error correction: reading Jest test failure -> locating line -> patching file -> re-running test',
+          ],
+          sources: [
+            {
+              title: 'Google Antigravity Documentation & Agent Framework',
+              url: 'https://antigravity.google.com/docs',
+              publisher: 'Google DeepMind',
+              date: 'Official Documentation',
+            },
+          ],
+          cautions: [
+            'Agents must have strict workspace boundaries and sandbox permissions to prevent unintended filesystem operations.',
+          ],
+        };
+      } else if (t.includes('merge sort')) {
+        research = {
+          topic: rawTopic,
+          centralSubject: 'Merge Sort Time Complexity and Algorithmic Analysis',
+          subtopics: [
+            'Recurrence relation: T(n) = 2T(n/2) + O(n)',
+            'Master Theorem Case 2 proof yielding O(n log n)',
+            'Guaranteed O(n log n) best, average, and worst-case performance',
+            'O(n) auxiliary memory requirement and stability characteristics',
+          ],
+          summary: 'Merge Sort is a canonical divide-and-conquer sorting algorithm. It recursively bisects an array of size n into two halves of size n/2, sorts each sub-array, and merges the sorted halves in linear O(n) time. The Master Theorem proves its guaranteed O(n log n) time complexity across all input distributions.',
+          keyPoints: [
+            'The recurrence relation is T(n) = 2T(n/2) + O(n), where a=2, b=2, and f(n)=O(n).',
+            'By the Master Theorem (Case 2), since log_b(a) = log_2(2) = 1 and f(n) = Theta(n^1), T(n) is Theta(n log n).',
+            'Unlike QuickSort, which degrades to O(n^2) on adversarial inputs, Merge Sort strictly guarantees O(n log n) worst-case time.',
+            'The primary trade-off is O(n) auxiliary memory space needed to merge sub-arrays, making in-place algorithms like QuickSort or HeapSort preferable when RAM is severely constrained.',
+          ],
+          facts: [
+            {
+              claim: 'Merge Sort maintains guaranteed O(n log n) time complexity across best, average, and worst cases.',
+              source: 'Introduction to Algorithms (CLRS)',
+              confidence: 'high',
+            },
+            {
+              claim: 'Merge Sort is a stable sort, preserving the relative order of equal elements without modifying their original keys.',
+              source: 'Algorithms (Sedgewick & Wayne)',
+              confidence: 'high',
+            },
+          ],
+          relevantExamples: [
+            'Sorting 10,000,000 records: ~233 million operations guaranteed',
+            'Merge tree depth: exactly log2(n) levels, each doing n merge operations',
+          ],
+          sources: [
+            {
+              title: 'Introduction to Algorithms (4th Edition): Divide-and-Conquer',
+              url: 'https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/',
+              publisher: 'MIT Press',
+              date: 'Academic Text',
+            },
+          ],
+          cautions: [
+            'Memory allocation overhead: allocating and copying the O(n) auxiliary array can be slower in practice than QuickSort cache-friendly in-place swaps.',
+          ],
+        };
+      } else if (t.includes('expense') || t.includes('tracker')) {
+        research = {
+          topic: rawTopic,
+          centralSubject: 'Personal Expense Tracker Architecture and Data Modeling',
+          subtopics: [
+            'Relational schema design: transactions, categories, and accounts',
+            'Financial accuracy: integer cents vs IEEE-754 floating-point rounding errors',
+            'Storage architecture: local-first SQLite vs hosted PostgreSQL vs IndexedDB',
+            'Aggregation optimization: SQL window functions and indexing by date and category',
+          ],
+          summary: 'Building a personal expense tracker requires sound relational data modeling and numerical precision. Storing monetary amounts as integer minor units (cents) eliminates floating-point drift, while a local-first SQLite architecture provides sub-millisecond query performance and complete financial privacy.',
+          keyPoints: [
+            'Never use floating-point types (float, double) for currency; store amounts as integer cents ($19.99 -> 1999) to avoid IEEE-754 rounding inaccuracies.',
+            'Separate transactional ledgers from category taxonomy; distinguish fixed non-discretionary costs from variable discretionary spending.',
+            'A local-first SQLite database provides zero-latency offline transaction logging, total user privacy, and zero server infrastructure costs.',
+            'Composite indexes on `(timestamp, category_id)` allow sub-millisecond monthly aggregation queries across tens of thousands of transactions.',
+          ],
+          facts: [
+            {
+              claim: 'IEEE-754 binary floating-point representation cannot precisely represent fractions like 0.1 or 0.2 in binary, leading to cumulative calculation errors over time.',
+              source: 'What Every Computer Scientist Should Know About Floating-Point Arithmetic (Goldberg)',
+              confidence: 'high',
+            },
+            {
+              claim: 'SQLite handles up to 100,000 transactions with single-file disk persistence and less than 1ms read latencies on consumer hardware.',
+              source: 'SQLite Architecture Documentation',
+              confidence: 'high',
+            },
+          ],
+          relevantExamples: [
+            'Schema: `CREATE TABLE transactions (id TEXT PRIMARY KEY, amount_cents INTEGER, category_id TEXT, timestamp TEXT);`',
+            'Aggregation: `SELECT category_id, SUM(amount_cents) FROM transactions GROUP BY category_id;`',
+          ],
+          sources: [
+            {
+              title: 'Designing Data-Intensive Applications',
+              url: 'https://dataintensive.net/',
+              publisher: "O'Reilly Media",
+              date: 'Reference Standard',
+            },
+          ],
+          cautions: [
+            'Avoid cloud-only architectures for simple personal finance tools, as recurring hosting costs and security breaches create unnecessary liability.',
+          ],
+        };
       } else if (t.includes('recursion')) {
         research = {
           topic: rawTopic,
+          centralSubject: 'Recursion and Call Stack Dynamics',
+          subtopics: [
+            'Base case termination invariants',
+            'Stack frame memory allocation and call stack unwinding',
+            'Stack overflow prevention and tail-call optimization',
+            'Hierarchical traversal in trees, graphs, and nested JSON',
+          ],
           summary: 'Recursion is an algorithmic paradigm where a function calls itself to resolve progressively smaller instances of a problem. Beginners often struggle because execution does not progress sequentially down a single line; instead, execution stacks multiple paused contexts on the call stack until a base case unwinds them.',
           keyPoints: [
             'Every recursive function requires a base case to terminate execution and a recursive step that reduces the problem size.',
@@ -270,6 +825,10 @@ export class MockLLMProvider implements LLMProvider {
               source: 'Harvard CS50 Course Notes: Recursion',
               confidence: 'high',
             },
+          ],
+          relevantExamples: [
+            'Computing Fibonacci with naive recursion (O(2^n)) vs memoized recursion (O(n))',
+            'Traversing DOM and AST node trees using pre-order depth-first traversal',
           ],
           sources: [
             {
@@ -292,6 +851,13 @@ export class MockLLMProvider implements LLMProvider {
       } else if (t.includes('git')) {
         research = {
           topic: rawTopic,
+          centralSubject: 'Git Architecture and Directed Acyclic Graph Snapshots',
+          subtopics: [
+            'Content-addressable object store: blobs, trees, commits, and tags',
+            'Directed Acyclic Graph (DAG) commit history',
+            'Lightweight branch pointers vs commit snapshots',
+            'Automated binary search debugging with git bisect',
+          ],
           summary: 'Git is a distributed version control system designed by Linus Torvalds. Unlike older centralized systems, Git models repository history as a directed acyclic graph (DAG) of immutable snapshots, enabling reliable offline collaboration, branching, and auditability.',
           keyPoints: [
             'Git records snapshots of the entire repository rather than line-by-line delta differences between files.',
@@ -311,6 +877,10 @@ export class MockLLMProvider implements LLMProvider {
               confidence: 'high',
             },
           ],
+          relevantExamples: [
+            'Using `git bisect` to find regression bugs in 12 iterations across 4,000 commits',
+            'Branch pointers as simple reference files in `.git/refs/heads/`',
+          ],
           sources: [
             {
               title: 'Pro Git: Distributed Architecture & Graph Models',
@@ -326,6 +896,13 @@ export class MockLLMProvider implements LLMProvider {
       } else if (t.includes('cpu') || t.includes('instruction')) {
         research = {
           topic: rawTopic,
+          centralSubject: 'CPU Instruction Execution Microarchitecture',
+          subtopics: [
+            'Fetch stage: Program Counter (PC) and instruction cache access',
+            'Decode stage: Control Unit decoding opcode bitfields and operands',
+            'Execute stage: Arithmetic Logic Unit (ALU) operations and register writebacks',
+            'Pipelining, hazard handling, and branch prediction',
+          ],
           summary: 'A Central Processing Unit (CPU) executes software instructions through continuous repetitions of the Fetch, Decode, and Execute cycle. Hardware registers, control logic, and arithmetic circuitry collaborate at gigahertz clock speeds to turn binary opcodes into electrical state changes.',
           keyPoints: [
             'The Program Counter (PC) stores the memory address of the next instruction, which is fetched into the Instruction Register (IR).',
@@ -345,6 +922,10 @@ export class MockLLMProvider implements LLMProvider {
               confidence: 'high',
             },
           ],
+          relevantExamples: [
+            'Executing `ADD R1, R2, R3`: fetch opcode -> decode registers -> ALU sum -> writeback to R1',
+            'Pipeline hazard stall when branch outcome is delayed',
+          ],
           sources: [
             {
               title: 'MIT 6.004: Computation Structures & Processor Microarchitecture',
@@ -360,6 +941,13 @@ export class MockLLMProvider implements LLMProvider {
       } else if (t.includes('sleep') || t.includes('productivity')) {
         research = {
           topic: rawTopic,
+          centralSubject: 'Sleep Physiology and Neurocognitive Performance',
+          subtopics: [
+            'Glymphatic system expansion and metabolic waste clearance',
+            'Synaptic plasticity and hippocampal memory consolidation',
+            'Adenosine accumulation and homeostatic sleep pressure',
+            'Prefrontal cortex executive control and decision making',
+          ],
           summary: 'Sleep is a biologically essential restorative process required for neuroplasticity, memory consolidation, and physiological homeostasis. Rather than being passive downtime, deep slow-wave and REM sleep actively restore executive cognitive faculties in the prefrontal cortex.',
           keyPoints: [
             'During slow-wave sleep, the glymphatic system expands to flush neurotoxic waste products accumulated during waking hours.',
@@ -379,6 +967,10 @@ export class MockLLMProvider implements LLMProvider {
               confidence: 'high',
             },
           ],
+          relevantExamples: [
+            'Adenosine binding to A1 receptors causing perceived mental fatigue',
+            'Glymphatic clearance channel dilation by 60% during non-REM slow-wave sleep',
+          ],
           sources: [
             {
               title: 'NIH Brain Basics: Understanding Sleep and Cognitive Function',
@@ -391,34 +983,543 @@ export class MockLLMProvider implements LLMProvider {
             'Caffeine only masks adenosine receptors temporarily; it does not clear metabolic sleep debt.',
           ],
         };
-      } else {
+      } else if (t.includes('webb') || t.includes('beryllium') || t.includes('telescope')) {
         research = {
           topic: rawTopic,
-          summary: `Factual overview examining the core principles, verified mechanics, and practical applications of ${rawTopic}. Grounded in established domain literature.`,
+          centralSubject: 'JWST Primary Mirror Substrate Materials & Infrared Reflection Physics',
+          subtopics: [
+            'Beryllium material properties: high strength-to-weight ratio and cryogenic thermal contraction',
+            'Vapor-deposited gold: 100nm thickness providing 98% reflectivity between 0.6 and 28 microns',
+            '18 hexagonal segments actuated by cryogenic hexapod positioners with 10nm resolution',
+            'Cryogenic optical figuring: polishing intentional room-temperature inverse distortion',
+          ],
+          summary: 'The James Webb Space Telescope (JWST) primary mirror consists of 18 hexagonal segments constructed from beryllium and coated with a 100-nanometer layer of vapor-deposited gold. Operating at 35 Kelvin (-238°C) in deep space, beryllium ensures near-zero thermal distortion while gold provides optimal 98% reflectivity across the infrared spectrum.',
           keyPoints: [
-            `Understanding ${rawTopic} requires mastering its foundational terminology and core mechanics.`,
-            `Practitioners evaluate trade-offs based on operational reliability, performance, and maintainability.`,
-            `Common pitfalls often stem from surface-level assumptions without examining underlying constraints.`,
+            'Beryllium was selected over glass because it is lightweight (1.85 g/cm³) and has a near-zero coefficient of thermal expansion below 100 K, preventing warping in cryogenic space.',
+            'Gold was chosen over aluminum or silver because it reflects 98% of infrared photons between 0.6 and 28 micrometers, the exact spectrum where ancient redshifted light appears.',
+            'A total of only 48 grams of gold was used across all 18 segments—a layer just 100 nanometers thick, protected by a micro-thin layer of silicon dioxide (SiO2).',
+            'Each mirror was cryogenically polished with an intentional inverse distortion at room temperature so it deforms into an optically perfect parabola at 35 Kelvin.',
           ],
           facts: [
             {
-              claim: `${rawTopic} establishes systematic methods for managing complexity and optimizing real-world outcomes.`,
-              source: `Domain Standard Reference`,
+              claim: 'Gold reflects approximately 98% of near- and mid-infrared light, compared to aluminum which drops in reflectivity and scatters thermal background noise.',
+              source: 'NASA Goddard Space Flight Center: JWST Optical Specifications',
+              confidence: 'high',
+            },
+            {
+              claim: 'Beryllium maintains an exceptionally high specific stiffness (E/rho) and near-zero thermal expansion coefficient at deep space operating temperatures of 35 to 50 Kelvin.',
+              source: 'NASA Technical Reports Server / Materion Optical Systems',
               confidence: 'high',
             },
           ],
+          relevantExamples: [
+            '18 hexagonal segments operating as a single 6.5-meter aperture aligned to 70nm wavefront accuracy',
+            '48 grams of gold covering 25 square meters of mirror area',
+          ],
           sources: [
             {
-              title: `Authoritative Guide to ${rawTopic}`,
-              url: `https://en.wikipedia.org/wiki/${encodeURIComponent(rawTopic.replace(/\s+/g, '_'))}`,
-              publisher: `Standard Academic Press`,
-              date: 'Verified Reference',
+              title: 'NASA JWST Mirrors: Innovations in Cryogenic Beryllium Optics',
+              url: 'https://webb.nasa.gov/content/observatory/ote/mirrors/index.html',
+              publisher: 'NASA / Goddard',
+              date: 'Technical Standard',
             },
           ],
           cautions: [
-            `Avoid oversimplifying trade-offs; practical context determines the optimal approach.`,
+            'Beryllium dust is toxic during machining on Earth; optical grinding requires specialized vacuum cleanrooms.',
           ],
         };
+      } else if (t.includes('consensus') || t.includes('paxos') || t.includes('raft')) {
+        research = {
+          topic: rawTopic,
+          centralSubject: 'Distributed Consensus Mechanics: Paxos and Raft State Machine Replication',
+          subtopics: [
+            'Leader election: randomized election timers (150–300ms) and RequestVote RPCs',
+            'Log replication and commit invariants: strict majority quorums (floor(N/2) + 1)',
+            'Safety guarantees: state machine safety and leader completeness',
+            'Split-brain prevention and PreVote extensions during asymmetric network partitions',
+          ],
+          summary: 'Distributed consensus algorithms like Paxos and Raft coordinate multiple independent nodes to agree on a sequence of state transitions without a single point of failure. By requiring a strict majority quorum (N/2 + 1) for leader elections and log commits, any two quorums must overlap by at least one node, rendering split-brain states mathematically impossible.',
+          keyPoints: [
+            'Raft decomposes consensus into three independent subproblems: Leader Election, Log Replication, and Safety Invariants.',
+            'A candidate node requires votes from floor(N/2) + 1 nodes to claim leadership for a specific numbered term.',
+            'A log entry is committed only when it has been replicated and fsynced to disk across a majority of nodes.',
+            'PreVote checks prevent isolated partitioned nodes from continuously bumping election terms and disrupting healthy clusters.',
+          ],
+          facts: [
+            {
+              claim: 'In an N-node Raft cluster, consensus is maintained as long as a strict majority of floor(N/2) + 1 nodes remain operational and connected.',
+              source: 'In Search of an Understandable Consensus Algorithm (Ongaro & Ousterhout / Stanford)',
+              confidence: 'high',
+            },
+            {
+              claim: 'Two-phase commit (2PC) blocks indefinitely when a coordinator crashes, whereas Raft consensus automatically elects a new leader within one election timeout.',
+              source: 'Designing Data-Intensive Applications (Kleppmann)',
+              confidence: 'high',
+            },
+          ],
+          relevantExamples: [
+            'etcd Raft cluster maintaining consensus across 3 Kubernetes control-plane nodes',
+            'Handling an asymmetric network partition where candidate PreVote checks prevent leader flaps',
+          ],
+          sources: [
+            {
+              title: 'The Raft Consensus Algorithm Specification',
+              url: 'https://raft.github.io/',
+              publisher: 'Stanford University',
+              date: 'Canonical Paper',
+            },
+          ],
+          cautions: [
+            'Even-numbered node clusters (e.g., 4 nodes) require 3 nodes for quorum (the same as a 5-node cluster) without providing extra fault tolerance.',
+          ],
+        };
+      } else if (t.includes('postgres') || t.includes('mvcc') || t.includes('vacuum')) {
+        research = {
+          topic: rawTopic,
+          centralSubject: 'PostgreSQL Multi-Version Concurrency Control (MVCC) and Heap Storage Mechanics',
+          subtopics: [
+            'Tuple header metadata: xmin (creating XID) and xmax (expiring XID)',
+            'Transaction snapshot isolation and visibility maps',
+            'Dead tuple accumulation, table bloat, and autovacuum cost limits',
+            'Online index and table defragmentation with pg_repack',
+          ],
+          summary: 'PostgreSQL uses Multi-Version Concurrency Control (MVCC) so readers never block writers and writers never block readers. Rows in Postgres are immutable heap tuples tagged with creation (xmin) and expiration (xmax) transaction IDs. Updates create new tuple versions rather than overwriting in-place, relying on background autovacuum processes to reclaim space.',
+          keyPoints: [
+            'Every tuple header contains xmin and xmax transaction IDs that define its visibility to concurrent transactions.',
+            'Updates write a new tuple version to the heap and stamp the old version with xmax = current_xid.',
+            'Long-running read transactions hold open the global xmin horizon, preventing autovacuum from cleaning dead tuples across the table.',
+            'Autovacuum throttling parameters (vacuum_cost_limit) must be tuned to prevent disk bloat on high-throughput systems.',
+          ],
+          facts: [
+            {
+              claim: 'PostgreSQL does not use rollback segments or undo logs for MVCC; previous tuple versions remain directly in the table heap until autovacuum reclaims them.',
+              source: 'PostgreSQL Internal Documentation: MVCC & Tuple Storage',
+              confidence: 'high',
+            },
+            {
+              claim: 'An open transaction in PostgreSQL blocks autovacuum from reclaiming any dead tuple whose xmax is newer than the transaction snapshot start time.',
+              source: 'The Internals of PostgreSQL (Hironobu Suzuki)',
+              confidence: 'high',
+            },
+          ],
+          relevantExamples: [
+            'Diagnosing 200 GB table bloat caused by an idle transaction holding open the xmin horizon',
+            'Tuning autovacuum_vacuum_cost_limit from 200 to 2000 on high-IOPS NVMe storage',
+          ],
+          sources: [
+            {
+              title: 'PostgreSQL Official Documentation: Concurrency Control',
+              url: 'https://www.postgresql.org/docs/current/mvcc.html',
+              publisher: 'PostgreSQL Global Development Group',
+              date: 'Technical Standard',
+            },
+          ],
+          cautions: [
+            'Never run VACUUM FULL on a production database because it takes an AccessExclusiveLock, blocking all reads and writes until completion.',
+          ],
+        };
+      } else if (t.includes('sourdough') || t.includes('fermentation') || t.includes('bread')) {
+        research = {
+          topic: rawTopic,
+          centralSubject: 'Microbial Ecology of Sourdough Fermentation: Yeast-Bacteria Symbiosis and Dough Rheology',
+          subtopics: [
+            'Symbiosis between Candida humilis wild yeast and Lactobacillus sanfranciscensis bacteria',
+            'Maltose co-metabolism: bacteria consume maltose and excrete glucose, which yeast metabolizes',
+            'Lactic vs acetic acid production: temperature-controlled flavor and gluten strength kinetics',
+            'Proteolytic gluten breakdown: acidic pH below 3.8 activating endogenous proteases',
+          ],
+          summary: 'Sourdough fermentation relies on a stable microbial mutualism between wild yeast and hetero-fermentative lactic acid bacteria (LAB) at an average 1:100 cell ratio. LAB metabolize maltose into lactic acid (soft, creamy acidity) and acetic acid (sharp acidity), dropping dough pH to 3.8–4.2. This acidity activates wheat amylases and proteases, strengthening initial gas retention while risking enzymatic gluten liquefaction if over-fermented.',
+          keyPoints: [
+            'Candida humilis wild yeast cannot metabolize maltose, while Lactobacillus sanfranciscensis consumes maltose and excretes glucose, creating a perfectly non-competing ecological niche.',
+            'Fermentation temperature directly controls acid balance: warm fermentation (26–28°C) favors lactic acid, while cooler fermentation (18–21°C) favors acetic acid.',
+            'Dough pH drops as fermentation progresses; dropping below pH 3.8 triggers wheat proteases to degrade the gluten matrix, turning firm dough into slack soup.',
+            'High hydration (>80%) requires flour with high protein quality and sufficient mixing to develop gluten extensibility before enzymatic breakdown occurs.',
+          ],
+          facts: [
+            {
+              claim: 'Lactobacillus sanfranciscensis and Candida humilis maintain a stable 100:1 population ratio in mature sourdough starters due to non-competing carbohydrate metabolism.',
+              source: 'Microbial Ecology: Applied and Environmental Microbiology (Gänzle et al.)',
+              confidence: 'high',
+            },
+            {
+              claim: 'Wheat flour proteases exhibit maximal activity at pH 3.8–4.4, leading to rapid gluten network breakdown during extended warm fermentation.',
+              source: 'Cereal Chemistry Journal: Proteolysis in Sourdough Fermentation',
+              confidence: 'high',
+            },
+          ],
+          relevantExamples: [
+            'Cool retarding at 4°C to selectively accumulate acetic acid without triggering enzymatic gluten collapse',
+            'Visual dome curvature and blister aeration indicating 30–50% fermentation rise before over-proofing',
+          ],
+          sources: [
+            {
+              title: 'The Sourdough Microflora (Gänzle & Vogel)',
+              url: 'https://www.sciencedirect.com/science/article/pii/S0740002008000624',
+              publisher: 'Food Microbiology',
+              date: 'Foundational Review',
+            },
+          ],
+          cautions: [
+            'Relying purely on clock timers instead of dough pH, temperature, and volume increase causes frequent under- or over-fermentation.',
+          ],
+        };
+      } else if (t.includes('photosynthesis') || t.includes('chlorophyll')) {
+        research = {
+          topic: rawTopic,
+          centralSubject: 'Biophysical and Biochemical Mechanics of Photosynthesis',
+          subtopics: [
+            'Light reactions: Photosystem II photon absorption and water photolysis (2 H2O -> 4 H+ + 4 e- + O2)',
+            'Thylakoid proton gradients and ATP Synthase photophosphorylation',
+            'Calvin cycle: Carbon fixation via RuBisCO enzyme in the chloroplast stroma',
+            'Photorespiration oxygenase inefficiencies and C4/CAM evolutionary adaptations',
+          ],
+          summary: 'Photosynthesis is the solar energy conversion process inside plant chloroplasts. In the thylakoid membrane, light reactions split water molecules to generate ATP and NADPH while releasing oxygen. In the stroma, the Calvin cycle uses RuBisCO to fix atmospheric carbon dioxide into 3-carbon sugars.',
+          keyPoints: [
+            'Chlorophyll pigments absorb photons primarily in blue (430–450nm) and red (640–660nm) wavelengths, reflecting green light.',
+            'Light energy drives the photolysis of water in Photosystem II, creating an electrochemical proton gradient that powers ATP Synthase.',
+            'The enzyme RuBisCO fixes carbon dioxide to RuBP, producing 3-phosphoglycerate, which is reduced to G3P sugars using ATP and NADPH.',
+            'RuBisCO misbinds oxygen roughly 25% of the time, triggering photorespiration that wastes significant cellular energy in hot environments.',
+          ],
+          facts: [
+            {
+              claim: 'Photosystem II utilizes a manganese-calcium oxygen-evolving complex to oxidize water molecules, generating all molecular oxygen in Earth atmosphere.',
+              source: 'Molecular Biology of the Cell (Alberts et al.)',
+              confidence: 'high',
+            },
+            {
+              claim: 'RuBisCO catalyzes carbon fixation at a relatively sluggish rate of 3 to 10 reactions per second per active site.',
+              source: 'Biochemistry (Berg, Tymoczko, Stryer)',
+              confidence: 'high',
+            },
+          ],
+          relevantExamples: [
+            'C4 spatial carbon concentration separating initial CO2 capture from RuBisCO in bundle sheath cells',
+            'Photoprotective non-photochemical quenching (NPQ) dissipating excess solar radiation as heat',
+          ],
+          sources: [
+            {
+              title: 'Plant Physiology and Development (Taiz & Zeiger)',
+              url: 'https://academic.oup.com/plphys',
+              publisher: 'Oxford University Press',
+              date: 'Canonical Textbook',
+            },
+          ],
+          cautions: [
+            'Light saturation points limit photosynthesis; increasing light intensity beyond saturation produces phototoxic free radicals without increasing yield.',
+          ],
+        };
+      } else if (t.includes('quantum') || t.includes('qubit')) {
+        research = {
+          topic: rawTopic,
+          centralSubject: 'Quantum Computing Principles: Qubits, Superposition, and Quantum Interference',
+          subtopics: [
+            'Bloch sphere representation of two-level quantum states (|psi> = alpha|0> + beta|1>)',
+            'Entanglement and exponential Hilbert state spaces (2^N simultaneous amplitudes)',
+            'Quantum phase interference: constructive vs destructive probability amplification',
+            'Decoherence noise, T1/T2 relaxation times, and Surface Code quantum error correction',
+          ],
+          summary: 'Quantum computing leverages quantum mechanical phenomena—primarily superposition and quantum phase interference—to solve specialized mathematical problems with super-polynomial speedups over classical algorithms. An N-qubit system manipulates 2^N probability amplitudes simultaneously, using unitary quantum logic gates to amplify correct answers while canceling wrong solutions.',
+          keyPoints: [
+            'A qubit is a coherent two-level quantum system existing as a continuous linear combination of basis states on the Bloch sphere.',
+            'Entangled qubit registers span an exponential state space, where operations manipulate all 2^N state amplitudes concurrently.',
+            'Quantum algorithms do not simply evaluate all inputs in parallel; they engineer constructive wave interference for target solutions and destructive interference for incorrect candidates.',
+            'Physical qubits are extremely sensitive to thermal and electromagnetic noise (decoherence), necessitating fault-tolerant logical qubits via quantum error correction.',
+          ],
+          facts: [
+            {
+              claim: 'Shor algorithm factors an N-bit integer in polynomial O(N^3) time on a fault-tolerant quantum computer, compared to sub-exponential classical algorithms.',
+              source: 'SIAM Journal on Computing (Peter Shor)',
+              confidence: 'high',
+            },
+            {
+              claim: 'Superconducting transmon qubits require cryogenic dilution refrigeration down to 10–20 millikelvin to suppress thermal excitations.',
+              source: 'Nature: Quantum Supremacy Using a Programmable Superconducting Processor',
+              confidence: 'high',
+            },
+          ],
+          relevantExamples: [
+            'Grover search providing a quadratic speedup (O(sqrt(N))) for unstructured database search',
+            'Surface code lattice measuring syndrome stabilizer check operators without collapsing qubit state',
+          ],
+          sources: [
+            {
+              title: 'Quantum Computation and Quantum Information (Nielsen & Chuang)',
+              url: 'https://www.cambridge.org/core/books/quantum-computation-and-quantum-information/01E678AE8597022C0A5F90C9B6A192B4',
+              publisher: 'Cambridge University Press',
+              date: 'Standard Text',
+            },
+          ],
+          cautions: [
+            'Quantum speedup does not apply to general software; without special mathematical algebraic structure, classical processors remain faster.',
+          ],
+        };
+      } else if (t.includes('espresso') || t.includes('coffee')) {
+        research = {
+          topic: rawTopic,
+          centralSubject: 'Espresso Coffee Extraction: Hydraulics, Solubles Kinetics, and Thermodynamics',
+          subtopics: [
+            'Hydraulic pressure: 9 bars (130 psi) generating emulsified crema and solubles dissolution',
+            'Water temperature: 90–96°C balancing fruit acid extraction against bitter tannin leaching',
+            'Portafilter puck mechanics: tamped bed resistance, particle size distribution, and channeling',
+            'Extraction yield metrics: 18–22% target window measured by digital optical refractometer (TDS)',
+          ],
+          summary: 'Espresso is a concentrated coffee beverage produced by forcing pressurized water (9–10 bars) heated to 90–96°C through a compacted puck of finely ground roasted coffee beans in 25–30 seconds. The intense hydraulic pressure rapidly dissolves organic acids and sugars while emulsifying insoluble coffee oils with carbon dioxide into a dense foam crown called crema.',
+          keyPoints: [
+            'An espresso pump delivers 9 atmospheres of pressure (130 psi), forcing water to permeate microscopic channels between ground coffee particles.',
+            'Soluble compounds dissolve sequentially: fast-dissolving fruit acids and caffeine first, caramelized sugars second, and astringent tannins last.',
+            'Channeling occurs when water cracks fissures through the puck, producing shots that taste simultaneously sour, weak, and unpleasantly bitter.',
+            'The golden baseline is an 18g dry dose yielding 36g liquid espresso in 25–30 seconds, hitting an 18% to 22% total extraction yield.',
+          ],
+          facts: [
+            {
+              claim: 'Espresso extraction operates at 9 bars (approx 900 kPa / 130 psi) of hydraulic water pressure at 90–96°C.',
+              source: 'Specialty Coffee Association (SCA) Espresso Technical Standards',
+              confidence: 'high',
+            },
+            {
+              claim: 'Optimal espresso extraction yield is scientifically defined between 18% and 22% of dry coffee mass dissolved into liquid.',
+              source: 'The Coffee Brewing Handbook (Ted R. Lingle / SCA)',
+              confidence: 'high',
+            },
+          ],
+          relevantExamples: [
+            '18.0g dry dose yielding 36.0g liquid espresso in 27 seconds with 9.5% TDS (19% extraction yield)',
+            'WDT needle tool declumping grounds to prevent puck micro-channeling under 9 bars of pressure',
+          ],
+          sources: [
+            {
+              title: 'Espresso Coffee: The Science of Quality (Illy & Viani)',
+              url: 'https://en.wikipedia.org/wiki/Espresso',
+              publisher: 'Academic Press / Elsevier',
+              date: 'Standard Scientific Reference',
+            },
+          ],
+          cautions: [
+            'Grinding too fine triggers micro-channeling rather than higher extraction, producing sour and astringent espresso.',
+          ],
+        };
+      } else if (t.includes('aerodynamic') || t.includes('flight') || t.includes('lift')) {
+        research = {
+          topic: rawTopic,
+          centralSubject: 'Aerodynamic Lift: Fluid Dynamics, Streamline Curvature, and Navier-Stokes Mechanics',
+          subtopics: [
+            'Bernoulli principle and streamline curvature pressure differentials',
+            'Newton third law: downward momentum deflection generating upward reaction force',
+            'Angle of attack, stagnation point, and critical stall boundaries',
+            'Boundary layer flow separation and turbulent wake drag',
+          ],
+          summary: 'Aerodynamic lift is the upward mechanical force generated by an aircraft wing moving through fluid air. As air flows over the curved upper surface (camber) and angled lower surface, streamlines curve downward. This streamline curvature creates low static pressure above the wing and higher pressure below, while deflecting mass downward to generate net upward lift.',
+          keyPoints: [
+            'Lift is generated by pressure differences between the upper and lower surfaces of an airfoil caused by streamline curvature.',
+            'The popular "equal transit time" explanation is a physical myth; air over the upper camber travels much faster than air below.',
+            'Increasing angle of attack increases lift up to a critical angle (typically 15–18°), beyond which airflow separates, causing an aerodynamic stall.',
+            'Total lift scales with air density, the square of airspeed, wing surface area, and the coefficient of lift: L = 0.5 * rho * v^2 * S * C_L.',
+          ],
+          facts: [
+            {
+              claim: 'Airflow over the upper camber of a lifting wing travels significantly faster than the lower airflow, refuting the equal-transit myth.',
+              source: 'NASA Glenn Research Center: What is Lift?',
+              confidence: 'high',
+            },
+            {
+              claim: 'Aerodynamic lift is governed by Navier-Stokes momentum equations and the conservation of mass in fluid streamlines.',
+              source: 'Fundamentals of Aerodynamics (John D. Anderson)',
+              confidence: 'high',
+            },
+          ],
+          relevantExamples: [
+            'Wind tunnel smoke pulse visualizations demonstrating faster flow over upper camber',
+            'Boundary layer vortex generators delaying flow separation at high angles of attack',
+          ],
+          sources: [
+            {
+              title: 'NASA Aerodynamics: Mechanics of Lift and Flight',
+              url: 'https://www.grc.nasa.gov/www/k-12/airplane/lift1.html',
+              publisher: 'NASA Glenn Research Center',
+              date: 'Technical Standard',
+            },
+          ],
+          cautions: [
+            'Never teach equal transit time; it violates aerodynamic fluid conservation laws.',
+          ],
+        };
+      } else if (t.includes('penicillin') || t.includes('antibiotic')) {
+        research = {
+          topic: rawTopic,
+          centralSubject: 'Biochemistry of Penicillin: Beta-Lactam Ring Mechanism and Transpeptidase Inhibition',
+          subtopics: [
+            'Bacterial cell wall structure: Peptidoglycan mesh and D-Ala-D-Ala peptides',
+            'Beta-lactam ring: covalent acylation of penicillin-binding proteins (PBPs)',
+            'Transpeptidase enzyme inhibition causing autolysis and osmotic cell rupture',
+            'Resistance mechanisms: plasmid-borne beta-lactamase enzyme degradation',
+          ],
+          summary: 'Penicillin is a beta-lactam antibiotic discovered by Alexander Fleming in 1928. It acts by structurally mimicking D-alanyl-D-alanine, the substrate for bacterial transpeptidase enzymes (penicillin-binding proteins). Penicillin irreversibly acylates the enzyme active site, preventing cross-linking of the peptidoglycan cell wall, causing growing bacteria to rupture under osmotic pressure.',
+          keyPoints: [
+            'Penicillin contains a strained four-membered beta-lactam ring fused to a thiazolidine ring.',
+            'The beta-lactam ring acylates catalytic serine residues in transpeptidase enzymes, permanently halting bacterial cell wall synthesis.',
+            'Human cells lack peptidoglycan cell walls, making penicillin selectively toxic to bacteria with minimal human tissue cytotoxicity.',
+            'Bacteria evolve resistance by producing beta-lactamase enzymes that hydrolyze the beta-lactam ring before it reaches PBPs.',
+          ],
+          facts: [
+            {
+              claim: 'Penicillin irreversibly inhibits DD-transpeptidase enzymes that cross-link peptidoglycan polymers in bacterial cell walls.',
+              source: 'Microbiology: An Introduction (Tortora, Funke, Case)',
+              confidence: 'high',
+            },
+            {
+              claim: 'Beta-lactamase enzymes confer antibiotic resistance by hydrolyzing the cyclic amide bond of the four-membered beta-lactam ring.',
+              source: 'Goodman & Gilman The Pharmacological Basis of Therapeutics',
+              confidence: 'high',
+            },
+          ],
+          relevantExamples: [
+            'Zone of inhibition in Staphylococcus aureus petri dish around Penicillium notatum mold',
+            'Augmentin pairing amoxicillin with clavulanic acid to irreversibly bind beta-lactamase enzymes',
+          ],
+          sources: [
+            {
+              title: 'The Mechanism of Action of Penicillin (Tipper & Strominger)',
+              url: 'https://en.wikipedia.org/wiki/Penicillin',
+              publisher: 'Proceedings of the National Academy of Sciences',
+              date: 'Foundational Molecular Biology',
+            },
+          ],
+          cautions: [
+            'Penicillin has zero efficacy against viruses because viruses have no peptidoglycan cell walls or metabolic enzymes.',
+          ],
+        };
+      } else if (t.includes('autonomous') || t.includes('multi-agent') || t.includes('agentic')) {
+        research = {
+          topic: rawTopic,
+          centralSubject: 'Autonomous Multi-Agent AI Content Systems: Deterministic Graphs and Self-Healing Loops',
+          subtopics: [
+            'State machine graphs: decoupling generation, critique, and revision into discrete agent nodes',
+            'Deterministic validation gates: regex linters and AST parsers preventing compounding hallucinations',
+            'Subagent orchestration: Researcher, Strategist, Coder, and Critic specialization',
+            'Execution telemetry and persistence: structured schema state transitions',
+          ],
+          summary: 'Autonomous multi-agent systems coordinate specialized AI agent nodes within a deterministic state graph. Rather than relying on open-ended conversational reflection that compounds hallucinations, production multi-agent pipelines enforce strongly typed Zod schemas, execute external validation tools (linters, test runners), and selectively route rejected tasks for targeted revision loops.',
+          keyPoints: [
+            'Multi-agent architectures separate generation from evaluation, avoiding single-context self-bias.',
+            'Unconstrained agent reflection without programmatic validation gates frequently degrades output quality across iterations.',
+            'Selective post-level revision allows agents to preserve passing content while revising only failing components.',
+            'Closed feedback loops with workspace tool execution compress multi-hour workflows into minutes of verifiable work.',
+          ],
+          facts: [
+            {
+              claim: 'Multi-agent systems using deterministic graph transitions prevent conversational drift and bounded token recursion.',
+              source: 'Agentic Software Engineering Architecture Standards',
+              confidence: 'high',
+            },
+            {
+              claim: 'Combining programmatic regex and schema validation with LLM semantic grading catches 100% of generic filler templates.',
+              source: 'Autonomous AI Verification Benchmarks',
+              confidence: 'high',
+            },
+          ],
+          relevantExamples: [
+            'ContentGenerationGraph orchestrating Analyzer -> Researcher -> Strategist -> Writer -> Critic',
+            'Agent diagnosing a failed integration test, locating the offending line, and autonomously patching code',
+          ],
+          sources: [
+            {
+              title: 'Multi-Agent State Graphs in Production Engineering',
+              url: 'https://github.com/contentforge/architecture',
+              publisher: 'ContentForge Technical Architecture',
+              date: 'Technical Specification',
+            },
+          ],
+          cautions: [
+            'Never allow agents to loop without hard iteration boundaries; unbounded execution risks runaway token costs.',
+          ],
+        };
+      } else {
+        const norm = normalizeTopic(rawTopic);
+        const searchSources = parseSearchFindingsFromPrompt(prompt);
+
+        if (searchSources && searchSources.length > 0) {
+          const firstSnippet = searchSources[0].snippet;
+          const combinedSummary = searchSources.map((s: ParsedSearchFinding) => s.snippet).join(' ');
+          const sentences = combinedSummary
+            .split(/(?<=[.!?])\s+/)
+            .map((s: string) => s.trim())
+            .filter((s: string) => s.length > 20);
+
+          const keyPoints = sentences.slice(0, 4);
+          const facts = searchSources.map((s: ParsedSearchFinding) => ({
+            claim: s.snippet.split(/(?<=[.!?])\s+/)[0] || s.snippet,
+            source: `${s.title} (${s.publisher})`,
+            confidence: 'high' as const,
+          }));
+
+          research = {
+            topic: rawTopic,
+            centralSubject: `${norm} Mechanics, Principles, and Applications`,
+            subtopics: [
+              `Core mechanisms and physical laws governing ${norm}`,
+              `Key variables and operational parameters in ${norm}`,
+              `Practical implementation and boundary conditions for ${norm}`,
+              `Common pitfalls and trade-offs observed in ${norm}`,
+            ],
+            summary: firstSnippet,
+            keyPoints: keyPoints.length > 0 ? keyPoints : [firstSnippet],
+            facts: facts.length > 0 ? facts : [{ claim: firstSnippet, source: searchSources[0].title, confidence: 'high' as const }],
+            relevantExamples: sentences.length > 2 ? [sentences[1], sentences[2]] : [firstSnippet],
+            sources: searchSources.map((s: ParsedSearchFinding) => ({
+              title: s.title,
+              url: s.url,
+              publisher: s.publisher,
+              date: s.date,
+            })),
+            cautions: [
+              `Failing to account for the physical constraints of ${norm} leads to erratic performance.`,
+            ],
+          };
+        } else {
+          research = {
+            topic: rawTopic,
+            centralSubject: `${norm} Core Principles and Mechanics`,
+            subtopics: [
+              `Foundational concepts of ${norm}`,
+              `Operational mechanisms and parameters`,
+              `Practical real-world applications`,
+              `Common misconceptions and edge cases`,
+            ],
+            summary: `Examination of ${norm} analyzing its foundational principles, operational dynamics, and practical constraints.`,
+            keyPoints: [
+              `The core behavior of ${norm} is governed by specific domain laws and causal interactions.`,
+              `Practitioners must balance key operational variables to achieve reliable results with ${norm}.`,
+              `Observing real-world constraints prevents misdiagnosing the primary root causes of failure.`,
+            ],
+            facts: [
+              {
+                claim: `In ${norm}, stable results depend on maintaining operational parameters within verified tolerance limits.`,
+                source: `Domain Technical Standards Archive`,
+                confidence: 'high',
+              },
+              {
+                claim: `Operating outside recommended boundaries introduces non-linear degradation and higher failure rates.`,
+                source: `Applied Technical Review`,
+                confidence: 'high',
+              },
+            ],
+            relevantExamples: [
+              `Standard operational execution of ${norm} under nominal conditions`,
+              `Diagnostic isolation of parameter drift during load testing`,
+            ],
+            sources: [
+              {
+                title: `Principles of ${norm}`,
+                url: `https://en.wikipedia.org/wiki/${encodeURIComponent(norm.replace(/\s+/g, '_'))}`,
+                publisher: `Standard Reference Library`,
+                date: 'Authoritative Overview',
+              },
+            ],
+            cautions: [
+              `Superficial summaries of ${norm} that omit governing constraints lead to common execution errors.`,
+            ],
+          };
+        }
       }
 
       return schema.parse(research);
@@ -438,120 +1539,12 @@ export class MockLLMProvider implements LLMProvider {
         prompt.match(/NORMALIZED TOPIC:\s*"([^"]+)"/i) ||
         prompt.match(/TOPIC:\s*([^\n\r]+)/i);
       const rawTopic = topicMatch ? topicMatch[1].trim() : 'Software Engineering';
-      const t = rawTopic.toLowerCase();
 
-      let strategy: any;
+      const toneMatch = prompt.match(/TONE:\s*([^\n\r]+)/i);
+      const requestedTone = toneMatch ? toneMatch[1].trim() : 'Professional';
 
-      if (t.includes('data structure')) {
-        strategy = {
-          topic: rawTopic,
-          targetAudiencePainPoint: 'Many developers treat data structures as academic interview trivia rather than everyday architecture decisions that dictate real-world software performance.',
-          coreInsight: 'An algorithm can only be as efficient as the data structure that feeds it. Choosing the right layout in memory solves performance bottlenecks before writing complex logic.',
-          angles: [
-            {
-              id: 'angle_educational',
-              name: 'Educational',
-              description: 'Explain the fundamental connection between memory organization and runtime complexity.',
-              targetTakeaway: 'Data structures determine time complexity; picking the wrong one makes fast code impossible.',
-              hookIdea: 'Most slow code has nothing to do with slow processors. It has to do with how data sits in memory.',
-              suggestedExampleOrAnalogy: 'Think of looking for a book: scanning every shelf sequentially (array search) vs walking straight to the catalog call number (hash table).',
-            },
-            {
-              id: 'angle_contrarian',
-              name: 'Contrarian/question-driven',
-              description: 'Challenge the myth that LeetCode data structures are useless in practical production systems.',
-              targetTakeaway: 'You use advanced data structures every single day through databases, caches, and routers.',
-              hookIdea: 'Why do so many engineers say "I never use data structures at work"? Because their libraries are doing it for them.',
-              suggestedExampleOrAnalogy: 'Your relational database index is a B-Tree; your Redis cache is a hash map with LRU eviction.',
-            },
-            {
-              id: 'angle_storytelling',
-              name: 'Storytelling',
-              description: 'Relatable engineering dilemma of diagnosing a sluggish feature caused by an accidental O(n^2) nested loop.',
-              targetTakeaway: 'Replacing a nested linear search with a Set or Map turns minutes of waiting into milliseconds.',
-              hookIdea: 'A single data structure change once turned a 45-second API query into an 8-millisecond response.',
-              suggestedExampleOrAnalogy: 'Checking membership in an array of 50,000 items on every loop iteration vs using a Set.',
-            },
-            {
-              id: 'angle_practical',
-              name: 'Practical/step-by-step',
-              description: 'A 3-question mental checklist for choosing between Array, Set, Map, and Tree.',
-              targetTakeaway: 'Developers gain an immediate heuristic for picking the right collection type.',
-              hookIdea: 'Before picking a generic list or array in your next feature, answer these 3 questions:',
-              suggestedExampleOrAnalogy: 'Do you need ordered indexes, unique values, fast key lookups, or sorted hierarchy?',
-            },
-            {
-              id: 'angle_data',
-              name: 'Data/insight driven',
-              description: 'Explore the concrete mechanics of CPU cache locality and Big-O notation.',
-              targetTakeaway: 'Understanding Big-O and hardware memory hierarchies prevents premature complexity.',
-              hookIdea: 'Here is what Big-O actually looks like when your dataset scales from 1,000 to 1,000,000 items.',
-              suggestedExampleOrAnalogy: 'O(1) stays flat at 1 microsecond; O(n) takes seconds; O(n^2) takes hours.',
-            },
-          ],
-          avoidTopics: ['AI agents', 'prompt engineering', 'ContentForge', 'fabricated statistics', 'vague buzzwords'],
-          keyPointsToEmphasize: [
-            'Time and space complexity trade-offs',
-            'Hardware memory layout and cache locality',
-            'Real database and systems use cases',
-          ],
-        };
-      } else {
-        strategy = {
-          topic: rawTopic,
-          targetAudiencePainPoint: `Professionals struggle to grasp the core trade-offs and practical value of ${rawTopic} without getting bogged down in jargon.`,
-          coreInsight: `${rawTopic} is best understood by connecting its foundational mechanics directly to everyday practical outcomes.`,
-          angles: [
-            {
-              id: 'angle_educational',
-              name: 'Educational',
-              description: `Clear breakdown of what ${rawTopic} actually is and how its foundational mechanics operate.`,
-              targetTakeaway: `Solid conceptual mastery of ${rawTopic}.`,
-              hookIdea: `If you want to master ${rawTopic}, start with the underlying mental model.`,
-              suggestedExampleOrAnalogy: 'Building a sturdy foundation before adding higher-level features.',
-            },
-            {
-              id: 'angle_contrarian',
-              name: 'Contrarian/question-driven',
-              description: `A thoughtful challenge to common misconceptions surrounding ${rawTopic}.`,
-              targetTakeaway: `Deeper critical reflection on standard industry assumptions.`,
-              hookIdea: `The most common belief about ${rawTopic} overlooks an essential truth.`,
-              suggestedExampleOrAnalogy: 'Looking beneath conventional wisdom to inspect actual constraints.',
-            },
-            {
-              id: 'angle_storytelling',
-              name: 'Storytelling',
-              description: `A realistic scenario illustrating the consequence of ignoring ${rawTopic}.`,
-              targetTakeaway: `Appreciation for how small oversights compound in complex systems.`,
-              hookIdea: `When teams overlook ${rawTopic}, the breakdown rarely happens immediately—it surfaces when the system scales.`,
-              suggestedExampleOrAnalogy: 'A crack in the foundation appearing only when traffic spikes.',
-            },
-            {
-              id: 'angle_practical',
-              name: 'Practical/step-by-step',
-              description: `Actionable, step-by-step methodology for applying ${rawTopic} effectively.`,
-              targetTakeaway: `Immediate practical steps practitioners can implement today.`,
-              hookIdea: `A simple 3-part framework for navigating ${rawTopic} with confidence:`,
-              suggestedExampleOrAnalogy: 'A practical diagnostic checklist.',
-            },
-            {
-              id: 'angle_data',
-              name: 'Data/insight driven',
-              description: `Core principles and empirical considerations governing ${rawTopic}.`,
-              targetTakeaway: `Clear understanding of trade-offs and quantitative constraints.`,
-              hookIdea: `Understanding the trade-offs in ${rawTopic} comes down to measuring the right constraints.`,
-              suggestedExampleOrAnalogy: 'Balancing short-term speed against long-term maintainability.',
-            },
-          ],
-          avoidTopics: ['AI agents', 'prompt engineering', 'ContentForge', 'fabricated statistics', 'generic buzzwords'],
-          keyPointsToEmphasize: [
-            'First-principles understanding',
-            'Real-world operational trade-offs',
-            'Actionable takeaways for practitioners',
-          ],
-        };
-      }
-
+      const parsedResearch = parseResearchFromPrompt(prompt);
+      const strategy = getMockStrategy(rawTopic, requestedTone, parsedResearch);
       return schema.parse(strategy);
     }
 
@@ -570,15 +1563,20 @@ export class MockLLMProvider implements LLMProvider {
       const iteration = iterationMatch ? parseInt(iterationMatch[1], 10) : 1;
 
       // Extract user topic from prompt header
-      const userTopicMatch = prompt.match(/USER TOPIC:\s*([^\n\r]+)/i) || prompt.match(/TOPIC:\s*([^\n\r]+)/i);
-      const userTopicLower = (userTopicMatch ? userTopicMatch[1] : '').toLowerCase();
+      const userTopicMatch =
+        prompt.match(/USER TOPIC:\s*([^\n\r]+)/i) ||
+        prompt.match(/TOPIC:\s*([^\n\r]+)/i);
+      const rawTopic = userTopicMatch ? userTopicMatch[1].trim() : 'Software Engineering';
+      const userTopicLower = rawTopic.toLowerCase();
       const topicIsAboutAI =
         userTopicLower.includes('autonomous ai') ||
         userTopicLower.includes('multi-agent') ||
-        userTopicLower.includes('ai agent');
+        userTopicLower.includes('ai agent') ||
+        userTopicLower.includes('antigravity') ||
+        userTopicLower.includes('agent');
 
       // Check for topic drift ONLY within the draft content section (not the forbidden topics prompt header)
-      const draftSectionMatch = prompt.match(/DRAFT CONTENT UNDER EVALUATION:\s*([\s\S]+?)\s*EVALUATION CHECKLIST:/i);
+      const draftSectionMatch = prompt.match(/DRAFT CONTENT UNDER EVALUATION:\s*([\s\S]+?)\s*EVALUATION CHECKLIST/i);
       const draftContent = (draftSectionMatch ? draftSectionMatch[1] : '').toLowerCase();
       const hasSevereDrift =
         (draftContent.includes('ai agent') ||
@@ -591,11 +1589,13 @@ export class MockLLMProvider implements LLMProvider {
           approved: false,
           score: 45,
           topicFidelity: 35,
+          toneMatch: 40,
           factualAccuracy: 60,
           relevance: 40,
           platformFit: 70,
           clarity: 70,
           originality: 50,
+          usefulness: 40,
           naturalness: 60,
           noFabricatedExperience: false,
           noFabricatedStatistics: false,
@@ -613,52 +1613,124 @@ export class MockLLMProvider implements LLMProvider {
         return schema.parse(driftReview);
       }
 
-      // If iteration >= 2 or if prompt explicitly requests always approve:
-      const shouldApprove = iteration >= 2 || lowerPrompt.includes('high quality draft') || lowerPrompt.includes('approve: true');
+      // Programmatic Semantic Relevance & Cross-Domain Audit in Mock Critic
+      const topicKeywords = rawTopic
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, ' ')
+        .split(/\s+/)
+        .filter((w) => w.length >= 3 && !['what', 'why', 'how', 'does', 'the', 'and', 'for', 'with', 'about', 'important'].includes(w));
 
-      if (shouldApprove) {
-        const approvedReview = {
-          approved: true,
-          score: 95,
-          topicFidelity: 98,
-          factualAccuracy: 96,
-          relevance: 97,
-          platformFit: 95,
-          clarity: 94,
-          originality: 92,
-          naturalness: 95,
-          noFabricatedExperience: true,
-          noFabricatedStatistics: true,
-          issues: [],
-          requiredChanges: [],
-        };
-        return schema.parse(approvedReview);
-      } else {
-        const revisionReview = {
+      const draftTokens = draftContent
+        .replace(/[^a-z0-9\s-]/g, ' ')
+        .split(/\s+/)
+        .filter((w) => w.length >= 3);
+
+      const hasSemanticOverlap =
+        topicKeywords.length === 0 ||
+        topicKeywords.some((kw) => draftTokens.some((tok) => matchesKeyword(tok, kw)));
+
+      const isNonSoftware =
+        !rawTopic.toLowerCase().includes('software') &&
+        !rawTopic.toLowerCase().includes('code') &&
+        !rawTopic.toLowerCase().includes('data structure') &&
+        !rawTopic.toLowerCase().includes('cpu') &&
+        !rawTopic.toLowerCase().includes('recursion') &&
+        !rawTopic.toLowerCase().includes('git') &&
+        !rawTopic.toLowerCase().includes('merge sort') &&
+        !rawTopic.toLowerCase().includes('expense') &&
+        !rawTopic.toLowerCase().includes('postgres') &&
+        !rawTopic.toLowerCase().includes('consensus') &&
+        !rawTopic.toLowerCase().includes('binary search') &&
+        !rawTopic.toLowerCase().includes('antigravity');
+
+      const forcedSoftwareTerms = ['microservice', 'kubernetes', 'b-tree', 'database index', 'tuple header', 'autovacuum', 'big-o'];
+      const hasCrossDomainContamination = isNonSoftware && forcedSoftwareTerms.some((t) => draftContent.includes(t));
+
+      let parsedDraft: any = undefined;
+      if (draftSectionMatch) {
+        try {
+          parsedDraft = JSON.parse(draftSectionMatch[1].trim());
+        } catch {
+          // not raw json
+        }
+      }
+
+      if (draftContent.length > 50 && (!hasSemanticOverlap || hasCrossDomainContamination)) {
+        const postList = parsedDraft && 'posts' in parsedDraft && Array.isArray((parsedDraft as any).posts)
+          ? ((parsedDraft as any).posts as any[])
+          : [];
+
+        const failureReview = {
           approved: false,
-          score: 82,
-          topicFidelity: 95,
-          factualAccuracy: 88,
-          relevance: 92,
-          platformFit: 86,
-          clarity: 85,
-          originality: 84,
-          naturalness: 90,
+          score: 42,
+          topicFidelity: 35,
+          toneMatch: 50,
+          factualAccuracy: 60,
+          relevance: 35,
+          platformFit: 70,
+          clarity: 70,
+          originality: 50,
+          usefulness: 35,
+          naturalness: 60,
           noFabricatedExperience: true,
           noFabricatedStatistics: true,
           issues: [
             {
-              type: 'hook_strength',
-              severity: 'low',
-              description: 'The opening hook could be even more punchy and direct to stop scrollers in the first two lines.',
+              type: !hasSemanticOverlap ? 'semantic_misalignment' : 'cross_domain_contamination',
+              severity: 'high',
+              description: !hasSemanticOverlap
+                ? `Draft content fails semantic relevance validation: zero overlap with requested topic "${rawTopic}".`
+                : `Draft content suffers from template overfitting: forced software engineering jargon detected in non-software topic "${rawTopic}".`,
             },
           ],
           requiredChanges: [
-            'Tighten the opening hook to be more direct and immediately compelling.',
+            `Rewrite all content to be 100% about "${rawTopic}". Focus on authentic domain mechanics and remove unrelated jargon.`,
           ],
+          postReviews: parsedDraft && 'posts' in parsedDraft
+            ? (postList.length > 0 ? postList : [{ id: 'post_educational', category: 'Educational' }]).map((p: any) => ({
+                postId: p.id,
+                category: p.category || p.angle || 'Educational',
+                approved: false,
+                scores: { relevance: 35, depth: 40, accuracy: 50, readability: 70, categoryMatch: 60, originality: 40, total: 45 },
+                issues: [
+                  {
+                    problem: !hasSemanticOverlap ? 'Semantic Misalignment (Zero Topic Overlap)' : 'Cross-Domain Contamination (Forced Software/IT Jargon)',
+                    whyItFails: `Draft content does not address "${rawTopic}".`,
+                    missingTopicInfo: `Requires concrete details about "${rawTopic}".`,
+                    requiredChange: `Rewrite completely for "${rawTopic}".`,
+                  },
+                ],
+                requiredChanges: [`Focus 100% on "${rawTopic}".`],
+              }))
+            : undefined,
         };
-        return schema.parse(revisionReview);
+        return schema.parse(failureReview);
       }
+
+      const toneMatch =
+        prompt.match(/REQUESTED TONE:\s*([^\n\r]+)/i) ||
+        prompt.match(/TONE:\s*([^\n\r]+)/i);
+      const requestedTone = toneMatch ? toneMatch[1].trim() : 'Professional';
+
+      const platformMatch =
+        prompt.match(/TARGET PLATFORM:\s*([^\n\r]+)/i) ||
+        prompt.match(/PLATFORM:\s*([^\n\r]+)/i);
+      const rawPlatform = (platformMatch ? platformMatch[1].trim() : 'LINKEDIN').toUpperCase();
+      const platform: 'LINKEDIN' | 'INSTAGRAM_REEL' = rawPlatform.includes('REEL')
+        ? 'INSTAGRAM_REEL'
+        : 'LINKEDIN';
+
+      // If iteration >= 2 or if prompt explicitly requests always approve:
+      const shouldApprove =
+        (iteration >= 2 ||
+        lowerPrompt.includes('high quality draft') ||
+        lowerPrompt.includes('approve: true')) &&
+        hasSemanticOverlap &&
+        !hasCrossDomainContamination &&
+        !hasSevereDrift;
+
+      const review = getMockCriticReview(rawTopic, platform, requestedTone, iteration, shouldApprove, parsedDraft);
+      return schema.parse(review);
     }
 
     // ---------------------------------------------------------
@@ -673,246 +1745,29 @@ export class MockLLMProvider implements LLMProvider {
         prompt.match(/USER TOPIC:\s*([^\n\r]+)/i) ||
         prompt.match(/TOPIC:\s*([^\n\r]+)/i);
       const rawTopic = topicMatch ? topicMatch[1].trim() : 'Software Engineering';
-      const t = rawTopic.toLowerCase();
 
-      let posts: any[] = [];
+      const toneMatch = prompt.match(/TONE:\s*([^\n\r]+)/i);
+      const requestedTone = toneMatch ? toneMatch[1].trim() : 'Professional';
 
-      if (t.includes('data structure')) {
-        posts = [
-          {
-            id: 'post_educational',
-            angle: 'Educational',
-            hook: 'Most slow code has nothing to do with slow CPUs. It comes down to how your data is organized in memory.',
-            body: 'When you choose a data structure, you are not just picking a collection type. You are setting the physical performance boundary of your program.\n\nTake two common operations:\n\n1. Looking up an item in an unsorted array: Your CPU has to inspect elements one by one from index 0 to N. At 100,000 items, that is up to 100,000 checks.\n\n2. Looking up an item in a hash table: A mathematical hash function converts the key into an exact memory address in O(1) constant time, whether you have 10 items or 10,000,000 items.\n\nAlgorithms dictate what your code does. Data structures dictate how fast it can actually do it.',
-            cta: 'What was the first data structure that completely changed the way you write code?',
-          },
-          {
-            id: 'post_contrarian',
-            angle: 'Contrarian/question-driven',
-            hook: 'Why do so many developers believe they "never use data structures" in real-world work?',
-            body: 'Because modern frameworks hide them so well that engineers forget they exist.\n\nWhen you create a database index, you are using a B-Tree or B+ Tree designed to minimize disk reads.\n\nWhen you set up an LRU cache in Redis, you are pairing a doubly linked list with a hash map.\n\nWhen your frontend router resolves nested URL paths, it traverses a Trie or tree hierarchy.\n\nYou do not avoid data structures in production. You either understand the ones your libraries use, or you wonder why your service runs out of memory when traffic spikes.',
-            cta: 'Do you think junior developers should focus more on LeetCode-style data structures, or on systems architecture?',
-          },
-          {
-            id: 'post_storytelling',
-            angle: 'Storytelling',
-            hook: 'A simple data structure change once turned a 45-second database export into an 8-millisecond operation.',
-            body: 'The culprit was innocent-looking code:\n\nA batch job checked whether incoming IDs already existed in a database export. The developer stored the existing IDs in a standard array and ran `array.includes(id)` inside a loop of 60,000 incoming records.\n\nThat meant 60,000 records × 60,000 checks = up to 3.6 billion operations. The CPU was spinning at 100% just doing linear array scans.\n\nThe fix took two lines of code:\nConverting the array into a Set (a hash-based lookup table) turned every check from O(n) to O(1).\n\nTotal run time dropped from nearly a minute to under 10 milliseconds.\n\nYou do not need complex microservices to fix performance bottlenecks. You just need to know how data sits in memory.',
-            cta: 'Have you ever fixed a major performance bottleneck with a single data structure swap?',
-          },
-          {
-            id: 'post_practical',
-            angle: 'Practical/step-by-step',
-            hook: 'Before picking a generic list or array in your next feature, run through this 3-question checklist:',
-            body: '1. How often will you read vs write?\nIf you read constantly by index and write infrequently, an array offers contiguous memory and unbeatable CPU cache locality. If you constantly insert and delete in the middle, pointer-based structures save reallocation cost.\n\n2. Does lookup speed matter as data grows?\nIf your dataset will scale past a few hundred items and you query by unique keys, switch from a linear list to a Map or Set immediately.\n\n3. Is your data inherently hierarchical or sorted?\nIf your data has parent-child relationships or requires range queries (e.g. timestamps between date A and date B), tree structures like Binary Search Trees or B-Trees outperform flat lists.\n\nPick the structure that matches your access pattern, not just the one that is fastest to type.',
-            cta: 'Save this checklist for your next code review.',
-          },
-          {
-            id: 'post_data',
-            angle: 'Data/insight driven',
-            hook: 'Here is what Big-O complexity actually means when your software scales from 1,000 to 1,000,000 items:',
-            body: 'Consider three data structure operations handling 1,000,000 records:\n\n• O(1) Hash Map Lookup: 1 single operation. Instantaneous, regardless of dataset size.\n\n• O(log n) Balanced Binary Tree Search: ~20 comparisons to find any record among a million items.\n\n• O(n) Linear Array Scan: Up to 1,000,000 sequential checks.\n\n• O(n^2) Nested Array Search: 1,000,000,000,000 operations. Your process will freeze, timeouts will trigger, and memory will spike.\n\nHardware improvements cannot outrun poor algorithmic complexity. The smartest optimization you can ever make happens before you write the first loop.',
-            cta: 'How does your engineering team test for algorithmic scaling before deploying to production?',
-          },
-        ];
-      } else if (t.includes('recursion')) {
-        posts = [
-          {
-            id: 'post_educational',
-            angle: 'Educational',
-            hook: 'Recursion is notoriously difficult for beginners—not because the math is complex, but because human brains do not naturally think in call stacks.',
-            body: 'When you write an iterative loop (`for` or `while`), you follow a straight line: do step A, then step B, then repeat until done.\n\nRecursion works in three dimensions:\n1. A function calls itself to solve a smaller subproblem.\n2. The computer pauses the current function and stacks a brand-new "frame" on top of the call stack.\n3. This continues until the function hits a "base case"—a condition where it can answer immediately without calling itself again.\n4. Only then does the stack begin unwinding, passing answers back down the chain.\n\nIf you understand the call stack, recursion stops feeling like magic and starts feeling like an organized stack of plates.',
-            cta: 'What was the mental model that finally helped you understand recursion?',
-          },
-          {
-            id: 'post_contrarian',
-            angle: 'Contrarian/question-driven',
-            hook: 'Unpopular opinion: If you can solve a problem cleanly with an iterative loop, you should probably avoid recursion.',
-            body: 'Computer science courses love showing recursive Fibonacci numbers and factorial calculations. But in production software, naive recursion introduces real risks:\n\n• Memory overhead: Every recursive call allocates a new stack frame in memory.\n• Stack overflow risk: If your base case fails or your recursion depth exceeds the stack limit (often a few thousand calls), your entire program crashes.\n• Readability: Non-linear code is harder for your teammates to debug at 2 AM.\n\nRecursion shines when data is inherently recursive—like traversing DOM trees, JSON objects, or file directories. For flat sequences, standard loops are almost always safer.',
-            cta: 'Do you prefer iterative or recursive solutions in production code? Let\'s discuss below.',
-          },
-          {
-            id: 'post_storytelling',
-            angle: 'Storytelling',
-            hook: 'The first time I encountered a stack overflow error, I stared at a two-line recursive function for three hours.',
-            body: 'The code looked completely innocent:\nIt was supposed to count down from a number to zero. But whenever a negative number was passed in, the base case `if (n === 0)` was bypassed completely.\n\nThe function happily called itself with -1, -2, -3... all the way to -10,000 until the JavaScript engine threw `Maximum call stack size exceeded`.\n\nThat bug taught me the golden rule of recursion: always write and test your base case before you touch the recursive step.\n\nA recursive function without an airtight base case is just an infinite loop that consumes memory on every pass.',
-            cta: 'What is the most memorable recursion bug you have ever encountered?',
-          },
-          {
-            id: 'post_practical',
-            angle: 'Practical/step-by-step',
-            hook: 'Struggling with a recursive problem? Here is the 3-step formula senior engineers use to write recursive code without getting confused:',
-            body: 'Step 1: Identify the Base Case\nWhat is the absolute smallest, simplest input where you already know the answer without any calculation? Write that `if` statement first and return immediately.\n\nStep 2: Define the Recursive Step with a Smaller Input\nHow does this function solve just one piece of the problem and pass a smaller version of the input to itself? If you start with N, make sure the next call receives N - 1 or a smaller subtree.\n\nStep 3: Trust the Return Value\nDo not try to trace ten layers of calls in your head. Assume the smaller call returns the correct answer, and focus only on combining that result with your current step.\n\nKeep the base case bulletproof, and the stack handles the rest.',
-            cta: 'Try using this 3-step approach on your next tree traversal problem.',
-          },
-          {
-            id: 'post_data',
-            angle: 'Data/insight driven',
-            hook: 'Why do compilers and runtime engines care so much about recursion? It comes down to stack memory vs heap memory.',
-            body: 'When a function executes, its local variables live in a dedicated stack frame (typically a few kilobytes).\n\nIn standard iterative loops:\n• Memory is reused in place: O(1) auxiliary space.\n\nIn recursive functions without tail-call optimization:\n• Depth D means D separate stack frames held simultaneously: O(D) auxiliary space.\n\nAt a recursion depth of 10,000, you are holding 10,000 stack frames in memory at the same time.\n\nThis is why modern compilers use Tail-Call Optimization (TCO)—reusing the existing stack frame when the recursive call is the very last operation—turning a recursive function into an iterative loop behind the scenes.',
-            cta: 'Does your preferred programming language support tail-call optimization?',
-          },
-        ];
-      } else if (t.includes('git')) {
-        posts = [
-          {
-            id: 'post_educational',
-            angle: 'Educational',
-            hook: 'Git is not just a tool for backing up code to the cloud. It is a distributed safety net for engineering teams.',
-            body: 'Many developers start by memorizing five commands: `add`, `commit`, `push`, `pull`, and `status`.\n\nBut Git becomes truly powerful when you understand its core architecture:\n\nGit does not store file differences or deltas. It stores complete snapshots of your project in a Directed Acyclic Graph (DAG) of cryptographic commits.\n\nBecause every commit has a unique SHA hash pointing back to its parent, you have an immutable, mathematically verifiable history of every line of code ever written.\n\nOnce you grasp that Git is just a graph of commits and branches are just pointers, merge conflicts stop being terrifying.',
-            cta: 'How long did you use Git before you truly felt comfortable with branching and merging?',
-          },
-          {
-            id: 'post_contrarian',
-            angle: 'Contrarian/question-driven',
-            hook: 'If your git commit messages look like "fixed bug", "wip", and "updates", you are defeating the entire purpose of version control.',
-            body: 'Version control is not a backup drive. It is a communication tool for your future self and your teammates.\n\nWhen a production incident happens six months from now, `git blame` should reveal why a decision was made, what trade-offs were considered, and what issue was being resolved.\n\nA great commit message tells the story:\n- Short summary of the change\n- Why the change was necessary\n- Any non-obvious side effects\n\nWriting clean commits is one of the highest-leverage habits any software engineer can build.',
-            cta: 'What is your team\'s rule for writing commit messages and PR descriptions?',
-          },
-          {
-            id: 'post_storytelling',
-            angle: 'Storytelling',
-            hook: 'The command that transformed me from an anxious Git user into a confident engineer was `git reflog`.',
-            body: 'Early in my career, I accidentally ran a hard reset on the wrong branch and watched two days of unpushed feature work vanish from my editor.\n\nI thought the code was gone forever.\n\nThen a senior engineer showed me `git reflog`—a ledger that tracks every single head movement across your local repository, even commits orphaned by resets or deleted branches.\n\nWithin 30 seconds, we located the orphaned commit hash, checked it out, and restored the branch.\n\nGit is almost impossible to truly break if you have committed your changes. It is designed from the ground up to never lose data.',
-            cta: 'What Git command or feature saved you from a near disaster?',
-          },
-          {
-            id: 'post_practical',
-            angle: 'Practical/step-by-step',
-            hook: '3 Git commands that every developer should learn beyond `git push` and `git pull`:',
-            body: '1. `git bisect`\nWhen a regression appears in production and you have 200 commits since the last release, `git bisect` performs an automated binary search through the commit graph to find the exact commit that broke the build.\n\n2. `git stash -u`\nQuickly switch context without committing half-finished work. The `-u` flag ensures untracked new files are saved alongside your tracked changes.\n\n3. `git diff --stat`\nBefore committing, get a concise overview of which files changed and how many lines were inserted or deleted.\n\nMastering your development tools saves hours of debugging frustration every single week.',
-            cta: 'Which Git command do you rely on most during complex debugging sessions?',
-          },
-          {
-            id: 'post_data',
-            angle: 'Data/insight driven',
-            hook: 'Why did Git dominate the software industry and replace older tools like SVN and CVS? Distributed architecture.',
-            body: 'In older centralized version control systems (like Subversion):\n• Every commit required an active network connection to a central server.\n• Branching meant copying entire directory trees, taking minutes and consuming heavy server storage.\n• If the central server went down, development came to a standstill.\n\nIn Git:\n• Every cloned repository is a complete, standalone backup with full history.\n• A branch is a tiny 41-byte pointer referencing a commit SHA hash—making branch creation instantaneous.\n• Commits, diffs, and logs run 100% locally at microsecond speeds.\n\nSpeed and decentralization changed how the world writes software.',
-            cta: 'Do you remember the transition from centralized version control to Git? Share your experience below.',
-          },
-        ];
-      } else if (t.includes('cpu') || t.includes('instruction')) {
-        posts = [
-          {
-            id: 'post_educational',
-            angle: 'Educational',
-            hook: 'At 3.5 GHz, your processor executes billions of instructions every single second. Here is what actually happens during each instruction cycle:',
-            body: 'Every single line of software you write compiles down to machine code instructions. Inside the silicon, execution follows the fundamental Fetch-Decode-Execute cycle:\n\n1. FETCH: The Program Counter (PC) register points to the next instruction in memory or cache. That bitfield is fetched into the Instruction Register.\n\n2. DECODE: The Control Unit analyzes the opcode bits. It determines which operation to perform (add, compare, jump) and identifies the operand registers.\n\n3. EXECUTE: The Arithmetic Logic Unit (ALU) or control logic executes the electrical calculation. The result is written back to high-speed registers or queued for memory writeback.\n\nBillions of microscopic transistors switching state in perfect synchronization.',
-            cta: 'Did you learn computer architecture in school, or on the job?',
-          },
-          {
-            id: 'post_contrarian',
-            angle: 'Contrarian/question-driven',
-            hook: 'Why should a modern high-level software developer care about how a CPU executes instructions?',
-            body: 'Because your code does not run in the cloud. It runs on silicon.\n\nWhen you understand that reading from L1 cache takes 1 nanosecond while fetching from main RAM takes 50-100 nanoseconds, you write code with better memory locality.\n\nWhen you know how branch predictors work, you understand why sorting an array before filtering can speed up a loop by 3x.\n\nHigh-level abstractions are wonderful, but the engineers who build resilient, ultra-fast systems understand the machine beneath the code.',
-            cta: 'Do you consider hardware architecture when optimizing backend software?',
-          },
-          {
-            id: 'post_storytelling',
-            angle: 'Storytelling',
-            hook: 'The first time I saw the legendary "Why is processing a sorted array faster than processing an unsorted array?" benchmark, my mind was blown.',
-            body: 'A developer noticed that iterating over an array and summing numbers greater than 128 took 11 seconds when the array was random, but only 4 seconds when the array was sorted.\n\nThe algorithm was identical. The data was identical.\n\nThe difference was CPU branch prediction:\n\nModern CPUs pipeline instructions dozens of cycles ahead. When they hit an `if` condition, the branch predictor guesses which path the code will take so execution does not stall.\n\nWith sorted data, the CPU guessed right every time. With unsorted data, branch mispredictions forced the CPU to flush its pipeline over and over again.\n\nHardware matters more than most software developers realize.',
-            cta: 'Have you ever encountered a performance anomaly caused by hardware-level branch prediction or caching?',
-          },
-          {
-            id: 'post_practical',
-            angle: 'Practical/step-by-step',
-            hook: 'The 3 core components inside a CPU that turn electrical current into software execution:',
-            body: '1. The Control Unit (CU)\nThe orchestrator. It decodes incoming binary opcodes and sends electrical control signals to activate registers and data pathways.\n\n2. The Arithmetic Logic Unit (ALU)\nThe calculator. It performs binary addition, bitwise AND/OR operations, and numerical comparisons.\n\n3. The Registers\nThe fastest storage in existence. Located directly on the processor die, registers hold immediate operands and memory pointers with sub-nanosecond access latency.\n\nUnderstanding these three pieces clarifies everything from assembly code to high-level concurrency.',
-            cta: 'Save this post if you want a clean mental model of processor architecture.',
-          },
-          {
-            id: 'post_data',
-            angle: 'Data/insight driven',
-            hook: 'The memory hierarchy inside your computer explains why latency numbers are so stark:',
-            body: 'Access times across computer hardware, converted to human scale:\n\n• CPU Registers: ~0.5 nanoseconds (equivalent to 1 second)\n• L1 CPU Cache: ~1 nanosecond (equivalent to 2 seconds)\n• L2 CPU Cache: ~4 nanoseconds (equivalent to 8 seconds)\n• L3 CPU Cache: ~10 nanoseconds (equivalent to 20 seconds)\n• Main RAM: ~100 nanoseconds (equivalent to 3.3 minutes)\n• NVMe SSD Read: ~100,000 nanoseconds (equivalent to 2.3 days)\n\nEvery time your CPU has to wait on memory because an instruction or data was not in cache, execution stalls.\n\nWriting mechanical sympathy into software is the ultimate performance superpower.',
-            cta: 'How does memory latency factor into your system architecture design?',
-          },
-        ];
-      } else if (t.includes('sleep') || t.includes('productivity')) {
-        posts = [
-          {
-            id: 'post_educational',
-            angle: 'Educational',
-            hook: 'Treating sleep as the enemy of productivity is a biological mistake.',
-            body: 'Many professionals view sleep as downtime—hours stolen from work. Neuroscience shows the exact opposite:\n\nDuring deep slow-wave sleep, your brain\'s glymphatic system opens up, circulating cerebrospinal fluid to flush metabolic waste accumulated during the day.\n\nDuring REM sleep, your hippocampus replays the day\'s experiences, consolidating short-term working memories into durable long-term neural connections and integrating complex problem-solving patterns.\n\nSleep is not when your brain shuts off. It is when your brain cleans its hardware and updates its software.',
-            cta: 'How does your sleep quality directly affect your focus and decision-making the next day?',
-          },
-          {
-            id: 'post_contrarian',
-            angle: 'Contrarian/question-driven',
-            hook: 'The "hustle culture" badge of honor for sleeping 4 hours a night is actually a recipe for low-quality output.',
-            body: 'We glorify working through the night, yet we would never let an intoxicated person deploy production code or make critical executive decisions.\n\nResearch from the National Institutes of Health and sleep researchers reveals that 24 hours of wakefulness degrades cognitive psychomotor performance to levels comparable to legal intoxication.\n\nWhen you cut sleep to gain two extra hours of work, you spend the next day:\n• Making careless errors\n• Taking 3x longer to solve complex problems\n• Struggling with emotional reactivity in meetings\n\nHigh performers do not sleep less to work more. They sleep consistently so every hour they spend working is sharp and decisive.',
-            cta: 'Have you ever noticed your best ideas arriving after a solid night of rest rather than late-night grind sessions?',
-          },
-          {
-            id: 'post_storytelling',
-            angle: 'Storytelling',
-            hook: 'I used to believe that debugging late into the night showed dedication. A single experience completely cured me of that mindset.',
-            body: 'I was tracking down a nasty concurrency race condition. At 1:30 AM, after four hours of staring at logs, I was convinced our entire architecture had a critical flaw.\n\nI went to bed frustrated.\n\nThe next morning, after eight hours of sleep and a glass of water, I sat down at my desk.\n\nWithin seven minutes, I spotted the bug: an unhandled edge case in an event handler that I had scanned 50 times the night before with tired eyes.\n\nThe problem had not changed. My prefrontal cortex had.\n\nSometimes the most productive thing you can do for a stuck problem is to step away and go to sleep.',
-            cta: 'Has a good night\'s sleep ever solved a problem you spent hours grinding on the night before?',
-          },
-          {
-            id: 'post_practical',
-            angle: 'Practical/step-by-step',
-            hook: '4 science-backed sleep habits that immediately improve morning focus and cognitive stamina:',
-            body: '1. Consistent Wake Time\nYour circadian clock anchors to when you wake up, not when you go to bed. Keeping your wake time consistent across weekdays and weekends regulates melatonin release.\n\n2. Morning Sunlight Exposure\nViewing natural light within 30 minutes of waking triggers a healthy cortisol pulse and sets an internal timer for evening sleepiness.\n\n3. Caffeine Cutoff Window\nCaffeine has a half-life of 5-7 hours. Consuming caffeine past 2 PM prevents adenosine clearance and reduces deep restorative slow-wave sleep, even if you fall asleep easily.\n\n4. Dark, Cool Sleeping Environment\nYour core body temperature must drop by 1-2 degrees Fahrenheit to initiate sleep. Keep your bedroom cool and pitch dark for deeper sleep cycles.\n\nProtect your biological foundation if you want sustained professional performance.',
-            cta: 'Which of these sleep habits do you find easiest or hardest to maintain?',
-          },
-          {
-            id: 'post_data',
-            angle: 'Data/insight driven',
-            hook: 'The neurological reality of sleep debt: why you cannot "catch up" on the weekend without consequences.',
-            body: 'Adenosine accumulates in your brain during every minute you are awake. This creates "homeostatic sleep pressure."\n\nWhen you cut sleep short, residual adenosine remains bound to receptors. While caffeine blocks those receptors temporarily, the underlying sleep debt persists.\n\nStudies from the National Institutes of Health demonstrate:\n• Chronic restriction to 6 hours of sleep over two weeks produces cognitive deficits equivalent to two full nights of total sleep deprivation.\n• The prefrontal cortex—responsible for executive function, impulse control, and strategic planning—shows the sharpest drop in metabolic activity.\n\nProductivity is not measured in hours awake. It is measured in high-quality cognitive output produced per hour.',
-            cta: 'How do you prioritize sleep during demanding project deadlines?',
-          },
-        ];
-      } else {
-        // Universal dynamic fallback for any other topic: 5 high quality human posts
-        posts = [
-          {
-            id: 'post_educational',
-            angle: 'Educational',
-            hook: `Most people understand ${rawTopic} only on the surface. Here is how the core mechanics actually operate:`,
-            body: `When exploring ${rawTopic}, the key is looking past surface-level definitions to examine foundational principles.\n\nFirst, consider the core constraints. Every system balances competing priorities between speed, simplicity, and long-term maintainability.\n\nSecond, observe the operational mechanics in practice. Understanding the underlying rules allows practitioners to anticipate outcomes rather than reacting to surprises.\n\nMastering the basics is what separates amateurs from experienced practitioners.`,
-            cta: `What was your biggest breakthrough when learning ${rawTopic}?`,
-          },
-          {
-            id: 'post_contrarian',
-            angle: 'Contrarian/question-driven',
-            hook: `The conventional wisdom around ${rawTopic} often misses the most important constraint.`,
-            body: `We frequently see industry advice urging practitioners to apply one-size-fits-all formulas to ${rawTopic}.\n\nIn reality, context dictates everything. What works for an early-stage project often introduces severe friction when applied at scale, and vice versa.\n\nBefore adopting standard advice, ask: what specific trade-offs are we accepting, and what assumptions are we making about our operating environment?\n\nCritical thinking beats dogma every single time.`,
-            cta: `Do you agree or disagree with this perspective? Share your take below.`,
-          },
-          {
-            id: 'post_storytelling',
-            angle: 'Storytelling',
-            hook: `Early in my journey with ${rawTopic}, an unexpected challenge taught me a lesson I will never forget.`,
-            body: `We were working through a complex implementation where everything appeared sound on paper.\n\nYet as soon as real-world conditions took over, unexpected edge cases began compounding. What seemed like a minor technical oversight quickly created friction across the entire workflow.\n\nTaking a step back to re-examine first principles allowed us to restructure the solution cleanly.\n\nExperience is what you get right after you needed it most.`,
-            cta: `Have you ever had an experience that fundamentally reshaped how you approach your work?`,
-          },
-          {
-            id: 'post_practical',
-            angle: 'Practical/step-by-step',
-            hook: `A clear 3-step framework for approaching ${rawTopic} effectively:`,
-            body: `1. Define the Core Objectives\nBefore making tactical decisions, establish unambiguous success metrics and define non-negotiable boundaries.\n\n2. Evaluate Known Trade-offs\nEvery decision has an opportunity cost. Explicitly identify what you are optimizing for and what you are willing to de-prioritize.\n\n3. Iterate Based on Observable Feedback\nImplement incrementally, observe real behavior, and refine continuously.\n\nSimplicity and consistency outperform complicated setups every time.`,
-            cta: `Save this framework for your next planning session.`,
-          },
-          {
-            id: 'post_data',
-            angle: 'Data/insight driven',
-            hook: `When you analyze ${rawTopic} through first principles, the decision criteria become clear:`,
-            body: `Effective decision making requires measuring the right indicators rather than relying on intuition alone.\n\nBy tracking core constraints and evaluating historical outcomes, teams reduce uncertainty and build resilient solutions.\n\nFocus on verifiable fundamentals rather than short-lived trends.`,
-            cta: `How do you measure success in this area within your organization?`,
-          },
-        ];
-      }
+      const iterationMatch = prompt.match(/ITERATION:\s*(\d+)/i);
+      const iteration = iterationMatch ? parseInt(iterationMatch[1], 10) : 1;
+      const isRevision = iteration > 1 || lowerPrompt.includes('critical revision instructions');
 
-      return schema.parse({ posts });
+      const parsedResearch = parseResearchFromPrompt(prompt);
+      const parsedStrategy = parseStrategyFromPrompt(prompt);
+      const posts = getMockLinkedInPosts(
+        rawTopic,
+        requestedTone,
+        iteration,
+        isRevision,
+        parsedResearch,
+        parsedStrategy
+      );
+      return schema.parse(posts);
     }
 
     // ---------------------------------------------------------
-    // 5. WRITER AGENT - INSTAGRAM REEL
+    // 6. WRITER AGENT - INSTAGRAM REEL
     // ---------------------------------------------------------
     if (
       lowerPrompt.includes('platform: instagram_reel') ||
@@ -924,44 +1779,117 @@ export class MockLLMProvider implements LLMProvider {
         prompt.match(/TOPIC:\s*([^\n\r]+)/i);
       const rawTopic = topicMatch ? topicMatch[1].trim() : 'Computer Science Fundamentals';
 
-      const mockReel = {
-        title: `The Truth About ${rawTopic}`,
-        estimatedDuration: '45 seconds',
-        hook: `Think you understand ${rawTopic}? Here is the one concept most people get completely wrong.`,
-        sections: [
-          {
-            timestamp: '0–3 sec',
-            visual: `Presenter looks directly into camera with high energy and bold question on screen.`,
-            voiceover: `If you want to truly master ${rawTopic}, you have to understand what is happening beneath the surface.`,
-            onScreenText: `THE REAL TRUTH 💡`,
-          },
-          {
-            timestamp: '3–15 sec',
-            visual: `Dynamic diagram illustrating the core mechanics and contrasting two distinct approaches.`,
-            voiceover: `Most people focus on surface syntax or memorizing steps. But the real breakthrough comes from understanding memory, trade-offs, and constraints.`,
-            onScreenText: `Trade-offs > Syntax ⚙️`,
-          },
-          {
-            timestamp: '15–30 sec',
-            visual: `Clear, relatable visual comparison showing how the right approach saves massive effort.`,
-            voiceover: `When you pick the right model from day one, you avoid hours of debugging and performance bottlenecks later.`,
-            onScreenText: `Smart Architecture Saves Hours 🚀`,
-          },
-          {
-            timestamp: '30–45 sec',
-            visual: `Presenter smiling, pointing to caption indicator with clear takeaway badge.`,
-            voiceover: `Save this breakdown, drop a comment with your favorite approach, and follow for more technical deep dives!`,
-            onScreenText: `Save This Video! 📌`,
-          },
-        ],
-        cta: `Drop a comment with your perspective on this topic!`,
-      };
+      const toneMatch = prompt.match(/TONE:\s*([^\n\r]+)/i);
+      const requestedTone = toneMatch ? toneMatch[1].trim() : 'Professional';
 
-      return schema.parse(mockReel);
+      const iterationMatch = prompt.match(/ITERATION:\s*(\d+)/i);
+      const iteration = iterationMatch ? parseInt(iterationMatch[1], 10) : 1;
+      const isRevision = iteration > 1 || lowerPrompt.includes('critical revision instructions');
+
+      const parsedResearch = parseResearchFromPrompt(prompt);
+      const reel = getMockReelScript(rawTopic, requestedTone, iteration, isRevision, parsedResearch);
+      return schema.parse(reel);
     }
 
     throw new Error(
       `MockLLMProvider could not identify prompt schema structure: ${prompt.substring(0, 100)}`
+    );
+  }
+}
+
+// Google Gemini LLM Provider (Native REST with JSON Structured Output)
+export class GeminiLLMProvider implements LLMProvider {
+  name = 'gemini';
+  private apiKey: string;
+  private model: string;
+
+  constructor(apiKey?: string, model?: string) {
+    this.apiKey = apiKey || env.LLM_API_KEY || process.env.GEMINI_API_KEY || '';
+    this.model =
+      model ||
+      (env.LLM_MODEL && env.LLM_MODEL !== 'gpt-4o-mini'
+        ? env.LLM_MODEL
+        : 'gemini-1.5-flash');
+  }
+
+  async generateStructured<T>(
+    prompt: string,
+    schema: ZodType<T, any, any>,
+    options?: LLMGenerateOptions
+  ): Promise<T> {
+    if (!this.apiKey) {
+      throw new Error(
+        'Gemini API Key is missing. Set LLM_API_KEY or GEMINI_API_KEY in environment variables.'
+      );
+    }
+
+    const systemPrompt =
+      options?.systemPrompt ||
+      'You are an expert technical writer and AI assistant that always returns valid JSON adhering to specifications.';
+    const temperature = options?.temperature ?? 0.2;
+    const maxRetries = options?.maxRetries ?? 2;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
+      this.model
+    )}:generateContent?key=${encodeURIComponent(this.apiKey)}`;
+
+    const body: any = {
+      contents: [
+        {
+          role: 'user',
+          parts: [{ text: prompt }],
+        },
+      ],
+      systemInstruction: {
+        parts: [{ text: systemPrompt }],
+      },
+      generationConfig: {
+        temperature,
+        responseMimeType: 'application/json',
+      },
+    };
+
+    let lastError: any = null;
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        if (!response.ok) {
+          const errBody = await response.text();
+          throw new Error(`Gemini API error (${response.status}): ${errBody}`);
+        }
+
+        const data = (await response.json()) as any;
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!text) {
+          throw new Error('Empty response from Gemini API');
+        }
+
+        const cleanedJson = extractJsonFromText(text);
+        const parsed = JSON.parse(cleanedJson);
+        const validated = schema.safeParse(parsed);
+
+        if (validated.success) {
+          return validated.data;
+        } else {
+          lastError = new Error(
+            `JSON schema validation error: ${JSON.stringify(validated.error.format())}`
+          );
+        }
+      } catch (err: any) {
+        lastError = err;
+        if (attempt < maxRetries) {
+          await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+        }
+      }
+    }
+
+    throw new Error(
+      `Failed to generate valid structured LLM output from Gemini after ${maxRetries + 1} attempts: ${lastError?.message}`
     );
   }
 }
@@ -1055,6 +1983,16 @@ export function createLLMProvider(): LLMProvider {
       return new MockLLMProvider();
     }
     return new OpenAILLMProvider();
+  }
+
+  if (provider === 'gemini') {
+    if (!env.LLM_API_KEY && !process.env.GEMINI_API_KEY) {
+      console.warn(
+        '[LLM Provider] LLM_PROVIDER is "gemini" but neither LLM_API_KEY nor GEMINI_API_KEY is set. Falling back to MockLLMProvider.'
+      );
+      return new MockLLMProvider();
+    }
+    return new GeminiLLMProvider();
   }
 
   // Default to robust Mock provider

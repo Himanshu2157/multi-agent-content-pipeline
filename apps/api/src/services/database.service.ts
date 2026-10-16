@@ -49,6 +49,8 @@ export interface DatabaseAdapter {
     iteration: number;
     platform: Platform;
     content: any;
+    contentHash?: string;
+    revisionNotes?: string[];
   }): Promise<ContentDraftDTO>;
 
   saveCriticReview(data: {
@@ -58,16 +60,21 @@ export interface DatabaseAdapter {
     approved: boolean;
     score: number;
     topicFidelity?: number;
+    toneMatch?: number;
     factualAccuracy: number;
     relevance: number;
     platformFit: number;
     clarity: number;
     originality: number;
+    usefulness?: number;
     naturalness?: number;
+    scriptQuality?: number;
+    narrativeQuality?: number;
     noFabricatedExperience?: boolean;
     noFabricatedStatistics?: boolean;
     issues: any[];
     requiredChanges: string[];
+    postReviews?: any[];
   }): Promise<CriticReviewDTO>;
 
   recordAgentExecution(data: {
@@ -253,6 +260,8 @@ class MemoryDatabaseStore implements DatabaseAdapter {
     iteration: number;
     platform: Platform;
     content: any;
+    contentHash?: string;
+    revisionNotes?: string[];
   }): Promise<ContentDraftDTO> {
     const id = `draft_${crypto.randomUUID()}`;
     const draft: ContentDraftDTO = {
@@ -261,6 +270,8 @@ class MemoryDatabaseStore implements DatabaseAdapter {
       iteration: data.iteration,
       platform: data.platform,
       content: data.content,
+      contentHash: data.contentHash,
+      revisionNotes: data.revisionNotes,
       createdAt: new Date().toISOString(),
     };
     this.drafts.set(id, draft);
@@ -274,16 +285,21 @@ class MemoryDatabaseStore implements DatabaseAdapter {
     approved: boolean;
     score: number;
     topicFidelity?: number;
+    toneMatch?: number;
     factualAccuracy: number;
     relevance: number;
     platformFit: number;
     clarity: number;
     originality: number;
+    usefulness?: number;
     naturalness?: number;
+    scriptQuality?: number;
+    narrativeQuality?: number;
     noFabricatedExperience?: boolean;
     noFabricatedStatistics?: boolean;
     issues: any[];
     requiredChanges: string[];
+    postReviews?: any[];
   }): Promise<CriticReviewDTO> {
     const id = `rev_${crypto.randomUUID()}`;
     const review: CriticReviewDTO = {
@@ -294,16 +310,21 @@ class MemoryDatabaseStore implements DatabaseAdapter {
       approved: data.approved,
       score: data.score,
       topicFidelity: data.topicFidelity !== undefined ? data.topicFidelity : 100,
+      toneMatch: data.toneMatch !== undefined ? data.toneMatch : 90,
       factualAccuracy: data.factualAccuracy,
       relevance: data.relevance,
       platformFit: data.platformFit,
       clarity: data.clarity,
       originality: data.originality,
+      usefulness: data.usefulness !== undefined ? data.usefulness : 90,
       naturalness: data.naturalness !== undefined ? data.naturalness : 90,
+      scriptQuality: data.scriptQuality,
+      narrativeQuality: data.narrativeQuality,
       noFabricatedExperience: data.noFabricatedExperience !== undefined ? data.noFabricatedExperience : true,
       noFabricatedStatistics: data.noFabricatedStatistics !== undefined ? data.noFabricatedStatistics : true,
       issues: data.issues,
       requiredChanges: data.requiredChanges,
+      postReviews: data.postReviews,
       createdAt: new Date().toISOString(),
     };
     this.criticReviews.set(id, review);
@@ -614,6 +635,8 @@ class PrismaDatabaseAdapter implements DatabaseAdapter {
         iteration: d.iteration,
         platform: d.platform as Platform,
         content: d.content,
+        contentHash: d.contentHash || undefined,
+        revisionNotes: (d.revisionNotes as string[]) || undefined,
         createdAt: d.createdAt.toISOString(),
       })),
       criticReviews: g.criticReviews.map((r: any) => ({
@@ -624,12 +647,16 @@ class PrismaDatabaseAdapter implements DatabaseAdapter {
         approved: r.approved,
         score: r.score,
         topicFidelity: r.topicFidelity,
+        toneMatch: r.toneMatch !== undefined ? r.toneMatch : 90,
         factualAccuracy: r.factualAccuracy,
         relevance: r.relevance,
         platformFit: r.platformFit,
         clarity: r.clarity,
         originality: r.originality,
+        usefulness: r.usefulness !== undefined ? r.usefulness : 90,
         naturalness: r.naturalness,
+        scriptQuality: r.scriptQuality !== undefined ? r.scriptQuality : undefined,
+        narrativeQuality: r.narrativeQuality !== undefined ? r.narrativeQuality : undefined,
         noFabricatedExperience: r.noFabricatedExperience,
         noFabricatedStatistics: r.noFabricatedStatistics,
         issues: r.issues as any[],
@@ -713,6 +740,8 @@ class PrismaDatabaseAdapter implements DatabaseAdapter {
     iteration: number;
     platform: Platform;
     content: any;
+    contentHash?: string;
+    revisionNotes?: string[];
   }): Promise<ContentDraftDTO> {
     const d = await prisma.contentDraft.create({
       data: {
@@ -720,6 +749,8 @@ class PrismaDatabaseAdapter implements DatabaseAdapter {
         iteration: data.iteration,
         platform: data.platform as any,
         content: data.content as any,
+        contentHash: data.contentHash || null,
+        revisionNotes: (data.revisionNotes as any) || null,
       },
     });
 
@@ -729,6 +760,8 @@ class PrismaDatabaseAdapter implements DatabaseAdapter {
       iteration: d.iteration,
       platform: d.platform as Platform,
       content: d.content as any,
+      contentHash: d.contentHash || undefined,
+      revisionNotes: (d.revisionNotes as string[]) || undefined,
       createdAt: d.createdAt.toISOString(),
     };
   }
@@ -740,16 +773,21 @@ class PrismaDatabaseAdapter implements DatabaseAdapter {
     approved: boolean;
     score: number;
     topicFidelity?: number;
+    toneMatch?: number;
     factualAccuracy: number;
     relevance: number;
     platformFit: number;
     clarity: number;
     originality: number;
+    usefulness?: number;
     naturalness?: number;
+    scriptQuality?: number;
+    narrativeQuality?: number;
     noFabricatedExperience?: boolean;
     noFabricatedStatistics?: boolean;
     issues: any[];
     requiredChanges: string[];
+    postReviews?: any[];
   }): Promise<CriticReviewDTO> {
     const r = await prisma.criticReview.create({
       data: {
@@ -759,12 +797,16 @@ class PrismaDatabaseAdapter implements DatabaseAdapter {
         approved: data.approved,
         score: data.score,
         topicFidelity: data.topicFidelity !== undefined ? data.topicFidelity : 100,
+        toneMatch: data.toneMatch !== undefined ? data.toneMatch : 90,
         factualAccuracy: data.factualAccuracy,
         relevance: data.relevance,
         platformFit: data.platformFit,
         clarity: data.clarity,
         originality: data.originality,
+        usefulness: data.usefulness !== undefined ? data.usefulness : 90,
         naturalness: data.naturalness !== undefined ? data.naturalness : 90,
+        scriptQuality: data.scriptQuality !== undefined ? data.scriptQuality : null,
+        narrativeQuality: data.narrativeQuality !== undefined ? data.narrativeQuality : null,
         noFabricatedExperience: data.noFabricatedExperience !== undefined ? data.noFabricatedExperience : true,
         noFabricatedStatistics: data.noFabricatedStatistics !== undefined ? data.noFabricatedStatistics : true,
         issues: data.issues as any,
@@ -780,16 +822,21 @@ class PrismaDatabaseAdapter implements DatabaseAdapter {
       approved: r.approved,
       score: r.score,
       topicFidelity: r.topicFidelity,
+      toneMatch: r.toneMatch,
       factualAccuracy: r.factualAccuracy,
       relevance: r.relevance,
       platformFit: r.platformFit,
       clarity: r.clarity,
       originality: r.originality,
+      usefulness: r.usefulness,
       naturalness: r.naturalness,
+      scriptQuality: r.scriptQuality !== null ? r.scriptQuality : undefined,
+      narrativeQuality: r.narrativeQuality !== null ? r.narrativeQuality : undefined,
       noFabricatedExperience: r.noFabricatedExperience,
       noFabricatedStatistics: r.noFabricatedStatistics,
       issues: r.issues as any[],
       requiredChanges: r.requiredChanges as string[],
+      postReviews: data.postReviews,
       createdAt: r.createdAt.toISOString(),
     };
   }

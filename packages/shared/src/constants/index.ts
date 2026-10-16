@@ -46,6 +46,22 @@ export const LINKEDIN_ANGLES = [
   'Data/insight driven',
 ] as const;
 
+export const POST_CATEGORIES = {
+  EDUCATIONAL: 'Educational',
+  CONTRARIAN: 'Contrarian / Question-Driven',
+  STORYTELLING: 'Storytelling / Case Study',
+  PRACTICAL: 'Practical / Step-by-Step',
+  INSIGHT: 'Insight-Driven',
+} as const;
+
+export const MANDATORY_POST_CATEGORIES = [
+  'Educational',
+  'Contrarian / Question-Driven',
+  'Storytelling / Case Study',
+  'Practical / Step-by-Step',
+  'Insight-Driven',
+] as const;
+
 export const DEFAULT_MAX_ITERATIONS = 3;
 export const MIN_ITERATIONS = 1;
 export const MAX_ITERATIONS = 5;

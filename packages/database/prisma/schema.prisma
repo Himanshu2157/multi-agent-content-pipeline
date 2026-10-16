@@ -110,6 +110,8 @@ model ContentDraft {
   iteration     Int
   content       Json              // WriterOutput (LinkedInOutput or InstagramReelOutput)
   platform      Platform
+  contentHash   String?
+  revisionNotes Json?             // string[]
   createdAt     DateTime          @default(now())
   generation    ContentGeneration @relation(fields: [generationId], references: [id], onDelete: Cascade)
   criticReviews CriticReview[]
@@ -126,12 +128,16 @@ model CriticReview {
   approved               Boolean
   score                  Float
   topicFidelity          Float              @default(100)
+  toneMatch              Float              @default(90)
   factualAccuracy        Float
   relevance              Float
   platformFit            Float
   clarity                Float
   originality            Float
+  usefulness             Float              @default(90)
   naturalness            Float              @default(90)
+  scriptQuality          Float?
+  narrativeQuality       Float?
   noFabricatedExperience Boolean            @default(true)
   noFabricatedStatistics Boolean            @default(true)
   issues                 Json               // Array<{ type: string, severity: string, description: string }>

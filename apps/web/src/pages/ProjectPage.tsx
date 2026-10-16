@@ -10,6 +10,9 @@ import {
   ShieldCheck,
   CheckCircle2,
   Share2,
+  ArrowDown,
+  Sparkles,
+  Hash,
 } from 'lucide-react';
 import { api } from '../services/api.js';
 import { AgentPipelineTracker } from '../components/AgentPipelineTracker.js';
@@ -367,61 +370,128 @@ export const ProjectPage: React.FC = () => {
 
           {activeTab === 'history' && (
             <div className="space-y-6">
-              <h3 className="text-base font-bold text-white mb-4">
-                Self-Refinement Audit Trail
-              </h3>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-bold text-white">
+                    Autonomous Multi-Agent Refinement Audit Trail
+                  </h3>
+                  <p className="text-xs text-forge-400 mt-0.5">
+                    Verified trail showing drafts, critic rejections, and how the Writer agent refined each cycle.
+                  </p>
+                </div>
+                <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-forge-900 border border-forge-800 text-forge-300">
+                  {drafts.length} Cycles Completed
+                </span>
+              </div>
+
               <div className="space-y-4">
-                {drafts.map((draftItem) => {
+                {drafts.map((draftItem, idx) => {
                   const revItem = reviews.find((r) => r.iteration === draftItem.iteration);
                   return (
-                    <div
-                      key={draftItem.iteration}
-                      className="p-5 rounded-2xl bg-forge-900/50 border border-forge-800"
-                    >
-                      <div className="flex items-center justify-between pb-3 mb-3 border-b border-forge-800">
-                        <div className="flex items-center gap-2">
-                          <span className="px-2.5 py-0.5 rounded text-xs font-bold bg-forge-800 text-forge-300">
-                            Cycle {draftItem.iteration}
+                    <React.Fragment key={draftItem.iteration}>
+                      {idx > 0 && (
+                        <div className="flex items-center justify-center my-2 text-xs font-mono text-brand-400 font-bold gap-2">
+                          <div className="h-px bg-forge-800 flex-1" />
+                          <span className="px-3 py-1 rounded-full bg-forge-900/90 border border-brand-500/30 flex items-center gap-1.5 shadow-sm text-[11px]">
+                            <ArrowDown className="w-3.5 h-3.5 text-brand-400 shrink-0" />
+                            AUTONOMOUS REVISION CYCLE &bull; ADDRESSING CRITIC FEEDBACK
                           </span>
-                          <span className="text-xs text-forge-400">
-                            Generated at {new Date(draftItem.createdAt).toLocaleTimeString()}
-                          </span>
-                        </div>
-                        {revItem && (
-                          <span
-                            className={cn(
-                              'text-xs font-bold px-2.5 py-0.5 rounded-full',
-                              revItem.approved
-                                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                                : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                            )}
-                          >
-                            Score: {revItem.score}/100 &bull; {revItem.approved ? 'Approved' : 'Rejected'}
-                          </span>
-                        )}
-                      </div>
-
-                      {revItem && !revItem.approved && revItem.issues.length > 0 && (
-                        <div className="mb-4 p-3 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-amber-300">
-                          <strong className="block text-amber-200 mb-1">Critic Feedback Dispatched:</strong>
-                          <ul className="list-disc pl-4 space-y-1">
-                            {revItem.issues.map((iss, i) => (
-                              <li key={i}>{iss.description}</li>
-                            ))}
-                          </ul>
+                          <div className="h-px bg-forge-800 flex-1" />
                         </div>
                       )}
 
-                      <button
-                        onClick={() => {
-                          setSelectedIteration(draftItem.iteration);
-                          setActiveTab('content');
-                        }}
-                        className="text-xs font-bold text-brand-400 hover:text-brand-300 transition-colors"
-                      >
-                        Inspect Full Draft &rarr;
-                      </button>
-                    </div>
+                      <div className="p-5 rounded-2xl bg-forge-900/50 border border-forge-800 space-y-3.5 hover:border-forge-700/80 transition-all shadow-md">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-forge-800/80 gap-2">
+                          <div className="flex items-center gap-2.5">
+                            <span className="px-2.5 py-0.5 rounded text-xs font-bold bg-forge-800 text-brand-300 border border-forge-700">
+                              Iteration {draftItem.iteration}
+                            </span>
+                            {draftItem.contentHash && (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-mono text-forge-400 bg-forge-950 px-2 py-0.5 rounded border border-forge-800">
+                                <Hash className="w-3 h-3 text-forge-500" />
+                                SHA: {draftItem.contentHash.substring(0, 8)}
+                              </span>
+                            )}
+                            <span className="text-xs text-forge-400">
+                              {new Date(draftItem.createdAt).toLocaleTimeString()}
+                            </span>
+                          </div>
+
+                          {revItem && (
+                            <span
+                              className={cn(
+                                'text-xs font-bold px-3 py-1 rounded-full inline-flex items-center gap-1.5 self-start sm:self-auto',
+                                revItem.approved
+                                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                  : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                              )}
+                            >
+                              {revItem.approved ? (
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                              ) : (
+                                <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                              )}
+                              Score: {revItem.score}/100 &bull; {revItem.approved ? 'Critic Approved' : 'Critic Rejected (Revision Required)'}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Identified Critic Concerns for this cycle */}
+                        {revItem && !revItem.approved && revItem.issues.length > 0 && (
+                          <div className="p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-amber-300 space-y-1.5">
+                            <strong className="block text-amber-200 font-semibold flex items-center gap-1.5">
+                              <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                              Critic Concerns Identified (Dispatched to Writer):
+                            </strong>
+                            <ul className="list-disc pl-4 space-y-1 text-amber-300/90">
+                              {revItem.issues.map((iss, i) => (
+                                <li key={i}>{iss.description}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Applied Revisions on this cycle (if revision) */}
+                        {draftItem.revisionNotes && draftItem.revisionNotes.length > 0 && (
+                          <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-xs text-emerald-300 space-y-1.5">
+                            <strong className="block text-emerald-200 font-semibold flex items-center gap-1.5">
+                              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                              Revisions Applied by Writer Agent in this Draft:
+                            </strong>
+                            <ul className="list-disc pl-4 space-y-1 text-emerald-300/90">
+                              {draftItem.revisionNotes.map((note, nIdx) => (
+                                <li key={nIdx}>{note}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        <div className="flex items-center justify-between pt-1">
+                          <button
+                            onClick={() => {
+                              setSelectedIteration(draftItem.iteration);
+                              setActiveTab('content');
+                            }}
+                            className="text-xs font-bold text-brand-400 hover:text-brand-300 transition-colors cursor-pointer inline-flex items-center gap-1"
+                          >
+                            <span>Inspect Full Draft {draftItem.iteration}</span>
+                            <span>&rarr;</span>
+                          </button>
+
+                          {revItem && (
+                            <button
+                              onClick={() => {
+                                setSelectedIteration(draftItem.iteration);
+                                setActiveTab('critic');
+                              }}
+                              className="text-xs font-bold text-forge-400 hover:text-forge-200 transition-colors cursor-pointer"
+                            >
+                              View Critic Review &rarr;
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </React.Fragment>
                   );
                 })}
               </div>
