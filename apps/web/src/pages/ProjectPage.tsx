@@ -167,11 +167,11 @@ export const ProjectPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Top Navigation & Project Metadata */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-forge-700 gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-[#202C3D] gap-4">
         <div>
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-forge-400 hover:text-[#1685FF] transition-colors mb-2"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#7F8BA0] hover:text-[#1685FF] transition-colors mb-2"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Create Another Project</span>
@@ -179,11 +179,11 @@ export const ProjectPage: React.FC = () => {
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
             {project.title}
           </h1>
-          <div className="flex flex-wrap items-center gap-3 text-xs text-forge-400 mt-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-forge-900 border border-forge-700 text-forge-200 font-medium">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-[#7F8BA0] mt-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-[#111A27] border border-[#202C3D] text-[#D2D8E2] font-medium">
               {project.platform === 'LINKEDIN' ? (
                 <>
-                  <LinkedInIcon className="w-3.5 h-3.5 text-[#0A66C2]" />
+                  <LinkedInIcon className="w-3.5 h-3.5 text-[#1685FF]" />
                   <span>LinkedIn Post Pack</span>
                 </>
               ) : (
@@ -194,11 +194,11 @@ export const ProjectPage: React.FC = () => {
               )}
             </span>
             <span>&bull;</span>
-            <span>Tone: <strong className="text-forge-200">{project.tone}</strong></span>
+            <span>Tone: <strong className="text-[#F5F7FA]">{project.tone}</strong></span>
             <span>&bull;</span>
-            <span>Audience: <strong className="text-forge-200">{project.audience}</strong></span>
+            <span>Audience: <strong className="text-[#F5F7FA]">{project.audience}</strong></span>
             <span>&bull;</span>
-            <span>Max Review Cycles: <strong className="text-forge-200">{project.maxIterations}</strong></span>
+            <span>Max Review Cycles: <strong className="text-[#F5F7FA]">{project.maxIterations}</strong></span>
           </div>
         </div>
 
@@ -206,7 +206,7 @@ export const ProjectPage: React.FC = () => {
           <button
             onClick={() => startGenMutation.mutate()}
             disabled={isRunning || startGenMutation.isPending}
-            className="px-4 py-2 rounded-lg text-xs font-semibold bg-forge-900 hover:bg-forge-800 text-forge-200 hover:text-white border border-forge-700 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-card"
+            className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#111A27] hover:bg-[#151F2E] hover:border-[#35445A] text-[#AAB4C5] hover:text-white border border-[#202C3D] transition-all duration-180 flex items-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-card focus:outline-none focus:ring-1 focus:ring-[#1685FF]/50"
           >
             <RefreshCw
               className={cn('w-3.5 h-3.5', (isRunning || startGenMutation.isPending) && 'animate-spin')}
@@ -228,10 +228,10 @@ export const ProjectPage: React.FC = () => {
       {isCompleted && (
         <div
           className={cn(
-            'p-5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-card',
+            'p-5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-card',
             generation.approved
-              ? 'bg-forge-900 border-forge-700 text-forge-200'
-              : 'bg-forge-900 border-amber-500/30 text-amber-200'
+              ? 'bg-[#111A27] border-[#202C3D] text-[#D2D8E2]'
+              : 'bg-[#111A27] border-amber-500/30 text-amber-200'
           )}
         >
           <div className="flex items-start gap-3">
@@ -246,7 +246,7 @@ export const ProjectPage: React.FC = () => {
                   ? `Pipeline Complete: Approved on Iteration ${generation.currentIteration}`
                   : `Maximum Review Iterations Reached (${generation.currentIteration}/${project.maxIterations})`}
               </h4>
-              <p className="text-xs mt-0.5 text-forge-300">
+              <p className="text-xs mt-0.5 text-[#7F8BA0]">
                 {generation.approved
                   ? `The Critic Agent verified this content against ground-truth research with a quality score of ${latestReview?.score || 94}/100.`
                   : 'Maximum review iterations reached. This content is the latest generated draft and may need manual review before publication.'}
@@ -255,7 +255,7 @@ export const ProjectPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2 text-xs font-mono font-bold shrink-0">
-            <span className="px-3 py-1 rounded-lg bg-forge-950 border border-forge-700 text-forge-200">
+            <span className="px-3 py-1 rounded-xl bg-[#0B0F17] border border-[#202C3D] text-[#D2D8E2]">
               Score: {latestReview?.score || 0}/100
             </span>
           </div>
@@ -266,15 +266,15 @@ export const ProjectPage: React.FC = () => {
       {activeDraft && (
         <div className="space-y-6">
           {/* Tabs Header */}
-          <div className="flex items-center justify-between border-b border-forge-700 pb-2">
+          <div className="flex items-center justify-between border-b border-[#202C3D] pb-2">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setActiveTab('content')}
                 className={cn(
-                  'px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-2',
+                  'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-[#1685FF]/50',
                   activeTab === 'content'
-                    ? 'bg-[#0A66C2] text-white shadow-sm'
-                    : 'text-forge-400 hover:text-forge-200 hover:bg-forge-900'
+                    ? 'bg-[#0A66C2] text-white shadow-sm shadow-blue-500/20'
+                    : 'text-[#7F8BA0] hover:text-[#F5F7FA] hover:bg-[#151F2E]'
                 )}
               >
                 <FileText className="w-4 h-4" />
@@ -284,10 +284,10 @@ export const ProjectPage: React.FC = () => {
               <button
                 onClick={() => setActiveTab('critic')}
                 className={cn(
-                  'px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-2',
+                  'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-[#1685FF]/50',
                   activeTab === 'critic'
-                    ? 'bg-[#0A66C2] text-white shadow-sm'
-                    : 'text-forge-400 hover:text-forge-200 hover:bg-forge-900'
+                    ? 'bg-[#0A66C2] text-white shadow-sm shadow-blue-500/20'
+                    : 'text-[#7F8BA0] hover:text-[#F5F7FA] hover:bg-[#151F2E]'
                 )}
               >
                 <ShieldCheck className="w-4 h-4" />
@@ -297,10 +297,10 @@ export const ProjectPage: React.FC = () => {
               <button
                 onClick={() => setActiveTab('sources')}
                 className={cn(
-                  'px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-2',
+                  'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-[#1685FF]/50',
                   activeTab === 'sources'
-                    ? 'bg-[#0A66C2] text-white shadow-sm'
-                    : 'text-forge-400 hover:text-forge-200 hover:bg-forge-900'
+                    ? 'bg-[#0A66C2] text-white shadow-sm shadow-blue-500/20'
+                    : 'text-[#7F8BA0] hover:text-[#F5F7FA] hover:bg-[#151F2E]'
                 )}
               >
                 <Share2 className="w-4 h-4" />
@@ -311,10 +311,10 @@ export const ProjectPage: React.FC = () => {
                 <button
                   onClick={() => setActiveTab('history')}
                   className={cn(
-                    'px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-2',
+                    'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-[#1685FF]/50',
                     activeTab === 'history'
-                      ? 'bg-[#0A66C2] text-white shadow-sm'
-                      : 'text-forge-400 hover:text-forge-200 hover:bg-forge-900'
+                      ? 'bg-[#0A66C2] text-white shadow-sm shadow-blue-500/20'
+                      : 'text-[#7F8BA0] hover:text-[#F5F7FA] hover:bg-[#151F2E]'
                   )}
                 >
                   <History className="w-4 h-4" />
@@ -325,12 +325,12 @@ export const ProjectPage: React.FC = () => {
 
             {/* Iteration Selector Pill */}
             {drafts.length > 1 && latestDraft && (
-              <div className="flex items-center gap-1.5 text-xs text-forge-400">
+              <div className="flex items-center gap-1.5 text-xs text-[#7F8BA0]">
                 <span>Viewing:</span>
                 <select
                   value={selectedIteration || latestDraft.iteration}
                   onChange={(e) => setSelectedIteration(Number(e.target.value))}
-                  className="bg-forge-950 border border-forge-700 rounded-lg px-2.5 py-1 text-xs text-forge-200 focus:outline-none focus:ring-1 focus:ring-[#0A66C2]"
+                  className="bg-[#0B0F17] border border-[#202C3D] rounded-xl px-2.5 py-1 text-xs text-[#F5F7FA] focus:outline-none focus:ring-1 focus:ring-[#1685FF]"
                 >
                   {drafts.map((d) => (
                     <option key={d.iteration} value={d.iteration}>
@@ -375,11 +375,11 @@ export const ProjectPage: React.FC = () => {
                   <h3 className="text-base font-bold text-white">
                     Autonomous Multi-Agent Refinement Audit Trail
                   </h3>
-                  <p className="text-xs text-forge-400 mt-0.5">
+                  <p className="text-xs text-[#7F8BA0] mt-0.5">
                     Verified trail showing drafts, critic rejections, and how the Writer agent refined each cycle.
                   </p>
                 </div>
-                <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-forge-900 border border-forge-700 text-forge-300">
+                <span className="text-xs font-mono px-2.5 py-1 rounded-xl bg-[#111A27] border border-[#202C3D] text-[#D2D8E2]">
                   {drafts.length} Cycles Completed
                 </span>
               </div>
@@ -391,28 +391,28 @@ export const ProjectPage: React.FC = () => {
                     <React.Fragment key={draftItem.iteration}>
                       {idx > 0 && (
                         <div className="flex items-center justify-center my-2 text-xs font-mono text-[#1685FF] font-semibold gap-2">
-                          <div className="h-px bg-forge-700 flex-1" />
-                          <span className="px-3 py-1 rounded-full bg-forge-900 border border-[#0A66C2]/30 flex items-center gap-1.5 shadow-sm text-[11px]">
+                          <div className="h-px bg-[#202C3D] flex-1" />
+                          <span className="px-3 py-1 rounded-full bg-[#111A27] border border-[#1685FF]/30 flex items-center gap-1.5 shadow-sm text-[11px]">
                             <ArrowDown className="w-3.5 h-3.5 text-[#1685FF] shrink-0" />
                             AUTONOMOUS REVISION CYCLE &bull; ADDRESSING CRITIC FEEDBACK
                           </span>
-                          <div className="h-px bg-forge-700 flex-1" />
+                          <div className="h-px bg-[#202C3D] flex-1" />
                         </div>
                       )}
 
-                      <div className="p-5 rounded-xl bg-forge-900 border border-forge-700 space-y-3.5 hover:border-forge-600 transition-all shadow-card">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-forge-700 gap-2">
+                      <div className="p-5 rounded-2xl bg-[#111A27] border border-[#202C3D] space-y-3.5 hover:border-[#35445A] transition-all shadow-card">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#202C3D] gap-2">
                           <div className="flex items-center gap-2.5">
-                            <span className="px-2.5 py-0.5 rounded text-xs font-semibold bg-forge-800 text-[#1685FF] border border-forge-700">
+                            <span className="px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-[#151F2E] text-[#1685FF] border border-[#202C3D]">
                               Iteration {draftItem.iteration}
                             </span>
                             {draftItem.contentHash && (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-mono text-forge-400 bg-forge-950 px-2 py-0.5 rounded border border-forge-700">
-                                <Hash className="w-3 h-3 text-forge-500" />
+                              <span className="inline-flex items-center gap-1 text-[11px] font-mono text-[#7F8BA0] bg-[#0B0F17] px-2 py-0.5 rounded-md border border-[#202C3D]">
+                                <Hash className="w-3 h-3 text-[#7F8BA0]" />
                                 SHA: {draftItem.contentHash.substring(0, 8)}
                               </span>
                             )}
-                            <span className="text-xs text-forge-400">
+                            <span className="text-xs text-[#7F8BA0]">
                               {new Date(draftItem.createdAt).toLocaleTimeString()}
                             </span>
                           </div>
@@ -438,7 +438,7 @@ export const ProjectPage: React.FC = () => {
 
                         {/* Identified Critic Concerns for this cycle */}
                         {revItem && !revItem.approved && revItem.issues.length > 0 && (
-                          <div className="p-3.5 rounded-lg bg-amber-500/5 border border-amber-500/20 text-xs text-amber-300 space-y-1.5">
+                          <div className="p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-amber-300 space-y-1.5">
                             <strong className="block text-amber-200 font-semibold flex items-center gap-1.5">
                               <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
                               Critic Concerns Identified (Dispatched to Writer):
@@ -453,7 +453,7 @@ export const ProjectPage: React.FC = () => {
 
                         {/* Applied Revisions on this cycle (if revision) */}
                         {draftItem.revisionNotes && draftItem.revisionNotes.length > 0 && (
-                          <div className="p-3.5 rounded-lg bg-emerald-500/5 border border-emerald-500/20 text-xs text-emerald-300 space-y-1.5">
+                          <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-xs text-emerald-300 space-y-1.5">
                             <strong className="block text-emerald-200 font-semibold flex items-center gap-1.5">
                               <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
                               Revisions Applied by Writer Agent in this Draft:
@@ -484,7 +484,7 @@ export const ProjectPage: React.FC = () => {
                                 setSelectedIteration(draftItem.iteration);
                                 setActiveTab('critic');
                               }}
-                              className="text-xs font-semibold text-forge-400 hover:text-forge-200 transition-colors cursor-pointer"
+                              className="text-xs font-semibold text-[#7F8BA0] hover:text-[#F5F7FA] transition-colors cursor-pointer"
                             >
                               View Critic Review &rarr;
                             </button>

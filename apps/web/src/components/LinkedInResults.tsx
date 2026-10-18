@@ -52,14 +52,16 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
   return (
     <div className="space-y-6">
       {/* Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-forge-900 border border-forge-700 shadow-card">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#111A27] border border-[#202C3D] shadow-card">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[#0A66C2]/15 border border-[#0A66C2]/30 flex items-center justify-center text-[#0A66C2]">
-            <LinkedInIcon className="w-5 h-5" />
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0077B5] to-[#1685FF] p-[1.5px] shadow-sm shadow-blue-500/10 shrink-0">
+            <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
+              <LinkedInIcon className="w-5 h-5 text-[#1685FF]" />
+            </div>
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">LinkedIn Content Package</h3>
-            <p className="text-xs text-forge-400">
+            <p className="text-xs text-[#7F8BA0]">
               {posts.length} Distinct Angles Generated &bull; Verifiable Citations Grounded
             </p>
           </div>
@@ -67,7 +69,7 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
 
         <button
           onClick={handleCopyAll}
-          className="px-4 py-2 rounded-lg text-xs font-semibold bg-[#0A66C2] hover:bg-[#1685FF] text-white transition-all flex items-center gap-2 shrink-0 cursor-pointer shadow-sm"
+          className="px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-[#0077B5] to-[#1685FF] hover:opacity-95 hover:shadow-btn-hover text-white transition-all duration-180 flex items-center gap-2 shrink-0 cursor-pointer shadow-md shadow-blue-500/20 focus:outline-none focus:ring-2 focus:ring-[#1685FF]/50"
         >
           {copiedAll ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
           <span>{copiedAll ? 'Copied All Posts!' : 'Copy All 5 Posts'}</span>
@@ -83,15 +85,15 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
           return (
             <div
               key={post.id || idx}
-              className="bg-forge-900 border border-forge-700 rounded-xl p-6 shadow-card hover:border-forge-600 transition-colors"
+              className="bg-[#111A27] border border-[#202C3D] rounded-2xl p-6 shadow-card hover:border-[#35445A] transition-all duration-180"
             >
               {/* Post Header */}
-              <div className="flex items-center justify-between pb-4 mb-4 border-b border-forge-700">
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#202C3D]">
                 <div className="flex items-center gap-2.5">
-                  <span className="w-6 h-6 rounded bg-forge-800 text-forge-300 text-xs font-semibold flex items-center justify-center">
+                  <span className="w-6 h-6 rounded-lg bg-[#151F2E] text-[#D2D8E2] border border-[#202C3D] text-xs font-semibold flex items-center justify-center">
                     {idx + 1}
                   </span>
-                  <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-[#0A66C2]/15 text-[#1685FF] border border-[#0A66C2]/30">
+                  <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#151F2E] text-[#1685FF] border border-[#202C3D]">
                     {post.angle}
                   </span>
                 </div>
@@ -99,7 +101,7 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setEditingId(isEditing ? null : post.id)}
-                    className="p-2 rounded-lg text-forge-400 hover:text-white hover:bg-forge-800 transition-colors text-xs flex items-center gap-1.5 cursor-pointer"
+                    className="p-2 rounded-lg text-[#7F8BA0] hover:text-white hover:bg-[#151F2E] transition-colors text-xs flex items-center gap-1.5 cursor-pointer"
                     title={isEditing ? 'Done Editing' : 'Edit Post Text'}
                   >
                     <Edit3 className="w-3.5 h-3.5" />
@@ -108,7 +110,7 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
 
                   <button
                     onClick={() => handleCopyPost(post)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-forge-800 hover:bg-forge-700 text-forge-200 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer border border-forge-700"
+                    className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#151F2E] hover:bg-[#182436] hover:border-[#35445A] text-[#D2D8E2] hover:text-white transition-all duration-180 flex items-center gap-1.5 cursor-pointer border border-[#202C3D] focus:outline-none focus:ring-1 focus:ring-[#1685FF]/50"
                   >
                     {isCopied ? (
                       <>
@@ -126,7 +128,7 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
               </div>
 
               {/* Hook Banner */}
-              <div className="mb-4 p-3.5 rounded-lg bg-forge-950 border border-forge-700">
+              <div className="mb-4 p-4 rounded-xl bg-[#0B0F17] border border-[#202C3D]">
                 <span className="text-[10px] font-semibold text-[#1685FF] uppercase tracking-wider block mb-1">
                   Scroll-Stopping Hook
                 </span>
@@ -142,10 +144,10 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
                     rows={8}
                     value={post.body}
                     onChange={(e) => handleTextChange(post.id, e.target.value)}
-                    className="w-full rounded-lg bg-forge-950 border border-forge-700 p-3 text-sm text-forge-100 focus:outline-none focus:ring-1 focus:ring-[#0A66C2]"
+                    className="w-full rounded-xl bg-[#0B0F17] border border-[#202C3D] p-3 text-sm text-[#F5F7FA] focus:outline-none focus:ring-1 focus:ring-[#1685FF]"
                   />
                 ) : (
-                  <div className="text-sm text-forge-200 leading-relaxed whitespace-pre-wrap font-sans">
+                  <div className="text-sm text-[#D2D8E2] leading-relaxed whitespace-pre-wrap font-sans">
                     {post.body}
                   </div>
                 )}
@@ -153,12 +155,12 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
 
               {/* CTA */}
               {post.cta && (
-                <div className="pt-3 border-t border-forge-700 flex items-center justify-between text-xs text-forge-400">
+                <div className="pt-3 border-t border-[#202C3D] flex items-center justify-between text-xs text-[#7F8BA0]">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-[#1685FF]">CTA:</span>
-                    <span className="italic text-forge-300">{post.cta}</span>
+                    <span className="italic text-[#AAB4C5]">{post.cta}</span>
                   </div>
-                  <div className="hidden sm:flex items-center gap-3 text-forge-500">
+                  <div className="hidden sm:flex items-center gap-3 text-[#5A6472]">
                     <ThumbsUp className="w-3.5 h-3.5" />
                     <MessageSquare className="w-3.5 h-3.5" />
                     <Share2 className="w-3.5 h-3.5" />

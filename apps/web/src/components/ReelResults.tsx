@@ -61,27 +61,27 @@ ${content.cta ? content.cta : 'Save this video and share your thoughts in the co
   return (
     <div className="space-y-6">
       {/* Header & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-xl bg-forge-900 border border-forge-700 shadow-card">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#111A27] border border-[#202C3D] shadow-card">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-lg bg-gradient-to-tr from-[#833AB4] via-[#E1306C] to-[#F77737] p-[1px] flex items-center justify-center text-white shrink-0 shadow-sm">
-            <div className="w-full h-full bg-forge-950 rounded-[7px] flex items-center justify-center">
+          <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-[#833AB4] via-[#E1306C] to-[#F77737] p-[1.5px] flex items-center justify-center text-white shrink-0 shadow-sm shadow-pink-500/10">
+            <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
               <Video className="w-5 h-5 text-[#E1306C]" />
             </div>
           </div>
           <div>
             <h3 className="text-base font-bold text-white">{content.title}</h3>
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-forge-400 mt-1">
-              <span className="flex items-center gap-1 text-[#1685FF] font-semibold bg-[#0A66C2]/15 px-2 py-0.5 rounded border border-[#0A66C2]/30">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-[#7F8BA0] mt-1">
+              <span className="flex items-center gap-1 text-[#1685FF] font-semibold bg-[#151F2E] px-2.5 py-0.5 rounded-lg border border-[#202C3D]">
                 <Clock className="w-3.5 h-3.5" />
                 {content.targetDuration || content.estimatedDuration || '60–90 seconds'}
               </span>
               <span>&bull;</span>
-              <span className="flex items-center gap-1 text-purple-300 font-semibold bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">
+              <span className="flex items-center gap-1 text-purple-300 font-semibold bg-[#151F2E] px-2.5 py-0.5 rounded-lg border border-[#202C3D]">
                 <FileText className="w-3.5 h-3.5" />
                 ~{displayWordCount} Spoken Words
               </span>
               <span>&bull;</span>
-              <span className="text-forge-300 font-medium">
+              <span className="text-[#D2D8E2] font-medium">
                 {content.sections.length} Recordable Scenes
               </span>
             </div>
@@ -90,7 +90,7 @@ ${content.cta ? content.cta : 'Save this video and share your thoughts in the co
 
         <button
           onClick={handleCopyScript}
-          className="px-4 py-2 rounded-lg text-xs font-semibold bg-[#0A66C2] hover:bg-[#1685FF] text-white transition-all flex items-center gap-2 shrink-0 cursor-pointer shadow-sm"
+          className="px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] hover:opacity-95 hover:shadow-btn-hover text-white transition-all duration-180 flex items-center gap-2 shrink-0 cursor-pointer shadow-md shadow-pink-500/20 focus:outline-none focus:ring-2 focus:ring-[#E1306C]/50"
         >
           {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
           <span>{copied ? 'Production Script Copied!' : 'Copy Video Script'}</span>
@@ -98,7 +98,7 @@ ${content.cta ? content.cta : 'Save this video and share your thoughts in the co
       </div>
 
       {/* Hook Banner */}
-      <div className="p-5 rounded-xl bg-forge-900 border border-forge-700 shadow-card">
+      <div className="p-5 rounded-2xl bg-[#111A27] border border-[#202C3D] shadow-card">
         <div className="flex items-center gap-2 mb-1.5">
           <Sparkles className="w-4 h-4 text-[#E1306C]" />
           <span className="text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] uppercase tracking-wider">
@@ -111,36 +111,36 @@ ${content.cta ? content.cta : 'Save this video and share your thoughts in the co
       </div>
 
       {/* Script Timeline */}
-      <div className="space-y-4 relative before:absolute before:left-5 before:top-4 before:bottom-4 before:w-0.5 before:bg-forge-700">
+      <div className="space-y-4 relative before:absolute before:left-5 before:top-4 before:bottom-4 before:w-[1.5px] before:bg-[#202C3D]">
         {content.sections.map((section, idx) => (
           <div
             key={idx}
             className="flex items-start gap-4 relative pl-2 group"
           >
             {/* Step Number Dot */}
-            <div className="w-7 h-7 rounded-full bg-forge-950 border border-forge-700 text-[#1685FF] text-xs font-semibold flex items-center justify-center shrink-0 z-10 group-hover:border-[#0A66C2] transition-colors">
+            <div className="w-7 h-7 rounded-full bg-[#0B0F17] border border-[#202C3D] text-[#1685FF] text-xs font-semibold flex items-center justify-center shrink-0 z-10 group-hover:border-[#1685FF] transition-colors">
               {idx + 1}
             </div>
 
             {/* Scene Card */}
-            <div className="flex-1 bg-forge-900 border border-forge-700 rounded-xl p-5 hover:border-forge-600 transition-colors shadow-card space-y-3.5">
-              <div className="flex items-center justify-between pb-3 border-b border-forge-700">
-                <span className="px-2.5 py-0.5 rounded text-xs font-semibold bg-purple-500/10 text-purple-300 border border-purple-500/20 font-mono">
+            <div className="flex-1 bg-[#111A27] border border-[#202C3D] rounded-2xl p-5 hover:border-[#35445A] transition-all duration-180 shadow-card space-y-3.5">
+              <div className="flex items-center justify-between pb-3 border-b border-[#202C3D]">
+                <span className="px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-[#151F2E] text-purple-300 border border-[#202C3D] font-mono">
                   {section.timestamp}
                 </span>
-                <span className="text-[11px] text-forge-400 font-medium">Scene {idx + 1} of {content.sections.length}</span>
+                <span className="text-[11px] text-[#7F8BA0] font-medium">Scene {idx + 1} of {content.sections.length}</span>
               </div>
 
               {/* Visual Cue */}
               <div className="flex items-start gap-2.5">
-                <div className="p-1 rounded bg-[#0A66C2]/10 text-[#0A66C2] mt-0.5 shrink-0">
+                <div className="p-1.5 rounded-lg bg-[#0077B5]/15 text-[#1685FF] mt-0.5 shrink-0">
                   <Eye className="w-3.5 h-3.5" />
                 </div>
                 <div>
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-[#1685FF] block">
                     Visual & Camera Direction
                   </span>
-                  <p className="text-xs text-forge-200 mt-0.5 leading-relaxed">
+                  <p className="text-xs text-[#D2D8E2] mt-0.5 leading-relaxed">
                     {section.visual}
                   </p>
                 </div>
@@ -150,13 +150,13 @@ ${content.cta ? content.cta : 'Save this video and share your thoughts in the co
               {(section.bRoll || section.transition) && (
                 <div className="flex flex-wrap gap-2 pt-0.5">
                   {section.bRoll && (
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-forge-950 border border-forge-700 text-[11px] text-purple-300">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#0B0F17] border border-[#202C3D] text-[11px] text-purple-300">
                       <Clapperboard className="w-3 h-3 text-purple-400 shrink-0" />
                       <span><strong>B-Roll:</strong> {section.bRoll}</span>
                     </div>
                   )}
                   {section.transition && (
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-forge-950 border border-forge-700 text-[11px] text-cyan-300">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#0B0F17] border border-[#202C3D] text-[11px] text-cyan-300">
                       <ArrowRight className="w-3 h-3 text-cyan-400 shrink-0" />
                       <span><strong>Transition:</strong> {section.transition}</span>
                     </div>
@@ -165,8 +165,8 @@ ${content.cta ? content.cta : 'Save this video and share your thoughts in the co
               )}
 
               {/* Voiceover Script */}
-              <div className="flex items-start gap-2.5 bg-forge-950 border border-forge-700/80 p-3.5 rounded-lg">
-                <div className="p-1 rounded bg-blue-500/10 text-blue-400 mt-0.5 shrink-0">
+              <div className="flex items-start gap-2.5 bg-[#0B0F17] border border-[#202C3D] p-3.5 rounded-xl">
+                <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 mt-0.5 shrink-0">
                   <Mic className="w-3.5 h-3.5" />
                 </div>
                 <div>
@@ -181,14 +181,14 @@ ${content.cta ? content.cta : 'Save this video and share your thoughts in the co
 
               {/* On-Screen Text */}
               <div className="flex items-start gap-2.5">
-                <div className="p-1 rounded bg-amber-500/10 text-amber-400 mt-0.5 shrink-0">
+                <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400 mt-0.5 shrink-0">
                   <Type className="w-3.5 h-3.5" />
                 </div>
                 <div>
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-amber-400 block">
                     On-Screen Text Overlay
                   </span>
-                  <span className="inline-block px-2.5 py-1 rounded-lg bg-forge-950 border border-forge-700 font-mono text-xs text-amber-300 font-semibold mt-1">
+                  <span className="inline-block px-2.5 py-1 rounded-xl bg-[#0B0F17] border border-[#202C3D] font-mono text-xs text-amber-300 font-semibold mt-1">
                     {section.onScreenText}
                   </span>
                 </div>
@@ -200,7 +200,7 @@ ${content.cta ? content.cta : 'Save this video and share your thoughts in the co
 
       {/* CTA Footer */}
       {content.cta && (
-        <div className="p-4 rounded-xl bg-forge-900 border border-forge-700 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-forge-300 shadow-card">
+        <div className="p-4 rounded-2xl bg-[#111A27] border border-[#202C3D] text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[#AAB4C5] shadow-card">
           <span className="font-semibold text-[#1685FF]">Closing Call To Action:</span>
           <span className="font-medium text-white italic">{content.cta}</span>
         </div>

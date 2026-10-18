@@ -18,7 +18,7 @@ export const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <div className="min-h-screen flex flex-col bg-forge-950 text-forge-50">
+        <div className="min-h-screen flex flex-col bg-[#0B0F17] text-[#F5F7FA]">
           <Navbar />
           <main className="flex-1">
             <Routes>
@@ -27,8 +27,10 @@ export const App: React.FC = () => {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
-          <footer className="border-t border-forge-700 py-6 text-center text-xs text-forge-400">
-            ContentForge &bull; Autonomous Multi-Agent AI Content Pipeline &bull; Production-Ready Architecture
+          <footer className="border-t border-[#202C3D] py-8 text-center text-xs text-[#7F8BA0] bg-[#0B0F17]">
+            <p>
+              Content<span className="spectrum-gradient-text font-bold">Forge</span> &bull; Autonomous Multi-Agent AI Content Pipeline &bull; Production-Grade Grounding
+            </p>
           </footer>
         </div>
       </BrowserRouter>
