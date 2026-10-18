@@ -127,6 +127,54 @@ code, pre {
   transform: translateY(-1px);
 }
 
+/* Ambient Floating Background Orbs */
+@keyframes float-ambient-1 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(40px, -30px) scale(1.1);
+  }
+}
+
+@keyframes float-ambient-2 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(-50px, 40px) scale(1.15);
+  }
+}
+
+@keyframes float-ambient-3 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(30px, 50px) scale(1.08);
+  }
+}
+
+.animate-float-1 {
+  animation: float-ambient-1 18s ease-in-out infinite;
+}
+
+.animate-float-2 {
+  animation: float-ambient-2 22s ease-in-out infinite;
+}
+
+.animate-float-3 {
+  animation: float-ambient-3 26s ease-in-out infinite;
+}
+
+/* Cybernetic Wireframe Lattice Pattern */
+.bg-cyber-grid {
+  background-image: 
+    linear-gradient(to right, rgba(32, 44, 61, 0.22) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(32, 44, 61, 0.22) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
 /* Accessibility: prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
@@ -136,3 +184,4 @@ code, pre {
     scroll-behavior: auto !important;
   }
 }
+

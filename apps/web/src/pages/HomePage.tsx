@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   Sparkles,
   ArrowRight,
+  ArrowLeft,
   CheckCircle2,
   Video,
   Layers,
@@ -94,81 +95,24 @@ export const HomePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Hero Headline & Eyebrow */}
-      <div className="text-center max-w-3xl mx-auto mb-10">
-        <div className="flex flex-col items-center gap-2.5 mb-5">
-          <div className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.25em] text-[#7F8BA0]">
-            TECH &bull; RESEARCH &bull; BUILD &bull; SHARE
+      {/* Configure Page Header */}
+      <div className="mb-8">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#7F8BA0] hover:text-[#1685FF] transition-colors mb-3"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Back to Overview & Flowchart</span>
+        </Link>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              Configure Content Generation
+            </h1>
+            <p className="text-xs sm:text-sm text-[#7F8BA0] mt-1">
+              Define your thesis, select your platform, and dispatch Content<span className="spectrum-gradient-text font-bold">Smith</span>'s multi-agent pipeline.
+            </p>
           </div>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#111A27] border border-[#202C3D] text-xs font-semibold text-[#1685FF] shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-[#1685FF]" />
-            <span>Autonomous Multi-Agent Content Pipeline</span>
-          </div>
-        </div>
-
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-4 leading-[1.15]">
-          Turning Topics into{' '}
-          <span className="spectrum-gradient-text">
-            Useful Content
-          </span>
-        </h1>
-        <p className="text-base sm:text-lg text-[#AAB4C5] max-w-2xl mx-auto leading-relaxed">
-          ContentForge deploys a specialized trio of Research, Writer, and Critic agents that verify facts, enforce platform rules, and iterate autonomously until quality is guaranteed.
-        </p>
-      </div>
-
-      {/* 4 Feature Capability Cards (Matching Reference Layout) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        {/* Card 1 */}
-        <div className="p-4 rounded-xl bg-[#111A27] border border-[#202C3D] hover:border-[#35445A] shadow-card transition-all duration-180 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0077B5] to-[#1685FF] p-[1.5px] mb-3 shadow-md shadow-blue-500/10">
-            <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
-              <Search className="w-5 h-5 text-[#1685FF] group-hover:scale-110 transition-transform" />
-            </div>
-          </div>
-          <h3 className="text-sm font-bold text-white mb-1">Deep-Ground Research</h3>
-          <p className="text-xs text-[#7F8BA0] leading-relaxed">
-            Verified sources & real data without fabricated claims or hallucinated citations.
-          </p>
-        </div>
-
-        {/* Card 2 */}
-        <div className="p-4 rounded-xl bg-[#111A27] border border-[#202C3D] hover:border-[#35445A] shadow-card transition-all duration-180 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#833AB4] to-[#E1306C] p-[1.5px] mb-3 shadow-md shadow-pink-500/10">
-            <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
-              <PenTool className="w-5 h-5 text-[#E1306C] group-hover:scale-110 transition-transform" />
-            </div>
-          </div>
-          <h3 className="text-sm font-bold text-white mb-1">Platform-Native Writers</h3>
-          <p className="text-xs text-[#7F8BA0] leading-relaxed">
-            4–5 multi-angle LinkedIn posts or scene-by-scene Instagram Reels with visual cues.
-          </p>
-        </div>
-
-        {/* Card 3 */}
-        <div className="p-4 rounded-xl bg-[#111A27] border border-[#202C3D] hover:border-[#35445A] shadow-card transition-all duration-180 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#5B51D8] to-[#833AB4] p-[1.5px] mb-3 shadow-md shadow-purple-500/10">
-            <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
-              <CheckSquare className="w-5 h-5 text-[#B845C8] group-hover:scale-110 transition-transform" />
-            </div>
-          </div>
-          <h3 className="text-sm font-bold text-white mb-1">Adversarial Critic</h3>
-          <p className="text-xs text-[#7F8BA0] leading-relaxed">
-            Automated rubric scoring tone, technical depth, and strict topic fidelity.
-          </p>
-        </div>
-
-        {/* Card 4 */}
-        <div className="p-4 rounded-xl bg-[#111A27] border border-[#202C3D] hover:border-[#35445A] shadow-card transition-all duration-180 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#E1306C] to-[#F77737] p-[1.5px] mb-3 shadow-md shadow-orange-500/10">
-            <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
-              <Repeat className="w-5 h-5 text-[#F77737] group-hover:scale-110 transition-transform" />
-            </div>
-          </div>
-          <h3 className="text-sm font-bold text-white mb-1">Self-Refining Loop</h3>
-          <p className="text-xs text-[#7F8BA0] leading-relaxed">
-            Rejection-driven rewrites that iterate until content meets the quality bar.
-          </p>
         </div>
       </div>
 

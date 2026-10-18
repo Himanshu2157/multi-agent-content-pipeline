@@ -136,11 +136,11 @@ export const ProjectPage: React.FC = () => {
           The requested content project does not exist or may have been deleted.
         </p>
         <Link
-          to="/"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#0A66C2] text-white font-semibold text-sm hover:bg-[#1685FF] transition-colors"
+          to="/create"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0A66C2] text-white font-semibold text-sm hover:bg-[#1685FF] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Return to Dashboard</span>
+          <span>Return to Configuration</span>
         </Link>
       </div>
     );
@@ -170,7 +170,7 @@ export const ProjectPage: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-[#202C3D] gap-4">
         <div>
           <Link
-            to="/"
+            to="/create"
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#7F8BA0] hover:text-[#1685FF] transition-colors mb-2"
           >
             <ArrowLeft className="w-3.5 h-3.5" />

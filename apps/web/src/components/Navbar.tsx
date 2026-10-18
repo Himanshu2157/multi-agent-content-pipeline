@@ -6,6 +6,7 @@ import { LinkedInIcon, InstagramIcon } from './icons.js';
 export const Navbar: React.FC = () => {
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const isConfigure = location.pathname === '/create' || location.pathname === '/configure';
 
   return (
     <header className="border-b border-[#202C3D] bg-[#0B0F17]/95 backdrop-blur-md sticky top-0 z-50">
@@ -20,14 +21,14 @@ export const Navbar: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <span className="font-extrabold tracking-tight text-xl text-white">
-                Content<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1685FF] via-[#B845C8] to-[#E1306C]">Forge</span>
+                Content<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1685FF] via-[#B845C8] to-[#E1306C]">Smith</span>
               </span>
             </div>
             <p className="text-[11px] text-[#7F8BA0] hidden sm:block">Autonomous AI Content Pipeline</p>
           </div>
         </Link>
 
-        {/* Center Nav Links (matching reference image) */}
+        {/* Center Nav Links */}
         <nav className="hidden md:flex items-center gap-8 text-sm">
           <Link
             to="/"
@@ -41,11 +42,23 @@ export const Navbar: React.FC = () => {
             )}
           </Link>
 
+          <Link
+            to="/create"
+            className={`relative py-1 font-medium transition-colors ${
+              isConfigure ? 'text-[#1685FF]' : 'text-[#AAB4C5] hover:text-white'
+            }`}
+          >
+            <span>Configure Engine</span>
+            {isConfigure && (
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-0.5 bg-[#1685FF] rounded-full shadow-[0_0_8px_#1685FF]" />
+            )}
+          </Link>
+
           <a
-            href="#pipeline"
+            href="/#flowchart"
             className="text-[#AAB4C5] hover:text-white transition-colors font-medium"
           >
-            Architecture
+            Agent Flowchart
           </a>
 
           <div className="flex items-center gap-1.5 text-xs text-[#AAB4C5] bg-[#111A27] px-3 py-1.5 rounded-full border border-[#202C3D]">
@@ -78,12 +91,12 @@ export const Navbar: React.FC = () => {
             <InstagramIcon className="w-4 h-4" />
           </a>
 
-          {/* Signature Gradient CTA Button (Matching "Let's Connect" in reference) */}
+          {/* Signature Gradient CTA Button */}
           <Link
-            to="/"
+            to="/create"
             className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#0A66C2] via-[#833AB4] to-[#E1306C] hover:opacity-95 shadow-md shadow-purple-500/20 transition-all hover:scale-[1.02] cursor-pointer"
           >
-            <span>Let's Forge</span>
+            <span>Launch Smith</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
