@@ -63,6 +63,10 @@ export const api = {
       latestGeneration?: ContentGenerationDTO;
     }>(`/projects/${projectId}`),
 
+  listProjects: () =>
+    request<{ projects: ContentProjectDTO[] }>('/projects'),
+
+
   // Generations
   startGeneration: (projectId: string) =>
     request<{ generationId: string; status: string }>(`/projects/${projectId}/generate`, {

@@ -165,7 +165,7 @@ export const ProjectPage: React.FC = () => {
     : latestReview;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 relative z-20">
       {/* Top Navigation & Project Metadata */}
       <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-[#202C3D] gap-4">
         <div>
@@ -230,8 +230,8 @@ export const ProjectPage: React.FC = () => {
           className={cn(
             'p-5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-card',
             generation.approved
-              ? 'bg-[#111A27] border-[#202C3D] text-[#D2D8E2]'
-              : 'bg-[#111A27] border-amber-500/30 text-amber-200'
+              ? 'bg-[#111A27]/85 backdrop-blur-md border-[#202C3D] text-[#D2D8E2]'
+              : 'bg-[#111A27]/85 backdrop-blur-md border-amber-500/30 text-amber-200'
           )}
         >
           <div className="flex items-start gap-3">
@@ -400,7 +400,7 @@ export const ProjectPage: React.FC = () => {
                         </div>
                       )}
 
-                      <div className="p-5 rounded-2xl bg-[#111A27] border border-[#202C3D] space-y-3.5 hover:border-[#35445A] transition-all shadow-card">
+                      <div className="p-5 rounded-2xl bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] space-y-3.5 hover:border-[#35445A] transition-all shadow-card">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#202C3D] gap-2">
                           <div className="flex items-center gap-2.5">
                             <span className="px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-[#151F2E] text-[#1685FF] border border-[#202C3D]">

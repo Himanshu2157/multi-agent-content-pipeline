@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   Sparkles,
@@ -14,90 +14,15 @@ import {
   Database,
   Cpu,
   Zap,
+  AlertTriangle,
+  RotateCcw,
 } from 'lucide-react';
 import { LinkedInIcon } from '../components/icons.js';
 import { RevealOnScroll } from '../components/RevealOnScroll.js';
 
 export const StartPage: React.FC = () => {
-  // Interactive Cursor Position Tracking for Background Effects
-  const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 });
-  const [isHovering, setIsHovering] = useState(false);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
-      if (!isHovering) setIsHovering(true);
-    };
-
-    const handleMouseLeave = () => {
-      setIsHovering(false);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    document.body.addEventListener('mouseleave', handleMouseLeave);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      document.body.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, [isHovering]);
-
   return (
-    <div className="relative min-h-screen bg-[#0B0F17] text-[#F5F7FA] overflow-x-hidden selection:bg-[#1685FF]/30 selection:text-[#1685FF]">
-      {/* 
-        ============================================================
-        1. FULL-PAGE CONTINUOUS AMBIENT GRADIENT & VISUAL SYSTEM
-        ============================================================
-        Applies across the entire Home Page from top to bottom
-      */}
-      <div className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden">
-        {/* Layer A: Full-Canvas Cybernetic Background Image with Smooth Masking */}
-        <img
-          src="/hero-bg.jpg"
-          alt="ContentSmith Ambient Background"
-          className="w-full h-full object-cover object-center opacity-20 scale-105"
-        />
-
-        {/* Layer B: Cyber Wireframe Lattice Pattern */}
-        <div className="absolute inset-0 bg-cyber-grid opacity-30" />
-
-        {/* Layer C: Continuous Ambient Gradient Mesh (Whole Page) */}
-        {/* Top Radial Glow (Electric Blue) */}
-        <div className="absolute -top-32 left-1/4 w-[600px] h-[600px] rounded-full bg-[#1685FF]/18 blur-[130px] animate-float-1" />
-
-        {/* Right Mid Radial Glow (Magenta / Pink) */}
-        <div className="absolute top-1/3 -right-32 w-[650px] h-[650px] rounded-full bg-[#E1306C]/14 blur-[140px] animate-float-2" />
-
-        {/* Center Purple Radial Glow */}
-        <div className="absolute top-1/2 left-1/3 w-[550px] h-[550px] rounded-full bg-[#833AB4]/12 blur-[120px] animate-float-3" />
-
-        {/* Bottom Radial Glow (Cyan / Electric Blue) */}
-        <div className="absolute bottom-20 left-10 w-[600px] h-[600px] rounded-full bg-[#0077B5]/16 blur-[130px] animate-float-1" />
-
-        {/* Bottom-Right Sunset Warmth Glow */}
-        <div className="absolute -bottom-20 right-10 w-[500px] h-[500px] rounded-full bg-[#F77737]/10 blur-[130px] animate-float-2" />
-
-        {/* Base Dark Vignette Layer */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0B0F17]/60 via-[#0B0F17]/85 to-[#0B0F17]/95" />
-      </div>
-
-      {/* 
-        ============================================================
-        2. DYNAMIC CURSOR SPOTLIGHT FOLLOWER
-        ============================================================
-        Casts a responsive aura wherever the user points their mouse
-      */}
-      <div
-        className="pointer-events-none fixed inset-0 z-10 transition-opacity duration-300"
-        style={{
-          opacity: isHovering ? 1 : 0,
-          background: `
-            radial-gradient(750px circle at ${mousePos.x}px ${mousePos.y}px, rgba(22, 133, 255, 0.14), rgba(131, 58, 180, 0.08), rgba(225, 48, 108, 0.04), transparent 65%),
-            radial-gradient(350px circle at ${mousePos.x}px ${mousePos.y}px, rgba(22, 133, 255, 0.18), transparent 70%)
-          `,
-        }}
-      />
-
+    <div className="relative min-h-screen text-[#F5F7FA] overflow-x-hidden">
       {/* Content wrapper sitting cleanly above the ambient and cursor canvas */}
       <div className="relative z-20">
         {/* ============================================================
@@ -263,178 +188,348 @@ export const StartPage: React.FC = () => {
                   Autonomous Agent Lifecycle Flowchart
                 </h2>
                 <p className="text-sm sm:text-base text-[#AAB4C5] mt-3 leading-relaxed">
-                  Each topic progresses through a deterministic graph of autonomous specialized agents. Review the flowchart below to see how inputs are transformed into verified content.
+                  Each topic progresses through a deterministic graph of autonomous specialized agents. Follow the state transitions below from semantic ingestion to the adversarial quality loop.
                 </p>
+
+                {/* State Machine Stage Progress Track */}
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs text-[#7F8BA0] font-mono">
+                  <span className="px-3 py-1 rounded-full bg-[#111A27] border border-[#1685FF]/40 text-[#1685FF] font-semibold">
+                    1. Ingestion
+                  </span>
+                  <span className="text-[#35445A] font-bold">&rarr;</span>
+                  <span className="px-3 py-1 rounded-full bg-[#111A27] border border-[#1685FF]/40 text-[#1685FF] font-semibold">
+                    2. Grounding
+                  </span>
+                  <span className="text-[#35445A] font-bold">&rarr;</span>
+                  <span className="px-3 py-1 rounded-full bg-[#111A27] border border-[#B845C8]/40 text-[#B845C8] font-semibold">
+                    3. Strategy
+                  </span>
+                  <span className="text-[#35445A] font-bold">&rarr;</span>
+                  <span className="px-3 py-1 rounded-full bg-[#111A27] border border-[#E1306C]/40 text-[#E1306C] font-semibold">
+                    4. Synthesis
+                  </span>
+                  <span className="text-[#35445A] font-bold">&rarr;</span>
+                  <span className="px-3 py-1 rounded-full bg-[#111A27] border border-[#F77737]/40 text-[#F77737] font-semibold">
+                    5. Critic &amp; Refine Loop
+                  </span>
+                </div>
               </div>
             </RevealOnScroll>
 
-            {/* Visual Flowchart Diagram */}
+            {/* ============================================================
+                PHASE 1: GROUND-TRUTH INTELLIGENCE & STRATEGY (STEPS 1, 2, 3)
+                ============================================================ */}
             <div className="space-y-6">
-              {/* Step 1 & 2 Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
-                {/* Node 1: Topic Ingestion & Intent Analyzer */}
-                <RevealOnScroll direction="left" delay={100}>
-                  <div className="h-full p-6 rounded-2xl bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] hover:border-[#1685FF]/50 shadow-card hover:shadow-card-hover transition-all duration-300">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0077B5] to-[#1685FF] p-[1.5px] shadow-sm shadow-blue-500/10">
-                          <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
-                            <Sparkles className="w-5 h-5 text-[#1685FF]" />
+              {/* Section Header */}
+              <div className="flex items-center gap-3">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#1685FF] animate-pulse" />
+                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-[#1685FF]">
+                  PHASE 1 &bull; GROUND-TRUTH INTELLIGENCE &amp; STRATEGY
+                </h3>
+              </div>
+
+              {/* 3 Connected Nodes Grid on Desktop */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative">
+                {/* Node 1: Topic Analyzer Agent */}
+                <RevealOnScroll direction="up" delay={100}>
+                  <div className="h-full p-6 rounded-2xl bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] hover:border-[#1685FF]/60 shadow-card hover:shadow-card-hover transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0077B5] to-[#1685FF] p-[1.5px] shadow-sm shadow-blue-500/10 group-hover:scale-105 transition-transform">
+                            <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
+                              <Sparkles className="w-5 h-5 text-[#1685FF]" />
+                            </div>
+                          </div>
+                          <div>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-[#1685FF]">Step 01 &bull; Ingestion</span>
+                            <h4 className="text-base font-bold text-white">Topic Analyzer Agent</h4>
                           </div>
                         </div>
-                        <div>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#1685FF]">Step 1 &bull; Ingestion</span>
-                          <h4 className="text-base font-bold text-white">Topic Analyzer Agent</h4>
-                        </div>
                       </div>
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-[#151F2E] text-[#D2D8E2] border border-[#202C3D]">
-                        guardrails.lock()
-                      </span>
+
+                      <div className="mb-3">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-[#151F2E] text-[#1685FF] border border-[#202C3D]">
+                          guardrails.lock()
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-[#AAB4C5] leading-relaxed mb-4">
+                        Deconstructs the user thesis, extracts core semantic entities, and establishes anti-hallucination domain boundaries to prevent topic drift.
+                      </p>
                     </div>
-                    <p className="text-xs text-[#AAB4C5] leading-relaxed mb-3">
-                      Deconstructs the user's thesis, extracts key semantic entities, and locks anti-hallucination guardrails to prevent topic drift.
-                    </p>
-                    <div className="p-2.5 rounded-xl bg-[#0B0F17]/90 border border-[#202C3D] text-[11px] text-[#7F8BA0] font-mono">
-                      Input: Thesis string &rarr; Output: Domain boundaries & key entities
+
+                    <div className="p-3 rounded-xl bg-[#0B0F17]/90 border border-[#202C3D] text-[11px] font-mono space-y-1">
+                      <div className="text-[#7F8BA0] flex items-center gap-1.5">
+                        <span className="text-[#1685FF] font-bold">IN:</span>
+                        <span className="truncate">Raw User Thesis String</span>
+                      </div>
+                      <div className="text-[#D2D8E2] flex items-center gap-1.5">
+                        <span className="text-emerald-400 font-bold">OUT:</span>
+                        <span className="truncate">Semantic Guardrails &amp; Entities</span>
+                      </div>
                     </div>
                   </div>
                 </RevealOnScroll>
 
-                {/* Node 2: Research Agent */}
-                <RevealOnScroll direction="right" delay={200}>
-                  <div className="h-full p-6 rounded-2xl bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] hover:border-[#1685FF]/50 shadow-card hover:shadow-card-hover transition-all duration-300">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0077B5] to-[#1685FF] p-[1.5px] shadow-sm shadow-blue-500/10">
-                          <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
-                            <Search className="w-5 h-5 text-[#1685FF]" />
+                {/* Node 2: Deep-Ground Research Agent */}
+                <RevealOnScroll direction="up" delay={200}>
+                  <div className="h-full p-6 rounded-2xl bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] hover:border-[#1685FF]/60 shadow-card hover:shadow-card-hover transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#1685FF] to-[#00A3FF] p-[1.5px] shadow-sm shadow-blue-500/10 group-hover:scale-105 transition-transform">
+                            <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
+                              <Search className="w-5 h-5 text-[#00A3FF]" />
+                            </div>
+                          </div>
+                          <div>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-[#1685FF]">Step 02 &bull; Grounding</span>
+                            <h4 className="text-base font-bold text-white">Deep-Ground Research</h4>
                           </div>
                         </div>
-                        <div>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#1685FF]">Step 2 &bull; Grounding</span>
-                          <h4 className="text-base font-bold text-white">Deep-Ground Research Agent</h4>
+                      </div>
+
+                      <div className="mb-3">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-[#151F2E] text-emerald-400 border border-[#202C3D]">
+                          citations.verify()
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-[#AAB4C5] leading-relaxed mb-4">
+                        Scrapes verified publications, whitepapers, and data points. Extracts ground-truth facts and eliminates fabricated citations or phantom URLs.
+                      </p>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-[#0B0F17]/90 border border-[#202C3D] text-[11px] font-mono space-y-1">
+                      <div className="text-[#7F8BA0] flex items-center gap-1.5">
+                        <span className="text-[#1685FF] font-bold">IN:</span>
+                        <span className="truncate">Entity Queries &amp; Constraints</span>
+                      </div>
+                      <div className="text-[#D2D8E2] flex items-center gap-1.5">
+                        <span className="text-emerald-400 font-bold">OUT:</span>
+                        <span className="truncate">3+ Verified Facts &amp; URLs</span>
+                      </div>
+                    </div>
+                  </div>
+                </RevealOnScroll>
+
+                {/* Node 3: Content Strategist Agent */}
+                <RevealOnScroll direction="up" delay={300}>
+                  <div className="h-full p-6 rounded-2xl bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] hover:border-[#B845C8]/60 shadow-card hover:shadow-card-hover transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#5B51D8] to-[#833AB4] p-[1.5px] shadow-sm shadow-purple-500/10 group-hover:scale-105 transition-transform">
+                            <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
+                              <Layers className="w-5 h-5 text-[#B845C8]" />
+                            </div>
+                          </div>
+                          <div>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-[#B845C8]">Step 03 &bull; Strategy</span>
+                            <h4 className="text-base font-bold text-white">Content Strategist</h4>
+                          </div>
                         </div>
                       </div>
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-[#151F2E] text-emerald-400 border border-[#202C3D]">
-                        citations.verify()
-                      </span>
+
+                      <div className="mb-3">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-[#151F2E] text-purple-300 border border-[#202C3D]">
+                          angles.plan()
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-[#AAB4C5] leading-relaxed mb-4">
+                        Architects 5 distinct hook angles (for LinkedIn) or narrative tension arcs with timestamps (for Instagram Reels) designed for maximum engagement.
+                      </p>
                     </div>
-                    <p className="text-xs text-[#AAB4C5] leading-relaxed mb-3">
-                      Scrapes and evaluates real external documentation, papers, and data points. Extracts verified facts and statistical evidence.
-                    </p>
-                    <div className="p-2.5 rounded-xl bg-[#0B0F17]/90 border border-[#202C3D] text-[11px] text-[#7F8BA0] font-mono">
-                      Input: Entity query &rarr; Output: 3+ verified facts & publisher URLs
+
+                    <div className="p-3 rounded-xl bg-[#0B0F17]/90 border border-[#202C3D] text-[11px] font-mono space-y-1">
+                      <div className="text-[#7F8BA0] flex items-center gap-1.5">
+                        <span className="text-[#1685FF] font-bold">IN:</span>
+                        <span className="truncate">Verified Fact Corpus</span>
+                      </div>
+                      <div className="text-[#D2D8E2] flex items-center gap-1.5">
+                        <span className="text-emerald-400 font-bold">OUT:</span>
+                        <span className="truncate">5 Angle Blueprints &amp; Arcs</span>
+                      </div>
                     </div>
                   </div>
                 </RevealOnScroll>
               </div>
 
-              {/* Connecting Flow Indicator with Scroll Reveal */}
-              <RevealOnScroll direction="up" delay={100}>
-                <div className="flex items-center justify-center py-1">
-                  <div className="flex items-center gap-2 text-xs font-mono text-[#1685FF] bg-[#111A27]/90 border border-[#202C3D] px-4 py-1.5 rounded-full shadow-sm backdrop-blur-md">
-                    <ArrowDown className="w-4 h-4 text-[#1685FF] animate-bounce" />
-                    <span>STATE DISPATCH &bull; GROUNDED CONTEXT FORWARDED</span>
+              {/* Connecting Pipeline Conduit Between Phase 1 and Phase 2 */}
+              <RevealOnScroll direction="up" delay={150}>
+                <div className="flex items-center justify-center py-4">
+                  <div className="flex items-center gap-3 px-5 py-2.5 rounded-full bg-[#111A27]/90 border border-[#202C3D] shadow-sm backdrop-blur-md text-xs font-mono text-[#D2D8E2]">
+                    <ArrowDown className="w-4 h-4 text-[#1685FF] animate-bounce shrink-0" />
+                    <span>STATE DISPATCH &bull; GROUNDED CONTEXT &amp; BLUEPRINTS FORWARDED TO REFINEMENT ENGINE</span>
+                    <ArrowDown className="w-4 h-4 text-[#1685FF] animate-bounce shrink-0" />
                   </div>
                 </div>
               </RevealOnScroll>
 
-              {/* Step 3 & 4 Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
-                {/* Node 3: Content Strategist */}
-                <RevealOnScroll direction="left" delay={150}>
-                  <div className="h-full p-6 rounded-2xl bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] hover:border-[#B845C8]/50 shadow-card hover:shadow-card-hover transition-all duration-300">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#5B51D8] to-[#833AB4] p-[1.5px] shadow-sm shadow-purple-500/10">
-                          <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
-                            <Layers className="w-5 h-5 text-[#B845C8]" />
+              {/* ============================================================
+                  PHASE 2: THE AUTONOMOUS REFINEMENT & QUALITY LOOP (STEPS 4 & 5)
+                  ============================================================ */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#E1306C] animate-pulse" />
+                  <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-[#E1306C]">
+                    PHASE 2 &bull; AUTONOMOUS REFINEMENT ENGINE &amp; ADVERSARIAL CRITIC LOOP
+                  </h3>
+                </div>
+
+                <div className="p-6 sm:p-8 rounded-3xl bg-[#111A27]/90 backdrop-blur-md border border-[#202C3D] shadow-2xl relative overflow-hidden">
+                  {/* Subtle Ambient Glow Accents */}
+                  <div className="absolute top-0 right-0 w-80 h-80 bg-[#E1306C]/10 rounded-full blur-3xl pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#1685FF]/10 rounded-full blur-3xl pointer-events-none" />
+
+                  {/* Node 4 & Node 5 Interactive Grid with Loop Conduit */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch relative">
+                    {/* Node 4: Platform Writer Agent */}
+                    <div className="lg:col-span-5 p-6 rounded-2xl bg-[#0B0F17]/90 border border-[#202C3D] hover:border-[#E1306C]/60 transition-all flex flex-col justify-between group">
+                      <div>
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#833AB4] to-[#E1306C] p-[1.5px] shadow-sm shadow-pink-500/10 group-hover:scale-105 transition-transform">
+                              <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
+                                <PenTool className="w-5 h-5 text-[#E1306C]" />
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-[#E1306C]">Step 04 &bull; Synthesis</span>
+                              <h4 className="text-base font-bold text-white">Platform Writer Agent</h4>
+                            </div>
                           </div>
                         </div>
-                        <div>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#B845C8]">Step 3 &bull; Strategy</span>
-                          <h4 className="text-base font-bold text-white">Content Strategist Agent</h4>
+
+                        <div className="mb-3">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-[#151F2E] text-pink-300 border border-[#202C3D]">
+                            draft.generate()
+                          </span>
+                        </div>
+
+                        <p className="text-xs text-[#AAB4C5] leading-relaxed mb-4">
+                          Synthesizes high-density, authoritative copy grounded strictly in research facts. Formats hooks, body structures, and engaging CTAs.
+                        </p>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-[#111A27] border border-[#202C3D] text-[11px] font-mono space-y-1">
+                        <div className="text-[#7F8BA0] flex items-center gap-1.5">
+                          <span className="text-[#E1306C] font-bold">IN:</span>
+                          <span className="truncate">Blueprints + Verified Facts</span>
+                        </div>
+                        <div className="text-[#D2D8E2] flex items-center gap-1.5">
+                          <span className="text-emerald-400 font-bold">OUT:</span>
+                          <span className="truncate">Full Grounded Draft Iteration</span>
                         </div>
                       </div>
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-[#151F2E] text-purple-300 border border-[#202C3D]">
-                        angles.plan()
-                      </span>
                     </div>
-                    <p className="text-xs text-[#AAB4C5] leading-relaxed mb-3">
-                      Formulates 5 distinct hook angles (for LinkedIn) or narrative tension arcs with timestamps (for Instagram Reels) to maximize retention.
-                    </p>
-                    <div className="p-2.5 rounded-xl bg-[#0B0F17]/90 border border-[#202C3D] text-[11px] text-[#7F8BA0] font-mono">
-                      Input: Verified facts &rarr; Output: 5 angle blueprints / scene storyboard
-                    </div>
-                  </div>
-                </RevealOnScroll>
 
-                {/* Node 4: Platform Writer Agent */}
-                <RevealOnScroll direction="right" delay={250}>
-                  <div className="h-full p-6 rounded-2xl bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] hover:border-[#E1306C]/50 shadow-card hover:shadow-card-hover transition-all duration-300">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#833AB4] to-[#E1306C] p-[1.5px] shadow-sm shadow-pink-500/10">
-                          <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
-                            <PenTool className="w-5 h-5 text-[#E1306C]" />
+                    {/* Central Interactive Feedback Loop Channel */}
+                    <div className="lg:col-span-2 flex flex-col justify-center items-center gap-4 py-4 lg:py-0">
+                      {/* Forward Arrow: Writer -> Critic */}
+                      <div className="w-full p-2.5 rounded-xl bg-[#151F2E]/90 border border-[#202C3D] text-center flex items-center justify-center gap-1.5 text-[11px] font-mono text-[#D2D8E2] shadow-sm">
+                        <span>Draft Forward</span>
+                        <ArrowRight className="w-3.5 h-3.5 text-[#1685FF] hidden lg:block" />
+                        <ArrowDown className="w-3.5 h-3.5 text-[#1685FF] lg:hidden" />
+                      </div>
+
+                      {/* Animated Loop Badge */}
+                      <div className="w-11 h-11 rounded-full bg-[#111A27] border border-[#F77737]/50 flex items-center justify-center text-[#F77737] shadow-[0_0_20px_rgba(247,119,55,0.25)]">
+                        <RotateCcw className="w-5 h-5 animate-spin" style={{ animationDuration: '6s' }} />
+                      </div>
+
+                      {/* Backward Loop: Critic -> Writer */}
+                      <div className="w-full p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-center flex items-center justify-center gap-1.5 text-[10px] font-mono text-amber-300 shadow-sm">
+                        <span className="hidden lg:block">&larr;</span>
+                        <span className="lg:hidden">&uarr;</span>
+                        <span>Revise &amp; Loop</span>
+                      </div>
+                    </div>
+
+                    {/* Node 5: Adversarial Critic Agent */}
+                    <div className="lg:col-span-5 p-6 rounded-2xl bg-[#0B0F17]/90 border border-[#202C3D] hover:border-[#F77737]/60 transition-all flex flex-col justify-between group">
+                      <div>
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#E1306C] to-[#F77737] p-[1.5px] shadow-sm shadow-orange-500/10 group-hover:scale-105 transition-transform">
+                              <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
+                                <Repeat className="w-5 h-5 text-[#F77737]" />
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-[#F77737]">Step 05 &bull; Quality Audit</span>
+                              <h4 className="text-base font-bold text-white">Adversarial Critic</h4>
+                            </div>
                           </div>
                         </div>
-                        <div>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#E1306C]">Step 4 &bull; Synthesis</span>
-                          <h4 className="text-base font-bold text-white">Platform Writer Agent</h4>
+
+                        <div className="mb-3 flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-[#151F2E] text-amber-300 border border-[#202C3D]">
+                            rubrics.score()
+                          </span>
+                          <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-mono font-bold">
+                            Bar: 90/100
+                          </span>
+                        </div>
+
+                        <p className="text-xs text-[#AAB4C5] leading-relaxed mb-4">
+                          Scores the draft across 6 metrics (Topic Fidelity, Tone, Accuracy, Platform Fit, Usefulness, Clarity). Flags unsupported statements.
+                        </p>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-[#111A27] border border-[#202C3D] text-[11px] font-mono space-y-1">
+                        <div className="text-[#7F8BA0] flex items-center gap-1.5">
+                          <span className="text-[#F77737] font-bold">EVAL:</span>
+                          <span className="truncate">6 Rigorous Scoring Rubrics</span>
+                        </div>
+                        <div className="text-[#D2D8E2] flex items-center gap-1.5">
+                          <span className="text-emerald-400 font-bold">OUT:</span>
+                          <span className="truncate">Approved or Directed Revision</span>
                         </div>
                       </div>
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-[#151F2E] text-pink-300 border border-[#202C3D]">
-                        draft.generate()
-                      </span>
-                    </div>
-                    <p className="text-xs text-[#AAB4C5] leading-relaxed mb-3">
-                      Synthesizes high-density, authoritative copy grounded strictly in research facts. Formats hooks, readable body structures, and engaging CTAs.
-                    </p>
-                    <div className="p-2.5 rounded-xl bg-[#0B0F17]/90 border border-[#202C3D] text-[11px] text-[#7F8BA0] font-mono">
-                      Input: Angle blueprints &rarr; Output: Full draft iteration
                     </div>
                   </div>
-                </RevealOnScroll>
-              </div>
 
-              {/* Connecting Flow: The Adversarial Quality Loop */}
-              <RevealOnScroll direction="up" delay={200}>
-                <div className="p-6 rounded-2xl bg-gradient-to-r from-[#111A27]/90 via-[#151F2E]/90 to-[#111A27]/90 backdrop-blur-md border border-[#202C3D] shadow-card hover:border-[#F77737]/50 transition-all duration-300 relative overflow-hidden">
-                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-[#E1306C] to-[#F77737] p-[1.5px] shrink-0 shadow-sm shadow-orange-500/10">
-                        <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
-                          <Repeat className="w-6 h-6 text-[#F77737]" />
-                        </div>
+                  {/* Decision Outcomes Fork (Approved vs Rejected) */}
+                  <div className="mt-8 pt-6 border-t border-[#202C3D] grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Outcome A: Rejection & Autonomous Revision */}
+                    <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/30 flex items-start gap-3">
+                      <div className="p-2 rounded-lg bg-amber-500/15 text-amber-400 shrink-0 mt-0.5">
+                        <AlertTriangle className="w-4 h-4" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#F77737]">Step 5 &bull; Quality Verification & Loop</span>
-                          <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-mono font-bold">
-                            Score Threshold: 90/100
+                          <span className="text-xs font-bold text-amber-300 uppercase tracking-wider">
+                            If Score &lt; 90 &bull; Rejection &amp; Autonomous Loop
                           </span>
                         </div>
-                        <h4 className="text-lg font-bold text-white">Adversarial Critic & Autonomous Self-Correction Loop</h4>
-                        <p className="text-xs text-[#AAB4C5] mt-1 leading-relaxed max-w-2xl">
-                          The Critic Agent scores the draft across 6 metrics (Topic Fidelity, Tone Match, Factual Accuracy, Platform Fit, Usefulness, Clarity). If any claim lacks factual backing, the Critic <strong>rejects</strong> the draft and routes specific revision instructions back to the Writer Agent.
+                        <p className="text-xs text-[#AAB4C5] leading-relaxed">
+                          Critic generates concrete line-by-line revision instructions. Writer Agent receives critique and regenerates flawed sections (up to 5 autonomous cycles).
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row lg:flex-col gap-2 shrink-0">
-                      <div className="px-3.5 py-2 rounded-xl bg-[#0B0F17]/90 border border-[#202C3D] text-xs flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                        <span className="text-[#D2D8E2]">If Approved: <strong>Deploy Deliverable</strong></span>
+                    {/* Outcome B: Approved & Production Deployment */}
+                    <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/30 flex items-start gap-3">
+                      <div className="p-2 rounded-lg bg-emerald-500/15 text-emerald-400 shrink-0 mt-0.5">
+                        <CheckCircle2 className="w-4 h-4" />
                       </div>
-                      <div className="px-3.5 py-2 rounded-xl bg-[#0B0F17]/90 border border-[#202C3D] text-xs flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-amber-400" />
-                        <span className="text-[#D2D8E2]">If Rejected: <strong>Loop to Writer (Iterate)</strong></span>
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xs font-bold text-emerald-300 uppercase tracking-wider">
+                            If Score &ge; 90 &bull; Quality Approved &amp; Deployed
+                          </span>
+                        </div>
+                        <p className="text-xs text-[#AAB4C5] leading-relaxed">
+                          Content passes all fidelity rubrics with verified research citations. Production-ready deliverable rendered for LinkedIn or Instagram Reels.
+                        </p>
                       </div>
                     </div>
                   </div>
                 </div>
-              </RevealOnScroll>
+              </div>
             </div>
           </div>
         </section>

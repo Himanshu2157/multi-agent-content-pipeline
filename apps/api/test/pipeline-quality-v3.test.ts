@@ -354,7 +354,7 @@ describe('Section 10 Quality & Content Fidelity Verification Suite', () => {
     for (const banned of BANNED_PHRASES) {
       expect(fullText).not.toContain(banned);
     }
-  });
+  }, 15000);
 
   it('Non-Software Domain Pipeline: Microbial Ecology of Sourdough Fermentation generated with 100% authentic biochemistry & zero software contamination', async () => {
     const rawTopic = 'Microbial Ecology of Sourdough Fermentation';

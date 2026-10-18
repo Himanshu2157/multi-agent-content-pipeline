@@ -30,7 +30,7 @@ export const CriticReport: React.FC<CriticReportProps> = ({ review, iteration })
   ];
 
   return (
-    <div className="bg-[#111A27] border border-[#202C3D] rounded-2xl p-6 shadow-card">
+    <div className="bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] rounded-2xl p-6 shadow-card">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-6 border-b border-[#202C3D]">
         <div>
           <div className="flex items-center gap-2">

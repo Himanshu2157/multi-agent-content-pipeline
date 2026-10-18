@@ -8,7 +8,7 @@ interface SourcesListProps {
 
 export const SourcesList: React.FC<SourcesListProps> = ({ research }) => {
   return (
-    <div className="bg-[#111A27] border border-[#202C3D] rounded-2xl p-6 shadow-card">
+    <div className="bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] rounded-2xl p-6 shadow-card">
       <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#202C3D]">
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-5 h-5 text-[#1685FF]" />

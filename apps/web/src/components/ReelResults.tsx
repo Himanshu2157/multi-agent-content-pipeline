@@ -61,7 +61,7 @@ ${content.cta ? content.cta : 'Save this video and share your thoughts in the co
   return (
     <div className="space-y-6">
       {/* Header & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#111A27] border border-[#202C3D] shadow-card">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] shadow-card">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-[#833AB4] via-[#E1306C] to-[#F77737] p-[1.5px] flex items-center justify-center text-white shrink-0 shadow-sm shadow-pink-500/10">
             <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
@@ -123,7 +123,7 @@ ${content.cta ? content.cta : 'Save this video and share your thoughts in the co
             </div>
 
             {/* Scene Card */}
-            <div className="flex-1 bg-[#111A27] border border-[#202C3D] rounded-2xl p-5 hover:border-[#35445A] transition-all duration-180 shadow-card space-y-3.5">
+            <div className="flex-1 bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] rounded-2xl p-5 hover:border-[#35445A] transition-all duration-180 shadow-card space-y-3.5">
               <div className="flex items-center justify-between pb-3 border-b border-[#202C3D]">
                 <span className="px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-[#151F2E] text-purple-300 border border-[#202C3D] font-mono">
                   {section.timestamp}
