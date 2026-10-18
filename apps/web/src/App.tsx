@@ -27,7 +27,7 @@ export const App: React.FC = () => {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
-          <footer className="border-t border-forge-900 py-6 text-center text-xs text-forge-500">
+          <footer className="border-t border-forge-700 py-6 text-center text-xs text-forge-400">
             ContentForge &bull; Autonomous Multi-Agent AI Content Pipeline &bull; Production-Ready Architecture
           </footer>
         </div>

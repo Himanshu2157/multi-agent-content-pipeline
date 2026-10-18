@@ -70,7 +70,7 @@ export const HomePage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Backend Status Bar */}
-      <div className="flex items-center justify-between pb-6 mb-8 border-b border-forge-800/60">
+      <div className="flex items-center justify-between pb-6 mb-8 border-b border-forge-700">
         <div className="flex items-center gap-2">
           <Activity className="w-4 h-4 text-forge-400" />
           <span className="text-xs font-medium text-forge-400">Backend Connectivity:</span>
@@ -96,28 +96,28 @@ export const HomePage: React.FC = () => {
 
       {/* Hero Headline */}
       <div className="text-center max-w-3xl mx-auto mb-12">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-forge-900 border border-forge-700/60 text-xs font-semibold text-brand-400 mb-4 shadow-inner">
-          <Sparkles className="w-3.5 h-3.5" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-forge-900 border border-forge-700 text-xs font-semibold text-[#1685FF] mb-4 shadow-sm">
+          <Sparkles className="w-3.5 h-3.5 text-[#0A66C2]" />
           Autonomous Multi-Agent Content Pipeline
         </div>
         <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-4 leading-tight">
           Don't refine prompts.{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 via-emerald-300 to-teal-400">
+          <span className="text-[#0A66C2]">
             Let AI research, critique & refine itself.
           </span>
         </h1>
-        <p className="text-lg text-forge-300 max-w-2xl mx-auto">
+        <p className="text-base sm:text-lg text-forge-300 max-w-2xl mx-auto leading-relaxed">
           ContentForge deploys a specialized trio of Research, Writer, and Critic agents that verify facts, enforce platform rules, and iterate autonomously until quality is guaranteed.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Input Form */}
-        <div className="lg:col-span-7 bg-forge-900/60 border border-forge-800 rounded-2xl p-6 sm:p-8 backdrop-blur-sm shadow-xl">
-          <div className="flex items-center justify-between mb-6 pb-4 border-b border-forge-800">
+        <div className="lg:col-span-7 bg-forge-900 border border-forge-700 rounded-xl p-6 sm:p-8 shadow-card">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-forge-700">
             <div>
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Sliders className="w-5 h-5 text-brand-400" />
+                <Sliders className="w-5 h-5 text-[#0A66C2]" />
                 Configure Content Generation
               </h2>
               <p className="text-xs text-forge-400 mt-1">
@@ -127,7 +127,7 @@ export const HomePage: React.FC = () => {
           </div>
 
           {errorMsg && (
-            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start gap-3 text-red-300 text-sm">
+            <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/30 flex items-start gap-3 text-red-300 text-sm">
               <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-red-200">Unable to generate</p>
@@ -140,7 +140,7 @@ export const HomePage: React.FC = () => {
             {/* Topic Input */}
             <div>
               <label htmlFor="topic" className="block text-sm font-semibold text-forge-200 mb-2">
-                Content Topic or Thesis <span className="text-brand-400">*</span>
+                Content Topic or Thesis <span className="text-[#1685FF]">*</span>
               </label>
               <textarea
                 id="topic"
@@ -148,7 +148,7 @@ export const HomePage: React.FC = () => {
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 placeholder="e.g. How autonomous AI coding agents are changing senior engineering workflows in 2026..."
-                className="w-full rounded-xl bg-forge-950 border border-forge-700/80 px-4 py-3 text-sm text-forge-100 placeholder-forge-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all resize-none"
+                className="w-full rounded-lg bg-forge-950 border border-forge-700 px-4 py-3 text-sm text-forge-100 placeholder-forge-400 focus:outline-none focus:ring-1 focus:ring-[#0A66C2] focus:border-[#0A66C2] transition-colors resize-none"
                 required
               />
               <p className="text-[11px] text-forge-400 mt-1.5 flex items-center gap-1">
@@ -159,23 +159,23 @@ export const HomePage: React.FC = () => {
             {/* Platform Selection */}
             <div>
               <label className="block text-sm font-semibold text-forge-200 mb-2">
-                Target Platform <span className="text-brand-400">*</span>
+                Target Platform <span className="text-[#1685FF]">*</span>
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => setPlatform(PLATFORMS.LINKEDIN)}
                   className={cn(
-                    'p-4 rounded-xl border text-left transition-all relative flex flex-col justify-between',
+                    'p-4 rounded-lg border text-left transition-all relative flex flex-col justify-between cursor-pointer',
                     platform === PLATFORMS.LINKEDIN
-                      ? 'bg-brand-500/10 border-brand-500 text-white shadow-md shadow-brand-500/5'
-                      : 'bg-forge-950/70 border-forge-800 text-forge-400 hover:border-forge-700 hover:text-forge-200'
+                      ? 'bg-[#0A66C2]/10 border-[#0A66C2] text-white shadow-sm'
+                      : 'bg-forge-950 border-forge-700 text-forge-300 hover:border-forge-600 hover:text-white'
                   )}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <LinkedInIcon className={cn('w-5 h-5', platform === PLATFORMS.LINKEDIN ? 'text-brand-400' : 'text-forge-500')} />
+                    <LinkedInIcon className={cn('w-5 h-5', platform === PLATFORMS.LINKEDIN ? 'text-[#0A66C2]' : 'text-forge-400')} />
                     {platform === PLATFORMS.LINKEDIN && (
-                      <CheckCircle2 className="w-4 h-4 text-brand-400" />
+                      <CheckCircle2 className="w-4 h-4 text-[#0A66C2]" />
                     )}
                   </div>
                   <div>
@@ -188,16 +188,16 @@ export const HomePage: React.FC = () => {
                   type="button"
                   onClick={() => setPlatform(PLATFORMS.INSTAGRAM_REEL)}
                   className={cn(
-                    'p-4 rounded-xl border text-left transition-all relative flex flex-col justify-between',
+                    'p-4 rounded-lg border text-left transition-all relative flex flex-col justify-between cursor-pointer',
                     platform === PLATFORMS.INSTAGRAM_REEL
-                      ? 'bg-brand-500/10 border-brand-500 text-white shadow-md shadow-brand-500/5'
-                      : 'bg-forge-950/70 border-forge-800 text-forge-400 hover:border-forge-700 hover:text-forge-200'
+                      ? 'bg-purple-950/20 border-[#E1306C]/60 text-white shadow-sm'
+                      : 'bg-forge-950 border-forge-700 text-forge-300 hover:border-forge-600 hover:text-white'
                   )}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <Video className={cn('w-5 h-5', platform === PLATFORMS.INSTAGRAM_REEL ? 'text-brand-400' : 'text-forge-500')} />
+                    <Video className={cn('w-5 h-5', platform === PLATFORMS.INSTAGRAM_REEL ? 'text-[#E1306C]' : 'text-forge-400')} />
                     {platform === PLATFORMS.INSTAGRAM_REEL && (
-                      <CheckCircle2 className="w-4 h-4 text-brand-400" />
+                      <CheckCircle2 className="w-4 h-4 text-[#E1306C]" />
                     )}
                   </div>
                   <div>
@@ -217,7 +217,7 @@ export const HomePage: React.FC = () => {
                 <select
                   value={tone}
                   onChange={(e) => setTone(e.target.value)}
-                  className="w-full rounded-xl bg-forge-950 border border-forge-700/80 px-3.5 py-2.5 text-sm text-forge-200 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500"
+                  className="w-full rounded-lg bg-forge-950 border border-forge-700 px-3.5 py-2.5 text-sm text-forge-200 focus:outline-none focus:ring-1 focus:ring-[#0A66C2] focus:border-[#0A66C2]"
                 >
                   {DEFAULT_TONES.map((t) => (
                     <option key={t} value={t}>
@@ -236,7 +236,7 @@ export const HomePage: React.FC = () => {
                   value={audience}
                   onChange={(e) => setAudience(e.target.value)}
                   placeholder="e.g. Founders, Engineers, Creators"
-                  className="w-full rounded-xl bg-forge-950 border border-forge-700/80 px-3.5 py-2.5 text-sm text-forge-200 placeholder-forge-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500"
+                  className="w-full rounded-lg bg-forge-950 border border-forge-700 px-3.5 py-2.5 text-sm text-forge-200 placeholder-forge-400 focus:outline-none focus:ring-1 focus:ring-[#0A66C2] focus:border-[#0A66C2]"
                 />
               </div>
             </div>
@@ -247,7 +247,7 @@ export const HomePage: React.FC = () => {
                 <label className="text-sm font-semibold text-forge-200">
                   Maximum Review & Refinement Iterations
                 </label>
-                <span className="px-2.5 py-0.5 text-xs font-bold rounded-md bg-forge-800 text-brand-400 border border-forge-700">
+                <span className="px-2.5 py-0.5 text-xs font-semibold rounded bg-forge-800 text-[#1685FF] border border-forge-700">
                   {maxIterations} {maxIterations === 1 ? 'cycle' : 'cycles'}
                 </span>
               </div>
@@ -258,7 +258,7 @@ export const HomePage: React.FC = () => {
                 step={1}
                 value={maxIterations}
                 onChange={(e) => setMaxIterations(Number(e.target.value))}
-                className="w-full accent-brand-500 h-2 bg-forge-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#0A66C2] h-2 bg-forge-800 rounded-lg cursor-pointer"
               />
               <div className="flex justify-between text-[11px] text-forge-400 mt-1">
                 <span>1 (Fastest, single review)</span>
@@ -271,11 +271,11 @@ export const HomePage: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-4 px-6 rounded-xl font-bold text-sm bg-gradient-to-r from-brand-600 via-emerald-500 to-teal-500 hover:from-brand-500 hover:to-teal-400 text-forge-950 shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full py-3.5 px-6 rounded-lg font-bold text-sm bg-[#0A66C2] hover:bg-[#1685FF] text-white shadow-sm transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {isSubmitting ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-forge-950 border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   <span>Initializing Multi-Agent System...</span>
                 </>
               ) : (
@@ -291,20 +291,20 @@ export const HomePage: React.FC = () => {
 
         {/* Right Column: Multi-Agent Architecture Visualizer */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="bg-forge-900/60 border border-forge-800 rounded-2xl p-6 backdrop-blur-sm">
+          <div className="bg-forge-900 border border-forge-700 rounded-xl p-6 shadow-card">
             <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-              <Layers className="w-4 h-4 text-brand-400" />
+              <Layers className="w-4 h-4 text-[#0A66C2]" />
               How the Multi-Agent Pipeline Works
             </h3>
 
-            <div className="space-y-3 relative before:absolute before:left-4 before:top-4 before:bottom-4 before:w-0.5 before:bg-forge-800">
+            <div className="space-y-3 relative before:absolute before:left-4 before:top-4 before:bottom-4 before:w-0.5 before:bg-forge-700">
               {/* Agent 1 */}
               <div className="flex items-start gap-3.5 relative">
-                <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center shrink-0 z-10 bg-forge-950">
-                  <Search className="w-4 h-4 text-blue-400" />
+                <div className="w-8 h-8 rounded-lg bg-[#0A66C2]/10 border border-[#0A66C2]/30 flex items-center justify-center shrink-0 z-10 bg-forge-950">
+                  <Search className="w-4 h-4 text-[#1685FF]" />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-blue-400 uppercase tracking-wider">Agent 1</div>
+                  <div className="text-xs font-bold text-[#1685FF] uppercase tracking-wider">Agent 1</div>
                   <div className="text-sm font-semibold text-white">Research Specialist</div>
                   <p className="text-xs text-forge-400 mt-0.5">
                     Gathers real-world sources, key statistics, and checks counter-claims. Does not fabricate URLs or data.
@@ -314,11 +314,11 @@ export const HomePage: React.FC = () => {
 
               {/* Agent 2 */}
               <div className="flex items-start gap-3.5 relative">
-                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0 z-10 bg-forge-950">
-                  <PenTool className="w-4 h-4 text-emerald-400" />
+                <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center shrink-0 z-10 bg-forge-950">
+                  <PenTool className="w-4 h-4 text-blue-400" />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Agent 2</div>
+                  <div className="text-xs font-bold text-blue-400 uppercase tracking-wider">Agent 2</div>
                   <div className="text-sm font-semibold text-white">Platform Writer Agent</div>
                   <p className="text-xs text-forge-400 mt-0.5">
                     Drafts 4–5 distinct angles for LinkedIn or timed scripts for Instagram Reels grounded in the verified research.
@@ -356,7 +356,7 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-forge-900/40 border border-forge-800/80 text-xs text-forge-400 flex items-center justify-between">
+          <div className="p-4 rounded-xl bg-forge-950 border border-forge-700 text-xs text-forge-400 flex items-center justify-between shadow-card">
             <span>Product Guarantee:</span>
             <span className="font-semibold text-forge-200">No fabricated facts • Full iteration history</span>
           </div>

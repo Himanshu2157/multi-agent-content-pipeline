@@ -137,7 +137,7 @@ export const ProjectPage: React.FC = () => {
         </p>
         <Link
           to="/"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-500 text-forge-950 font-bold text-sm hover:bg-brand-400 transition-colors"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#0A66C2] text-white font-semibold text-sm hover:bg-[#1685FF] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Return to Dashboard</span>
@@ -167,11 +167,11 @@ export const ProjectPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Top Navigation & Project Metadata */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-forge-800 gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-forge-700 gap-4">
         <div>
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-forge-400 hover:text-brand-400 transition-colors mb-2"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-forge-400 hover:text-[#1685FF] transition-colors mb-2"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Create Another Project</span>
@@ -180,15 +180,15 @@ export const ProjectPage: React.FC = () => {
             {project.title}
           </h1>
           <div className="flex flex-wrap items-center gap-3 text-xs text-forge-400 mt-2">
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-forge-900 border border-forge-800 text-forge-200 font-medium">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-forge-900 border border-forge-700 text-forge-200 font-medium">
               {project.platform === 'LINKEDIN' ? (
                 <>
-                  <LinkedInIcon className="w-3.5 h-3.5 text-brand-400" />
+                  <LinkedInIcon className="w-3.5 h-3.5 text-[#0A66C2]" />
                   <span>LinkedIn Post Pack</span>
                 </>
               ) : (
                 <>
-                  <InstagramIcon className="w-3.5 h-3.5 text-brand-400" />
+                  <InstagramIcon className="w-3.5 h-3.5 text-[#E1306C]" />
                   <span>Instagram Reel Script</span>
                 </>
               )}
@@ -206,7 +206,7 @@ export const ProjectPage: React.FC = () => {
           <button
             onClick={() => startGenMutation.mutate()}
             disabled={isRunning || startGenMutation.isPending}
-            className="px-4 py-2.5 rounded-xl text-xs font-bold bg-forge-900 hover:bg-forge-800 text-forge-200 hover:text-white border border-forge-700/80 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-lg text-xs font-semibold bg-forge-900 hover:bg-forge-800 text-forge-200 hover:text-white border border-forge-700 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-card"
           >
             <RefreshCw
               className={cn('w-3.5 h-3.5', (isRunning || startGenMutation.isPending) && 'animate-spin')}
@@ -228,10 +228,10 @@ export const ProjectPage: React.FC = () => {
       {isCompleted && (
         <div
           className={cn(
-            'p-5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg',
+            'p-5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-card',
             generation.approved
-              ? 'bg-emerald-950/30 border-emerald-500/40 text-emerald-200'
-              : 'bg-amber-950/30 border-amber-500/40 text-amber-200'
+              ? 'bg-forge-900 border-forge-700 text-forge-200'
+              : 'bg-forge-900 border-amber-500/30 text-amber-200'
           )}
         >
           <div className="flex items-start gap-3">
@@ -255,7 +255,7 @@ export const ProjectPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2 text-xs font-mono font-bold shrink-0">
-            <span className="px-3 py-1 rounded-lg bg-forge-950 border border-forge-800 text-forge-200">
+            <span className="px-3 py-1 rounded-lg bg-forge-950 border border-forge-700 text-forge-200">
               Score: {latestReview?.score || 0}/100
             </span>
           </div>
@@ -266,14 +266,14 @@ export const ProjectPage: React.FC = () => {
       {activeDraft && (
         <div className="space-y-6">
           {/* Tabs Header */}
-          <div className="flex items-center justify-between border-b border-forge-800 pb-2">
+          <div className="flex items-center justify-between border-b border-forge-700 pb-2">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setActiveTab('content')}
                 className={cn(
-                  'px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2',
+                  'px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-2',
                   activeTab === 'content'
-                    ? 'bg-brand-500 text-forge-950 shadow-md shadow-brand-500/10'
+                    ? 'bg-[#0A66C2] text-white shadow-sm'
                     : 'text-forge-400 hover:text-forge-200 hover:bg-forge-900'
                 )}
               >
@@ -284,9 +284,9 @@ export const ProjectPage: React.FC = () => {
               <button
                 onClick={() => setActiveTab('critic')}
                 className={cn(
-                  'px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2',
+                  'px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-2',
                   activeTab === 'critic'
-                    ? 'bg-brand-500 text-forge-950 shadow-md shadow-brand-500/10'
+                    ? 'bg-[#0A66C2] text-white shadow-sm'
                     : 'text-forge-400 hover:text-forge-200 hover:bg-forge-900'
                 )}
               >
@@ -297,9 +297,9 @@ export const ProjectPage: React.FC = () => {
               <button
                 onClick={() => setActiveTab('sources')}
                 className={cn(
-                  'px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2',
+                  'px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-2',
                   activeTab === 'sources'
-                    ? 'bg-brand-500 text-forge-950 shadow-md shadow-brand-500/10'
+                    ? 'bg-[#0A66C2] text-white shadow-sm'
                     : 'text-forge-400 hover:text-forge-200 hover:bg-forge-900'
                 )}
               >
@@ -311,9 +311,9 @@ export const ProjectPage: React.FC = () => {
                 <button
                   onClick={() => setActiveTab('history')}
                   className={cn(
-                    'px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2',
+                    'px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-2',
                     activeTab === 'history'
-                      ? 'bg-brand-500 text-forge-950 shadow-md shadow-brand-500/10'
+                      ? 'bg-[#0A66C2] text-white shadow-sm'
                       : 'text-forge-400 hover:text-forge-200 hover:bg-forge-900'
                   )}
                 >
@@ -330,7 +330,7 @@ export const ProjectPage: React.FC = () => {
                 <select
                   value={selectedIteration || latestDraft.iteration}
                   onChange={(e) => setSelectedIteration(Number(e.target.value))}
-                  className="bg-forge-950 border border-forge-700 rounded-lg px-2.5 py-1 text-xs text-forge-200 focus:outline-none"
+                  className="bg-forge-950 border border-forge-700 rounded-lg px-2.5 py-1 text-xs text-forge-200 focus:outline-none focus:ring-1 focus:ring-[#0A66C2]"
                 >
                   {drafts.map((d) => (
                     <option key={d.iteration} value={d.iteration}>
@@ -379,7 +379,7 @@ export const ProjectPage: React.FC = () => {
                     Verified trail showing drafts, critic rejections, and how the Writer agent refined each cycle.
                   </p>
                 </div>
-                <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-forge-900 border border-forge-800 text-forge-300">
+                <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-forge-900 border border-forge-700 text-forge-300">
                   {drafts.length} Cycles Completed
                 </span>
               </div>
@@ -390,24 +390,24 @@ export const ProjectPage: React.FC = () => {
                   return (
                     <React.Fragment key={draftItem.iteration}>
                       {idx > 0 && (
-                        <div className="flex items-center justify-center my-2 text-xs font-mono text-brand-400 font-bold gap-2">
-                          <div className="h-px bg-forge-800 flex-1" />
-                          <span className="px-3 py-1 rounded-full bg-forge-900/90 border border-brand-500/30 flex items-center gap-1.5 shadow-sm text-[11px]">
-                            <ArrowDown className="w-3.5 h-3.5 text-brand-400 shrink-0" />
+                        <div className="flex items-center justify-center my-2 text-xs font-mono text-[#1685FF] font-semibold gap-2">
+                          <div className="h-px bg-forge-700 flex-1" />
+                          <span className="px-3 py-1 rounded-full bg-forge-900 border border-[#0A66C2]/30 flex items-center gap-1.5 shadow-sm text-[11px]">
+                            <ArrowDown className="w-3.5 h-3.5 text-[#1685FF] shrink-0" />
                             AUTONOMOUS REVISION CYCLE &bull; ADDRESSING CRITIC FEEDBACK
                           </span>
-                          <div className="h-px bg-forge-800 flex-1" />
+                          <div className="h-px bg-forge-700 flex-1" />
                         </div>
                       )}
 
-                      <div className="p-5 rounded-2xl bg-forge-900/50 border border-forge-800 space-y-3.5 hover:border-forge-700/80 transition-all shadow-md">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-forge-800/80 gap-2">
+                      <div className="p-5 rounded-xl bg-forge-900 border border-forge-700 space-y-3.5 hover:border-forge-600 transition-all shadow-card">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-forge-700 gap-2">
                           <div className="flex items-center gap-2.5">
-                            <span className="px-2.5 py-0.5 rounded text-xs font-bold bg-forge-800 text-brand-300 border border-forge-700">
+                            <span className="px-2.5 py-0.5 rounded text-xs font-semibold bg-forge-800 text-[#1685FF] border border-forge-700">
                               Iteration {draftItem.iteration}
                             </span>
                             {draftItem.contentHash && (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-mono text-forge-400 bg-forge-950 px-2 py-0.5 rounded border border-forge-800">
+                              <span className="inline-flex items-center gap-1 text-[11px] font-mono text-forge-400 bg-forge-950 px-2 py-0.5 rounded border border-forge-700">
                                 <Hash className="w-3 h-3 text-forge-500" />
                                 SHA: {draftItem.contentHash.substring(0, 8)}
                               </span>
@@ -420,7 +420,7 @@ export const ProjectPage: React.FC = () => {
                           {revItem && (
                             <span
                               className={cn(
-                                'text-xs font-bold px-3 py-1 rounded-full inline-flex items-center gap-1.5 self-start sm:self-auto',
+                                'text-xs font-semibold px-3 py-1 rounded-full inline-flex items-center gap-1.5 self-start sm:self-auto',
                                 revItem.approved
                                   ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                                   : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
@@ -438,7 +438,7 @@ export const ProjectPage: React.FC = () => {
 
                         {/* Identified Critic Concerns for this cycle */}
                         {revItem && !revItem.approved && revItem.issues.length > 0 && (
-                          <div className="p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-amber-300 space-y-1.5">
+                          <div className="p-3.5 rounded-lg bg-amber-500/5 border border-amber-500/20 text-xs text-amber-300 space-y-1.5">
                             <strong className="block text-amber-200 font-semibold flex items-center gap-1.5">
                               <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
                               Critic Concerns Identified (Dispatched to Writer):
@@ -453,7 +453,7 @@ export const ProjectPage: React.FC = () => {
 
                         {/* Applied Revisions on this cycle (if revision) */}
                         {draftItem.revisionNotes && draftItem.revisionNotes.length > 0 && (
-                          <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-xs text-emerald-300 space-y-1.5">
+                          <div className="p-3.5 rounded-lg bg-emerald-500/5 border border-emerald-500/20 text-xs text-emerald-300 space-y-1.5">
                             <strong className="block text-emerald-200 font-semibold flex items-center gap-1.5">
                               <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
                               Revisions Applied by Writer Agent in this Draft:
@@ -472,7 +472,7 @@ export const ProjectPage: React.FC = () => {
                               setSelectedIteration(draftItem.iteration);
                               setActiveTab('content');
                             }}
-                            className="text-xs font-bold text-brand-400 hover:text-brand-300 transition-colors cursor-pointer inline-flex items-center gap-1"
+                            className="text-xs font-semibold text-[#1685FF] hover:text-[#0A66C2] transition-colors cursor-pointer inline-flex items-center gap-1"
                           >
                             <span>Inspect Full Draft {draftItem.iteration}</span>
                             <span>&rarr;</span>
@@ -484,7 +484,7 @@ export const ProjectPage: React.FC = () => {
                                 setSelectedIteration(draftItem.iteration);
                                 setActiveTab('critic');
                               }}
-                              className="text-xs font-bold text-forge-400 hover:text-forge-200 transition-colors cursor-pointer"
+                              className="text-xs font-semibold text-forge-400 hover:text-forge-200 transition-colors cursor-pointer"
                             >
                               View Critic Review &rarr;
                             </button>

@@ -52,9 +52,9 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
   return (
     <div className="space-y-6">
       {/* Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-forge-900/60 border border-forge-800 backdrop-blur-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-forge-900 border border-forge-700 shadow-card">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
+          <div className="w-9 h-9 rounded-lg bg-[#0A66C2]/15 border border-[#0A66C2]/30 flex items-center justify-center text-[#0A66C2]">
             <LinkedInIcon className="w-5 h-5" />
           </div>
           <div>
@@ -67,7 +67,7 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
 
         <button
           onClick={handleCopyAll}
-          className="px-4 py-2 rounded-xl text-xs font-bold bg-brand-500 hover:bg-brand-400 text-forge-950 transition-all flex items-center gap-2 shrink-0 cursor-pointer shadow-md shadow-brand-500/10"
+          className="px-4 py-2 rounded-lg text-xs font-semibold bg-[#0A66C2] hover:bg-[#1685FF] text-white transition-all flex items-center gap-2 shrink-0 cursor-pointer shadow-sm"
         >
           {copiedAll ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
           <span>{copiedAll ? 'Copied All Posts!' : 'Copy All 5 Posts'}</span>
@@ -83,15 +83,15 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
           return (
             <div
               key={post.id || idx}
-              className="bg-forge-900/40 border border-forge-800 rounded-2xl p-6 backdrop-blur-sm hover:border-forge-700/80 transition-all shadow-lg"
+              className="bg-forge-900 border border-forge-700 rounded-xl p-6 shadow-card hover:border-forge-600 transition-colors"
             >
               {/* Post Header */}
-              <div className="flex items-center justify-between pb-4 mb-4 border-b border-forge-800/80">
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-forge-700">
                 <div className="flex items-center gap-2.5">
-                  <span className="w-6 h-6 rounded-lg bg-forge-800 text-forge-300 text-xs font-bold flex items-center justify-center">
+                  <span className="w-6 h-6 rounded bg-forge-800 text-forge-300 text-xs font-semibold flex items-center justify-center">
                     {idx + 1}
                   </span>
-                  <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-brand-500/10 text-brand-400 border border-brand-500/20">
+                  <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-[#0A66C2]/15 text-[#1685FF] border border-[#0A66C2]/30">
                     {post.angle}
                   </span>
                 </div>
@@ -108,12 +108,12 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
 
                   <button
                     onClick={() => handleCopyPost(post)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-forge-800 hover:bg-forge-700 text-forge-200 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer border border-forge-700/80"
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-forge-800 hover:bg-forge-700 text-forge-200 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer border border-forge-700"
                   >
                     {isCopied ? (
                       <>
                         <Check className="w-3.5 h-3.5 text-emerald-400" />
-                        <span className="text-emerald-400 font-bold">Copied!</span>
+                        <span className="text-emerald-400 font-semibold">Copied!</span>
                       </>
                     ) : (
                       <>
@@ -126,8 +126,8 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
               </div>
 
               {/* Hook Banner */}
-              <div className="mb-4 p-3.5 rounded-xl bg-forge-950/70 border border-brand-500/20">
-                <span className="text-[10px] font-bold text-brand-400 uppercase tracking-wider block mb-1">
+              <div className="mb-4 p-3.5 rounded-lg bg-forge-950 border border-forge-700">
+                <span className="text-[10px] font-semibold text-[#1685FF] uppercase tracking-wider block mb-1">
                   Scroll-Stopping Hook
                 </span>
                 <p className="text-sm font-semibold text-white leading-snug">
@@ -142,7 +142,7 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
                     rows={8}
                     value={post.body}
                     onChange={(e) => handleTextChange(post.id, e.target.value)}
-                    className="w-full rounded-xl bg-forge-950 border border-forge-700 p-3 text-sm text-forge-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full rounded-lg bg-forge-950 border border-forge-700 p-3 text-sm text-forge-100 focus:outline-none focus:ring-1 focus:ring-[#0A66C2]"
                   />
                 ) : (
                   <div className="text-sm text-forge-200 leading-relaxed whitespace-pre-wrap font-sans">
@@ -153,9 +153,9 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
 
               {/* CTA */}
               {post.cta && (
-                <div className="pt-3 border-t border-forge-800/60 flex items-center justify-between text-xs text-forge-400">
+                <div className="pt-3 border-t border-forge-700 flex items-center justify-between text-xs text-forge-400">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-brand-400">CTA:</span>
+                    <span className="font-semibold text-[#1685FF]">CTA:</span>
                     <span className="italic text-forge-300">{post.cta}</span>
                   </div>
                   <div className="hidden sm:flex items-center gap-3 text-forge-500">
