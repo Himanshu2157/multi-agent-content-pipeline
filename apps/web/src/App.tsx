@@ -1,11 +1,21 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Navbar } from './components/Navbar.js';
 import { InteractiveBackground } from './components/InteractiveBackground.js';
 import { StartPage } from './pages/StartPage.js';
 import { HomePage } from './pages/HomePage.js';
 import { ProjectPage } from './pages/ProjectPage.js';
+
+const ScrollToTop: React.FC = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [pathname]);
+
+  return null;
+};
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,6 +30,7 @@ export const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <ScrollToTop />
         <div className="min-h-screen flex flex-col bg-[#0B0F17] text-[#F5F7FA] relative selection:bg-[#1685FF]/30 selection:text-[#1685FF]">
           {/* Continuous Full-Page Subtle Ambient Gradient & Dynamic Cursor Spotlight Effect */}
           <InteractiveBackground />

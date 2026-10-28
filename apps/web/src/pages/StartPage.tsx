@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Sparkles,
@@ -19,56 +19,65 @@ import {
 } from 'lucide-react';
 import { LinkedInIcon } from '../components/icons.js';
 import { RevealOnScroll } from '../components/RevealOnScroll.js';
+import { DotField, type DotFieldHandle } from '@/components/ui/dot-field';
+import { ScatteredHeading } from '@/components/ui/scattered-heading';
 
 export const StartPage: React.FC = () => {
+  const dotFieldRef = useRef<DotFieldHandle>(null);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, []);
+
   return (
     <div className="relative min-h-screen text-[#F5F7FA] overflow-x-hidden">
       {/* Content wrapper sitting cleanly above the ambient and cursor canvas */}
       <div className="relative z-20">
         {/* ============================================================
-            HERO SECTION
+            HERO SECTION: INTERACTIVE CANVAS DOT FIELD
+            Pure, unhindered headline with 3D flocking and scattering
             ============================================================ */}
-        <section className="relative pt-16 pb-24 md:pt-28 md:pb-36 px-4 sm:px-6 lg:px-8 border-b border-[#202C3D]/60">
-          <div className="max-w-5xl mx-auto text-center">
-            {/* Eyebrow Tagline with Scroll Reveal */}
-            <RevealOnScroll direction="down" delay={50}>
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#111A27]/90 border border-[#202C3D] text-xs font-semibold text-[#1685FF] shadow-sm backdrop-blur-md mb-6 hover:border-[#1685FF]/50 transition-colors">
-                <Sparkles className="w-3.5 h-3.5 text-[#1685FF]" />
-                <span>Autonomous Multi-Agent Content Pipeline</span>
-              </div>
-            </RevealOnScroll>
+        <DotField
+          ref={dotFieldRef}
+          headline="Autonomous Content Built with Precision."
+          accent="#1685FF"
+          fontFamily="Geist, Plus Jakarta Sans, system-ui, sans-serif"
+          fontWeight={600}
+          repelRadius={120}
+          scrollScatter={true}
+          scrollHint={false}
+        />
 
-            {/* Main Title with Scroll Reveal */}
-            <RevealOnScroll direction="up" delay={150}>
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.12]">
-                High-Impact Content Built with{' '}
-                <span className="spectrum-gradient-text">Autonomous Multi-Agent</span>{' '}
-                Precision
-              </h1>
-            </RevealOnScroll>
-
-            {/* Description with Scroll Reveal */}
-            <RevealOnScroll direction="up" delay={250}>
-              <p className="text-base sm:text-xl text-[#AAB4C5] max-w-3xl mx-auto leading-relaxed mb-10">
-                Content<span className="spectrum-gradient-text font-bold">Smith</span> deploys a specialized trio of Research, Writer, and Critic agents that verify real-world facts, enforce strict topic fidelity, and autonomously iterate until quality is guaranteed.
+        {/* ============================================================
+            TRANSITION SECTION: SHIFTED DOWN FROM HERO
+            Appears smoothly with scroll animation after scattering
+            ============================================================ */}
+        <section className="min-h-[85vh] flex flex-col justify-center py-32 md:py-48 px-4 sm:px-6 lg:px-8 border-b border-[#202C3D]/60 relative backdrop-blur-[2px]">
+          <div className="max-w-4xl mx-auto text-center">
+            <RevealOnScroll direction="up" delay={50}>
+              <p className="text-xl sm:text-2xl md:text-3xl font-medium text-[#D2D8E2] leading-relaxed tracking-tight">
+                Content<span className="spectrum-gradient-text font-bold">Smith</span> deploys a specialized trio of{' '}
+                <span className="text-white font-semibold underline decoration-[#1685FF]/50 decoration-2 underline-offset-4">Research</span>,{' '}
+                <span className="text-white font-semibold underline decoration-[#B845C8]/50 decoration-2 underline-offset-4">Writer</span>, and{' '}
+                <span className="text-white font-semibold underline decoration-[#E1306C]/50 decoration-2 underline-offset-4">Critic</span> agents{' '}
+                that verify real-world facts, enforce strict topic fidelity, and autonomously iterate until quality is guaranteed.
               </p>
             </RevealOnScroll>
 
-            {/* Primary & Secondary Call to Actions with Scroll Reveal */}
-            <RevealOnScroll direction="up" delay={350}>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <RevealOnScroll direction="up" delay={200}>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
                 <Link
                   to="/create"
-                  className="w-full sm:w-auto spectrum-gradient-btn px-8 py-4 rounded-xl text-base font-bold shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all flex items-center justify-center gap-3 cursor-pointer group hover:scale-[1.02]"
+                  className="w-full sm:w-auto spectrum-gradient-btn px-8 py-4 rounded-full text-sm sm:text-base font-bold shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all flex items-center justify-center gap-3 cursor-pointer group hover:scale-[1.02]"
                 >
-                  <Sliders className="w-5 h-5" />
+                  <Sliders className="w-4.5 h-4.5" />
                   <span>Configure Content Generation</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
                 </Link>
 
                 <a
                   href="#flowchart"
-                  className="w-full sm:w-auto px-6 py-4 rounded-xl text-sm font-semibold bg-[#111A27]/80 hover:bg-[#151F2E] text-[#D2D8E2] hover:text-white border border-[#202C3D] hover:border-[#35445A] transition-all backdrop-blur-md flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-6 py-4 rounded-full text-sm font-semibold bg-[#111A27]/85 hover:bg-[#151F2E] text-[#D2D8E2] hover:text-white border border-[#202C3D] hover:border-[#35445A] transition-all backdrop-blur-md flex items-center justify-center gap-2"
                 >
                   <span>Explore Agent Flowchart</span>
                   <ArrowDown className="w-4 h-4 text-[#1685FF]" />
@@ -76,9 +85,8 @@ export const StartPage: React.FC = () => {
               </div>
             </RevealOnScroll>
 
-            {/* Core Guarantees Chips with Scroll Reveal */}
-            <RevealOnScroll direction="up" delay={450}>
-              <div className="flex flex-wrap items-center justify-center gap-6 mt-12 text-xs text-[#7F8BA0]">
+            <RevealOnScroll direction="up" delay={300}>
+              <div className="flex flex-wrap items-center justify-center gap-6 mt-8 text-xs text-[#7F8BA0]">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   <span>Zero Fabricated Citations</span>
@@ -89,7 +97,7 @@ export const StartPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#E1306C]" />
-                  <span>LinkedIn & Instagram Reel Ready</span>
+                  <span>LinkedIn &amp; Instagram Reel Ready</span>
                 </div>
               </div>
             </RevealOnScroll>
@@ -99,22 +107,26 @@ export const StartPage: React.FC = () => {
         {/* ============================================================
             PROJECT OVERVIEW: WHY CONTENTSMITH?
             ============================================================ */}
-        <section className="py-24 px-4 sm:px-6 lg:px-8 border-b border-[#202C3D]/60 backdrop-blur-[2px]">
+        <section className="py-36 md:py-52 px-4 sm:px-6 lg:px-8 border-b border-[#202C3D]/60 backdrop-blur-[2px]">
           <div className="max-w-6xl mx-auto">
             {/* Section Header */}
-            <RevealOnScroll direction="up">
-              <div className="text-center max-w-3xl mx-auto mb-16">
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <RevealOnScroll direction="up">
                 <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-[#1685FF] mb-2">
                   THE AUTONOMOUS ADVANTAGE
                 </h2>
-                <h3 className="text-3xl sm:text-4xl font-extrabold text-white">
-                  Why Single-Prompt AI Fails & How Multi-Agent Teams Win
-                </h3>
+              </RevealOnScroll>
+              <ScatteredHeading
+                text="Why Single-Prompt AI Fails & How Multi-Agent Teams Win"
+                as="h3"
+                accent="#1685FF"
+              />
+              <RevealOnScroll direction="up" delay={80}>
                 <p className="text-sm sm:text-base text-[#AAB4C5] mt-3 leading-relaxed">
                   Standard LLMs suffer from prompt fatigue, superficial advice, and hallucinated URLs. ContentSmith solves this through true specialization and separation of concerns.
                 </p>
-              </div>
-            </RevealOnScroll>
+              </RevealOnScroll>
+            </div>
 
             {/* Feature Cards Grid with Staggered Scroll Reveal */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -175,18 +187,22 @@ export const StartPage: React.FC = () => {
         {/* ============================================================
             AGENT FLOWCHART ARCHITECTURE SECTION
             ============================================================ */}
-        <section id="flowchart" className="py-28 px-4 sm:px-6 lg:px-8 border-b border-[#202C3D]/60 backdrop-blur-[2px]">
+        <section id="flowchart" className="py-36 md:py-52 px-4 sm:px-6 lg:px-8 border-b border-[#202C3D]/60 backdrop-blur-[2px]">
           <div className="max-w-6xl mx-auto">
             {/* Flowchart Header */}
-            <RevealOnScroll direction="up">
-              <div className="text-center max-w-3xl mx-auto mb-16">
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <RevealOnScroll direction="up">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#111A27] border border-[#202C3D] text-[11px] font-bold uppercase tracking-wider text-[#1685FF] mb-3">
                   <Layers className="w-3.5 h-3.5" />
                   <span>Multi-Agent State Machine</span>
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-                  Autonomous Agent Lifecycle Flowchart
-                </h2>
+              </RevealOnScroll>
+              <ScatteredHeading
+                text="Autonomous Agent Lifecycle Flowchart"
+                as="h2"
+                accent="#1685FF"
+              />
+              <RevealOnScroll direction="up" delay={80}>
                 <p className="text-sm sm:text-base text-[#AAB4C5] mt-3 leading-relaxed">
                   Each topic progresses through a deterministic graph of autonomous specialized agents. Follow the state transitions below from semantic ingestion to the adversarial quality loop.
                 </p>
@@ -213,8 +229,8 @@ export const StartPage: React.FC = () => {
                     5. Critic &amp; Refine Loop
                   </span>
                 </div>
-              </div>
-            </RevealOnScroll>
+              </RevealOnScroll>
+            </div>
 
             {/* ============================================================
                 PHASE 1: GROUND-TRUTH INTELLIGENCE & STRATEGY (STEPS 1, 2, 3)
@@ -537,22 +553,26 @@ export const StartPage: React.FC = () => {
         {/* ============================================================
             PLATFORM DELIVERABLES SHOWCASE
             ============================================================ */}
-        <section className="py-24 px-4 sm:px-6 lg:px-8 border-b border-[#202C3D]/60 backdrop-blur-[2px]">
+        <section className="py-36 md:py-52 px-4 sm:px-6 lg:px-8 border-b border-[#202C3D]/60 backdrop-blur-[2px]">
           <div className="max-w-6xl mx-auto">
             {/* Deliverables Header */}
-            <RevealOnScroll direction="up">
-              <div className="text-center max-w-3xl mx-auto mb-16">
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <RevealOnScroll direction="up">
                 <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-[#1685FF] mb-2">
                   OUTPUT FORMATS
                 </h2>
-                <h3 className="text-3xl sm:text-4xl font-extrabold text-white">
-                  Engineered for Distribution & Engagement
-                </h3>
+              </RevealOnScroll>
+              <ScatteredHeading
+                text="Engineered for Distribution & Engagement"
+                as="h3"
+                accent="#1685FF"
+              />
+              <RevealOnScroll direction="up" delay={80}>
                 <p className="text-sm sm:text-base text-[#AAB4C5] mt-3 leading-relaxed">
                   Choose your target platform. ContentSmith generates production-ready deliverables formatted for immediate copy-pasting or recording.
                 </p>
-              </div>
-            </RevealOnScroll>
+              </RevealOnScroll>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* LinkedIn Showcase */}
@@ -631,7 +651,7 @@ export const StartPage: React.FC = () => {
         {/* ============================================================
             BOTTOM CTA BANNER
             ============================================================ */}
-        <section className="py-24 px-4 sm:px-6 lg:px-8">
+        <section className="pt-36 pb-56 px-4 sm:px-6 lg:px-8">
           <RevealOnScroll direction="up">
             <div className="max-w-4xl mx-auto text-center p-10 sm:p-14 rounded-3xl bg-[#111A27]/90 backdrop-blur-md border border-[#202C3D] shadow-2xl relative overflow-hidden group hover:border-[#1685FF]/40 transition-colors">
               {/* Subtle Glowing Radial Accents */}

@@ -53,6 +53,27 @@ export default {
           pink: '#E1306C',
           orange: '#F77737',
         },
+        /* Shadcn Core Tokens mapped to Midnight Spectrum */
+        background: '#0B0F17',
+        foreground: '#F5F7FA',
+        border: '#202C3D',
+        ring: '#1685FF',
+        muted: {
+          DEFAULT: '#111A27',
+          foreground: '#7F8BA0',
+        },
+        card: {
+          DEFAULT: '#111A27',
+          foreground: '#F5F7FA',
+        },
+        popover: {
+          DEFAULT: '#111A27',
+          foreground: '#F5F7FA',
+        },
+        primary: {
+          DEFAULT: '#1685FF',
+          foreground: '#FFFFFF',
+        },
       },
       boxShadow: {
         'card': '0 4px 16px rgba(0, 0, 0, 0.22)',
