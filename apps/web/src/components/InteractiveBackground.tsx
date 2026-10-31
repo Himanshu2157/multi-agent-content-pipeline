@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 // ============================================================================
-// STRICT MONOCHROME PALETTE
+// REFINED MONOCHROME & ACCENT PALETTE
+// Predominantly monochrome/soft gray with occasional subtle blue & magenta lighting
 // ============================================================================
-const MONO_COLORS = [
-  '#FFFFFF', // Crisp White
-  '#D9D9D9', // Light Gray
-  '#808080', // Medium Gray
-  '#404040', // Dark Gray
-  '#000000', // Deep Obsidian Black
+const PARTICLE_COLORS = [
+  '#E8EDF7', // Crisp Off-White (Primary text harmony)
+  '#D9D9D9', // Soft Light Gray
+  '#A1A9BA', // Muted Cool Gray
+  '#404040', // Dark Slate Depth
+  '#2787FF', // Electric Blue (Occasional Accent)
+  '#D21BCE', // Magenta (Occasional Accent)
 ] as const;
 
 // ============================================================================
@@ -317,7 +319,7 @@ type OffscreenCache = HTMLCanvasElement[][];
 
 const createOffscreenCache = (): OffscreenCache => {
   const cache: OffscreenCache = [];
-  const baseSize = 64;
+  const baseSize = 56;
   const padding = 6;
   const drawArea = baseSize - padding * 2;
   const scale = drawArea / 24;
@@ -326,8 +328,8 @@ const createOffscreenCache = (): OffscreenCache => {
     cache[i] = [];
     const iconDef = ICON_DEFINITIONS[i];
 
-    for (let c = 0; c < MONO_COLORS.length; c++) {
-      const color = MONO_COLORS[c];
+    for (let c = 0; c < PARTICLE_COLORS.length; c++) {
+      const color = PARTICLE_COLORS[c];
       const canvas = document.createElement('canvas');
       canvas.width = baseSize;
       canvas.height = baseSize;
@@ -340,13 +342,13 @@ const createOffscreenCache = (): OffscreenCache => {
 
         ctx.strokeStyle = color;
         ctx.fillStyle = color;
-        ctx.lineWidth = 1.85;
+        ctx.lineWidth = 1.75;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
 
-        // For black particles, apply a fine subtle contour so it reads as deep obsidian
-        if (color === '#000000') {
-          ctx.shadowColor = 'rgba(255, 255, 255, 0.25)';
+        // For dark/silhouette particles, subtle contour
+        if (color === '#404040') {
+          ctx.shadowColor = 'rgba(232, 237, 247, 0.15)';
           ctx.shadowBlur = 1;
         }
 
@@ -371,7 +373,7 @@ interface Particle {
   baseSize: number;
   x: number;
   y: number;
-  z: number; // 0.2 (closest, larger, crisper) to 1.8 (far away, smaller, soft)
+  z: number; // 0.2 (closest, crisper) to 1.8 (far away, smaller, soft)
   vx: number;
   vy: number;
   vz: number;
@@ -401,45 +403,49 @@ const createParticle = (
   height: number,
   randomPlacement = true
 ): Particle => {
-  // Ensure balanced distribution between social brands (~35%) and engagement icons (~65%)
+  // Ensure balanced distribution between social brands (~30%) and engagement icons (~70%)
   let iconIndex = 0;
-  if (Math.random() < 0.35) {
+  if (Math.random() < 0.30) {
     iconIndex = Math.floor(Math.random() * 5); // 0..4 Social logos
   } else {
     iconIndex = 5 + Math.floor(Math.random() * 14); // 5..18 Engagement icons
   }
 
-  // Color distribution: white & light gray favored for crisp foreground/midground,
-  // dark gray & black for depth silhouettes
+  // Color distribution: 85%+ monochrome (off-white, light gray, cool gray, slate),
+  // with ~15% subtle electric blue / magenta lighting accents
   const randColor = Math.random();
   let colorIndex = 0;
-  if (randColor < 0.32) {
-    colorIndex = 0; // #FFFFFF
-  } else if (randColor < 0.62) {
-    colorIndex = 1; // #D9D9D9
-  } else if (randColor < 0.82) {
-    colorIndex = 2; // #808080
+  if (randColor < 0.30) {
+    colorIndex = 0; // #E8EDF7 (Off-White)
+  } else if (randColor < 0.58) {
+    colorIndex = 1; // #D9D9D9 (Soft Light Gray)
+  } else if (randColor < 0.78) {
+    colorIndex = 2; // #A1A9BA (Muted Cool Gray)
+  } else if (randColor < 0.88) {
+    colorIndex = 3; // #404040 (Dark Slate Depth)
   } else if (randColor < 0.94) {
-    colorIndex = 3; // #404040
+    colorIndex = 4; // #2787FF (Electric Blue Accent)
   } else {
-    colorIndex = 4; // #000000
+    colorIndex = 5; // #D21BCE (Magenta Accent)
   }
 
-  const z = 0.25 + Math.random() * 1.5; // Depth range: 0.25 to 1.75
-  const baseSize = 22 + Math.random() * 12; // Base size before perspective
+  const z = 0.35 + Math.random() * 1.45; // Depth range: 0.35 to 1.80
+  // Sizing: restrained, elegant 15px - 23px (avoiding oversized icons)
+  const baseSize = 15 + Math.random() * 8;
 
-  // Velocity: gentle slow drift in different directions (floating in zero-g)
-  const vx = (Math.random() - 0.5) * 0.35;
-  const vy = -0.08 - Math.random() * 0.28; // Gentle upward/ambient drift
-  const vz = (Math.random() - 0.5) * 0.002;
+  // Velocity: gentle slow drift (floating smoothly in zero-g)
+  const vx = (Math.random() - 0.5) * 0.16;
+  const vy = -0.04 - Math.random() * 0.12; // Slow upward ambient drift
+  const vz = (Math.random() - 0.5) * 0.001;
 
-  // Base opacity based on color and depth
-  let baseOpacity = 0.22;
-  if (colorIndex === 0) baseOpacity = 0.26 + Math.random() * 0.14; // #FFFFFF
-  else if (colorIndex === 1) baseOpacity = 0.22 + Math.random() * 0.12; // #D9D9D9
-  else if (colorIndex === 2) baseOpacity = 0.18 + Math.random() * 0.10; // #808080
-  else if (colorIndex === 3) baseOpacity = 0.14 + Math.random() * 0.08; // #404040
-  else baseOpacity = 0.16 + Math.random() * 0.08; // #000000
+  // Restrained, soft opacity based on color and depth
+  let baseOpacity = 0.14;
+  if (colorIndex === 0) baseOpacity = 0.15 + Math.random() * 0.08; // #E8EDF7
+  else if (colorIndex === 1) baseOpacity = 0.12 + Math.random() * 0.06; // #D9D9D9
+  else if (colorIndex === 2) baseOpacity = 0.10 + Math.random() * 0.05; // #A1A9BA
+  else if (colorIndex === 3) baseOpacity = 0.08 + Math.random() * 0.04; // #404040
+  else if (colorIndex === 4) baseOpacity = 0.16 + Math.random() * 0.08; // #2787FF
+  else baseOpacity = 0.15 + Math.random() * 0.07; // #D21BCE
 
   return {
     id,
@@ -447,27 +453,27 @@ const createParticle = (
     colorIndex,
     baseSize,
     x: randomPlacement ? Math.random() * width : Math.random() * width,
-    y: randomPlacement ? Math.random() * height : height + 30 + Math.random() * 40,
+    y: randomPlacement ? Math.random() * height : height + 25 + Math.random() * 35,
     z,
     vx,
     vy,
     vz,
-    swayAmpX: 0.6 + Math.random() * 0.8,
-    swayFreqX: 0.006 + Math.random() * 0.012,
+    swayAmpX: 0.4 + Math.random() * 0.4,
+    swayFreqX: 0.005 + Math.random() * 0.008,
     swayPhaseX: Math.random() * Math.PI * 2,
-    swayAmpY: 0.4 + Math.random() * 0.6,
-    swayFreqY: 0.005 + Math.random() * 0.010,
+    swayAmpY: 0.3 + Math.random() * 0.4,
+    swayFreqY: 0.004 + Math.random() * 0.007,
     swayPhaseY: Math.random() * Math.PI * 2,
     rotZ: Math.random() * Math.PI * 2,
-    speedRotZ: (Math.random() - 0.5) * 0.008,
-    tiltAmpX: 0.2 + Math.random() * 0.25,
-    tiltFreqX: 0.005 + Math.random() * 0.009,
+    speedRotZ: (Math.random() - 0.5) * 0.004, // Very slow, calm rotation
+    tiltAmpX: 0.15 + Math.random() * 0.15,
+    tiltFreqX: 0.004 + Math.random() * 0.006,
     tiltPhaseX: Math.random() * Math.PI * 2,
-    tiltAmpY: 0.25 + Math.random() * 0.3,
-    tiltFreqY: 0.006 + Math.random() * 0.011,
+    tiltAmpY: 0.18 + Math.random() * 0.2,
+    tiltFreqY: 0.004 + Math.random() * 0.007,
     tiltPhaseY: Math.random() * Math.PI * 2,
     baseOpacity,
-    pulseFreq: 0.008 + Math.random() * 0.015,
+    pulseFreq: 0.006 + Math.random() * 0.010,
     pulsePhase: Math.random() * Math.PI * 2,
   };
 };
@@ -483,11 +489,11 @@ export const InteractiveBackground: React.FC = () => {
   // Mouse interaction state refs
   const mouseRef = useRef({ x: -1000, y: -1000, active: false });
 
-  // Responsive particle density calculation
+  // Restrained responsive particle density (preventing clutter / gaming look)
   const getTargetParticleCount = (width: number) => {
-    if (width >= 1280) return 110; // Desktop
-    if (width >= 768) return 80;   // Laptop / Tablet
-    return 48;                     // Mobile
+    if (width >= 1280) return 60; // Desktop: 60 clean, floating particles
+    if (width >= 768) return 42;  // Tablet
+    return 24;                    // Mobile: lightweight and non-distracting
   };
 
   useEffect(() => {
@@ -500,7 +506,7 @@ export const InteractiveBackground: React.FC = () => {
     // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Pre-render offscreen cache for all 19 icons in 5 monochrome colors
+    // Pre-render offscreen cache for all icons in monochrome & accent colors
     const offscreenCache = createOffscreenCache();
 
     let width = window.innerWidth;
@@ -541,25 +547,25 @@ export const InteractiveBackground: React.FC = () => {
       if (edge < 0.6) {
         // Respawn just below bottom
         p.x = Math.random() * width;
-        p.y = height + 40;
+        p.y = height + 30;
       } else if (edge < 0.8) {
         // Respawn from right
-        p.x = width + 40;
+        p.x = width + 30;
         p.y = Math.random() * height;
       } else {
         // Respawn from left
-        p.x = -40;
+        p.x = -30;
         p.y = Math.random() * height;
       }
 
-      p.z = 0.35 + Math.random() * 1.4;
-      p.vx = (Math.random() - 0.5) * 0.35;
-      p.vy = -0.08 - Math.random() * 0.28;
+      p.z = 0.35 + Math.random() * 1.45;
+      p.vx = (Math.random() - 0.5) * 0.16;
+      p.vy = -0.04 - Math.random() * 0.12;
       p.rotZ = Math.random() * Math.PI * 2;
     };
 
     // ------------------------------------------------------------------------
-    // ANIMATION RENDER LOOP (60+ FPS)
+    // ANIMATION RENDER LOOP (60+ FPS, Hardware Accelerated)
     // ------------------------------------------------------------------------
     const render = () => {
       time += 1;
@@ -577,9 +583,9 @@ export const InteractiveBackground: React.FC = () => {
         const swayY = Math.cos(time * p.swayFreqY + p.swayPhaseY) * p.swayAmpY;
 
         // Reduce velocity if user prefers reduced motion
-        const speedFactor = prefersReducedMotion ? 0.2 : 1.0;
-        p.x += (p.vx + swayX * 0.3) * speedFactor;
-        p.y += (p.vy + swayY * 0.2) * speedFactor;
+        const speedFactor = prefersReducedMotion ? 0.15 : 1.0;
+        p.x += (p.vx + swayX * 0.25) * speedFactor;
+        p.y += (p.vy + swayY * 0.15) * speedFactor;
         p.z += p.vz * speedFactor;
 
         // Subtle gentle cursor repulsion when mouse is near (organic interactive aura)
@@ -587,10 +593,10 @@ export const InteractiveBackground: React.FC = () => {
           const dx = p.x - mouse.x;
           const dy = p.y - mouse.y;
           const distSq = dx * dx + dy * dy;
-          const maxDist = 120;
+          const maxDist = 110;
           if (distSq < maxDist * maxDist && distSq > 1) {
             const dist = Math.sqrt(distSq);
-            const force = (1 - dist / maxDist) * 0.65;
+            const force = (1 - dist / maxDist) * 0.45;
             p.x += (dx / dist) * force;
             p.y += (dy / dist) * force;
           }
@@ -598,32 +604,31 @@ export const InteractiveBackground: React.FC = () => {
 
         // Respawn condition
         if (
-          p.x < -60 ||
-          p.x > width + 60 ||
-          p.y < -60 ||
-          p.y > height + 60 ||
-          p.z < 0.2 ||
-          p.z > 1.85
+          p.x < -50 ||
+          p.x > width + 50 ||
+          p.y < -50 ||
+          p.y > height + 50 ||
+          p.z < 0.25 ||
+          p.z > 1.90
         ) {
           respawn(p);
           continue;
         }
 
         // 2. Perspective Projection & Scaling
-        // Scale decreases with depth z, creating a true 3D frustum
-        const scale = 1.0 / (0.55 + 0.65 * p.z);
+        const scale = 1.0 / (0.60 + 0.60 * p.z);
 
         // 3. Natural Edge & Depth Fading
         const fadeX = Math.min(1, Math.max(0, p.x / margin), Math.max(0, (width - p.x) / margin));
         const fadeY = Math.min(1, Math.max(0, p.y / margin), Math.max(0, (height - p.y) / margin));
         const fadeZ = Math.min(
           1,
-          Math.max(0, (p.z - 0.2) / 0.15),
-          Math.max(0, (1.85 - p.z) / 0.2)
+          Math.max(0, (p.z - 0.25) / 0.15),
+          Math.max(0, (1.90 - p.z) / 0.20)
         );
 
         // Subtle breathing pulse
-        const pulse = 0.88 + 0.12 * Math.sin(time * p.pulseFreq + p.pulsePhase);
+        const pulse = 0.90 + 0.10 * Math.sin(time * p.pulseFreq + p.pulsePhase);
         const alpha = p.baseOpacity * fadeX * fadeY * fadeZ * pulse;
 
         if (alpha <= 0.005) continue;
@@ -704,16 +709,17 @@ export const InteractiveBackground: React.FC = () => {
         ============================================================
         3D FLOATING MONOCHROME SOCIAL MEDIA PARTICLE CANVAS
         Placed strictly behind content (z-0), pointer-events: none
+        Pure black foundation with restrained, controlled lighting
         ============================================================
       */}
       <div className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden">
-        {/* Subtle Ambient Base Gradient Mesh (Deep Midnight #0B0F17) */}
-        <div className="absolute inset-0 bg-[#0B0F17]" />
+        {/* Pure Black Canvas Foundation (#000000) */}
+        <div className="absolute inset-0 bg-[#000000]" />
 
-        {/* Soft Ambient Radial Glows (subtle backdrop illumination) */}
-        <div className="absolute -top-32 left-1/4 w-[500px] h-[500px] rounded-full bg-[#1685FF]/8 blur-[140px] pointer-events-none" />
-        <div className="absolute top-1/3 -right-32 w-[550px] h-[550px] rounded-full bg-[#833AB4]/6 blur-[150px] pointer-events-none" />
-        <div className="absolute bottom-20 left-10 w-[500px] h-[500px] rounded-full bg-[#0077B5]/6 blur-[140px] pointer-events-none" />
+        {/* Controlled, Restrained Lighting Accents (Predominantly black, never washed out) */}
+        <div className="absolute -top-40 left-1/3 w-[600px] h-[450px] rounded-full bg-[#2787FF]/[0.035] blur-[160px] pointer-events-none" />
+        <div className="absolute top-1/2 -right-36 w-[500px] h-[500px] rounded-full bg-[#D21BCE]/[0.025] blur-[170px] pointer-events-none" />
+        <div className="absolute bottom-10 left-10 w-[500px] h-[400px] rounded-full bg-[#2787FF]/[0.025] blur-[160px] pointer-events-none" />
 
         {/* Full-Viewport 3D Particle Canvas */}
         <canvas
@@ -721,14 +727,14 @@ export const InteractiveBackground: React.FC = () => {
           className="absolute inset-0 w-full h-full pointer-events-none"
         />
 
-        {/* Minimal Vignette for readable content contrast */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0B0F17]/30 via-transparent to-[#0B0F17]/70 pointer-events-none" />
+        {/* Subtle Edge Vignette for deep cinematic contrast */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#000000]/40 via-transparent to-[#000000]/80 pointer-events-none" />
       </div>
 
       {/* 
         ============================================================
         DYNAMIC CURSOR SPOTLIGHT FOLLOWER
-        Casts a subtle responsive aura where the cursor points
+        Casts a subtle, elegant ambient aura where the cursor points
         ============================================================
       */}
       <div
@@ -736,8 +742,8 @@ export const InteractiveBackground: React.FC = () => {
         style={{
           opacity: isHovering ? 1 : 0,
           background: `
-            radial-gradient(650px circle at ${mousePos.x}px ${mousePos.y}px, rgba(255, 255, 255, 0.04), rgba(22, 133, 255, 0.03), transparent 60%),
-            radial-gradient(280px circle at ${mousePos.x}px ${mousePos.y}px, rgba(255, 255, 255, 0.05), transparent 70%)
+            radial-gradient(550px circle at ${mousePos.x}px ${mousePos.y}px, rgba(39, 135, 255, 0.03), transparent 70%),
+            radial-gradient(240px circle at ${mousePos.x}px ${mousePos.y}px, rgba(232, 237, 247, 0.025), transparent 75%)
           `,
         }}
       />

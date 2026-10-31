@@ -6,30 +6,34 @@
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   color-scheme: dark;
 
-  /* Shadcn CSS Color Variables */
-  --color-foreground: #F5F7FA;
-  --color-background: #0B0F17;
-  --background: #0B0F17;
-  --foreground: #F5F7FA;
-  --border: #202C3D;
-  --muted: #111A27;
-  --muted-foreground: #7F8BA0;
-  --ring: #1685FF;
+  /* Official ContentSmith Design System Tokens */
+  --color-foreground: #E8EDF7;
+  --color-background: #000000;
+  --background: #000000;
+  --foreground: #E8EDF7;
+  --border: #252B38;
+  --border-hover: #34445F;
+  --muted: #080C15;
+  --muted-foreground: #A1A9BA;
+  --ring: #2787FF;
+  --card: #080C15;
+  --primary-accent: #2787FF;
+  --secondary-accent: #D21BCE;
 
-  /* Midnight Spectrum Theme Tokens */
-  --midnight-bg: #0B0F17;
-  --midnight-bg-secondary: #101622;
-  --midnight-card: #111A27;
-  --midnight-elevated: #151F2E;
-  --midnight-text: #F5F7FA;
-  --midnight-text-secondary: #AAB4C5;
-  --midnight-text-muted: #7F8BA0;
-  --midnight-border: #202C3D;
-  --midnight-border-hover: #35445A;
-  --midnight-blue: #0A66C2;
-  --midnight-blue-bright: #1685FF;
+  /* Theme Variable Aliases */
+  --midnight-bg: #000000;
+  --midnight-bg-secondary: #04070D;
+  --midnight-card: #080C15;
+  --midnight-elevated: #0E1422;
+  --midnight-text: #E8EDF7;
+  --midnight-text-secondary: #A1A9BA;
+  --midnight-text-muted: #737D91;
+  --midnight-border: #252B38;
+  --midnight-border-hover: #34445F;
+  --midnight-blue: #2787FF;
+  --midnight-blue-bright: #2787FF;
   --instagram-purple: #833AB4;
-  --instagram-pink: #E1306C;
+  --instagram-pink: #D21BCE;
   --instagram-orange: #F77737;
 
   /* Restrained standard transition */
@@ -37,8 +41,8 @@
 }
 
 body {
-  background-color: #0B0F17;
-  color: #F5F7FA;
+  background-color: #000000;
+  color: #E8EDF7;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -47,23 +51,23 @@ code, pre {
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* Midnight Spectrum Surface & Depth Standards */
+/* Official Card Surface & Depth Standards */
 .card-surface {
-  background-color: #111A27;
-  border: 1px solid #202C3D;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+  background-color: #080C15;
+  border: 1px solid #252B38;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.40);
 }
 
 .card-surface-hover {
-  background-color: #111A27;
-  border: 1px solid #202C3D;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+  background-color: #080C15;
+  border: 1px solid #252B38;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.40);
   transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, color 180ms ease;
 }
 
 .card-surface-hover:hover {
-  border-color: #35445A;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.32);
+  border-color: #34445F;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.60);
 }
 
 /* Interactive transitions */
@@ -73,67 +77,67 @@ code, pre {
 
 /* Primary Button Styling */
 .btn-primary {
-  background-color: #0A66C2;
+  background-color: #2787FF;
   color: #FFFFFF;
   transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, color 180ms ease;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #1685FF;
-  box-shadow: 0 4px 14px rgba(10, 102, 194, 0.35);
+  background-color: #1E74E0;
+  box-shadow: 0 4px 18px rgba(39, 135, 255, 0.35);
 }
 
 /* Instagram Selective Brand Gradient Accents */
 .instagram-gradient-bg {
-  background: linear-gradient(135deg, #833AB4 0%, #E1306C 50%, #F77737 100%);
+  background: linear-gradient(135deg, #833AB4 0%, #D21BCE 50%, #F77737 100%);
 }
 
 .instagram-gradient-text {
-  background: linear-gradient(135deg, #833AB4 0%, #E1306C 50%, #F77737 100%);
+  background: linear-gradient(135deg, #833AB4 0%, #D21BCE 50%, #F77737 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Reference Image Signature Dual-Tone Gradients */
+/* Controlled Dual-Tone Brand Moments */
 .spectrum-gradient-text {
-  background: linear-gradient(135deg, #1685FF 0%, #B845C8 50%, #E1306C 100%);
+  background: linear-gradient(135deg, #2787FF 0%, #A836D9 50%, #D21BCE 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .spectrum-gradient-btn {
-  background: linear-gradient(135deg, #0A66C2 0%, #833AB4 50%, #E1306C 100%);
+  background: linear-gradient(135deg, #2787FF 0%, #7644D4 60%, #D21BCE 100%);
   color: #FFFFFF;
   transition: all 180ms ease;
 }
 
 .spectrum-gradient-btn:hover:not(:disabled) {
-  opacity: 0.95;
-  box-shadow: 0 4px 20px rgba(225, 48, 108, 0.35);
+  opacity: 0.96;
+  box-shadow: 0 4px 20px rgba(39, 135, 255, 0.35);
   transform: translateY(-1px);
 }
 
 .linkedin-pill-btn {
-  background: linear-gradient(135deg, #0077B5 0%, #1685FF 100%);
+  background: linear-gradient(135deg, #0A66C2 0%, #2787FF 100%);
   color: #FFFFFF;
   transition: all 180ms ease;
 }
 
 .linkedin-pill-btn:hover:not(:disabled) {
   opacity: 0.95;
-  box-shadow: 0 4px 16px rgba(10, 102, 194, 0.35);
+  box-shadow: 0 4px 16px rgba(39, 135, 255, 0.35);
   transform: translateY(-1px);
 }
 
 .instagram-pill-btn {
-  background: linear-gradient(135deg, #833AB4 0%, #E1306C 50%, #F77737 100%);
+  background: linear-gradient(135deg, #833AB4 0%, #D21BCE 50%, #F77737 100%);
   color: #FFFFFF;
   transition: all 180ms ease;
 }
 
 .instagram-pill-btn:hover:not(:disabled) {
   opacity: 0.95;
-  box-shadow: 0 4px 16px rgba(225, 48, 108, 0.35);
+  box-shadow: 0 4px 16px rgba(210, 27, 206, 0.35);
   transform: translateY(-1px);
 }
 

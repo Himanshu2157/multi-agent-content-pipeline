@@ -7,78 +7,89 @@ export default {
   theme: {
     extend: {
       colors: {
+        /* Official ContentSmith Design System Palette */
         brand: {
           50: '#eef6fc',
           100: '#d9ecf8',
           200: '#b4dbf2',
           300: '#7ec0eb',
-          400: '#1685FF', // Bright blue accent
-          500: '#0A66C2', // LinkedIn official blue
+          400: '#2787FF', // Electric Blue (Primary Accent)
+          500: '#1E74E0',
           600: '#0052a3',
           700: '#004285',
           800: '#00366d',
           900: '#052e5a',
-          950: '#031c38',
+          950: '#000000',
         },
         forge: {
-          50: '#F5F7FA',  // Primary text
-          100: '#E8ECF2',
-          200: '#D2D8E2',
-          300: '#AAB4C5', // Secondary text
-          400: '#7F8BA0', // Muted text
-          500: '#5A6472',
-          600: '#35445A', // Hover border
-          700: '#202C3D', // Default border & divider
-          800: '#182436', // Elevated component surface
-          850: '#151F2E', // Elevated surface
-          900: '#111A27', // Card background
-          925: '#101622', // Secondary background
-          950: '#0B0F17', // Main background
+          50: '#E8EDF7',  // Primary text: Off-White
+          100: '#DEE4F0',
+          200: '#C7D0E0',
+          300: '#A1A9BA', // Secondary text: Muted Cool Gray
+          400: '#737D91', // Muted text
+          500: '#525B6C',
+          600: '#34445F', // Hover border: Blue-Tinted Slate
+          700: '#252B38', // Subtle border: Dark Slate
+          800: '#111827', // Elevated surface
+          850: '#0E1422', // Sub-surface
+          900: '#080C15', // Cards & Surfaces: Near-Black Navy
+          925: '#04070D', // Deep Navy Tint
+          950: '#000000', // Main Background: Pure Black
         },
         midnight: {
-          bg: '#0B0F17',
-          'bg-secondary': '#101622',
-          card: '#111A27',
-          elevated: '#151F2E',
-          text: '#F5F7FA',
-          'text-secondary': '#AAB4C5',
-          'text-muted': '#7F8BA0',
-          border: '#202C3D',
-          'border-hover': '#35445A',
-          blue: '#0A66C2',
-          'blue-bright': '#1685FF',
+          bg: '#000000',
+          'bg-secondary': '#04070D',
+          card: '#080C15',
+          elevated: '#0E1422',
+          text: '#E8EDF7',
+          'text-secondary': '#A1A9BA',
+          'text-muted': '#737D91',
+          border: '#252B38',
+          'border-hover': '#34445F',
+          blue: '#2787FF',
+          magenta: '#D21BCE',
+        },
+        accent: {
+          blue: '#2787FF',     // Electric Blue (Primary)
+          magenta: '#D21BCE',  // Magenta (Secondary)
         },
         instagram: {
           purple: '#833AB4',
-          pink: '#E1306C',
+          pink: '#D21BCE',
           orange: '#F77737',
         },
-        /* Shadcn Core Tokens mapped to Midnight Spectrum */
-        background: '#0B0F17',
-        foreground: '#F5F7FA',
-        border: '#202C3D',
-        ring: '#1685FF',
+        /* Shadcn Core Tokens mapped to Official Pure Black / Near-Black Navy Palette */
+        background: '#000000',
+        foreground: '#E8EDF7',
+        border: '#252B38',
+        ring: '#2787FF',
         muted: {
-          DEFAULT: '#111A27',
-          foreground: '#7F8BA0',
+          DEFAULT: '#080C15',
+          foreground: '#A1A9BA',
         },
         card: {
-          DEFAULT: '#111A27',
-          foreground: '#F5F7FA',
+          DEFAULT: '#080C15',
+          foreground: '#E8EDF7',
         },
         popover: {
-          DEFAULT: '#111A27',
-          foreground: '#F5F7FA',
+          DEFAULT: '#080C15',
+          foreground: '#E8EDF7',
         },
         primary: {
-          DEFAULT: '#1685FF',
+          DEFAULT: '#2787FF',
+          foreground: '#FFFFFF',
+        },
+        secondary: {
+          DEFAULT: '#D21BCE',
           foreground: '#FFFFFF',
         },
       },
       boxShadow: {
-        'card': '0 4px 16px rgba(0, 0, 0, 0.22)',
-        'card-hover': '0 6px 20px rgba(0, 0, 0, 0.32)',
-        'btn-hover': '0 4px 14px rgba(10, 102, 194, 0.35)',
+        'card': '0 4px 20px rgba(0, 0, 0, 0.40)',
+        'card-hover': '0 8px 30px rgba(0, 0, 0, 0.60)',
+        'btn-hover': '0 4px 18px rgba(39, 135, 255, 0.35)',
+        'glow-blue': '0 0 25px rgba(39, 135, 255, 0.20)',
+        'glow-magenta': '0 0 25px rgba(210, 27, 206, 0.20)',
       },
     },
   },

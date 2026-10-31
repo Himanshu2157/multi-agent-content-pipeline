@@ -56,26 +56,26 @@ export const AgentPipelineTracker: React.FC<AgentPipelineTrackerProps> = ({
       : null;
 
   return (
-    <div className="bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] rounded-2xl p-6 shadow-card">
+    <div className="bg-[#080C15] border border-[#252B38] rounded-2xl p-6 shadow-card">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-[#202C3D] gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-[#252B38] gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0077B5] to-[#1685FF] p-[1.5px] shadow-sm shadow-blue-500/10">
-            <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
-              <Sparkles className="w-4.5 h-4.5 text-[#1685FF]" />
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#2787FF] to-[#1E74E0] p-[1.5px] shadow-sm shadow-[#2787FF]/10">
+            <div className="w-full h-full bg-[#000000] rounded-[10px] flex items-center justify-center">
+              <Sparkles className="w-4.5 h-4.5 text-[#2787FF]" />
             </div>
           </div>
           <div>
-            <h3 className="font-bold text-white text-base">Multi-Agent Content Pipeline</h3>
-            <p className="text-xs text-[#7F8BA0]">
+            <h3 className="font-bold text-[#E8EDF7] text-base">Multi-Agent Content Pipeline</h3>
+            <p className="text-xs text-[#A1A9BA]">
               Autonomous execution &bull; Strict Topic Fidelity &bull; Self-correcting loop
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="px-3 py-1.5 rounded-xl bg-[#0B0F17] border border-[#202C3D] text-xs font-mono text-[#D2D8E2] flex items-center gap-2">
-            <Repeat className="w-3.5 h-3.5 text-[#1685FF]" />
+          <div className="px-3 py-1.5 rounded-xl bg-[#000000] border border-[#252B38] text-xs font-mono text-[#E8EDF7] flex items-center gap-2">
+            <Repeat className="w-3.5 h-3.5 text-[#2787FF]" />
             <span>
               Iteration {currentIteration} / {maxIterations}
             </span>
@@ -111,33 +111,33 @@ export const AgentPipelineTracker: React.FC<AgentPipelineTrackerProps> = ({
           className={cn(
             'p-3.5 rounded-xl border transition-all relative overflow-hidden',
             isAnalyzerRunning
-              ? 'bg-gradient-to-r from-[#0077B5]/15 to-[#1685FF]/15 border-[#1685FF] text-white shadow-[0_0_12px_rgba(22,133,255,0.15)]'
+              ? 'bg-[#2787FF]/15 border-[#2787FF] text-[#E8EDF7] shadow-[0_0_12px_rgba(39,135,255,0.15)]'
               : isAnalyzerDone
-              ? 'bg-[#0B0F17] border-[#202C3D] text-[#D2D8E2]'
-              : 'bg-[#0B0F17]/40 border-[#202C3D]/50 text-[#7F8BA0]'
+              ? 'bg-[#000000] border-[#252B38] text-[#E8EDF7]'
+              : 'bg-[#000000]/40 border-[#252B38]/50 text-[#A1A9BA]'
           )}
         >
           {isAnalyzerRunning && (
-            <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#1685FF] animate-pulse" />
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#2787FF] animate-pulse" />
           )}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <div
                 className={cn(
                   'w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold',
-                  isAnalyzerDone ? 'bg-emerald-500/15 text-emerald-400' : 'bg-[#151F2E] text-[#7F8BA0]'
+                  isAnalyzerDone ? 'bg-emerald-500/15 text-emerald-400' : 'bg-[#080C15] text-[#A1A9BA]'
                 )}
               >
                 {isAnalyzerDone ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Sparkles className="w-3.5 h-3.5" />}
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#7F8BA0]">Step 1</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#A1A9BA]">Step 1</span>
             </div>
             {isAnalyzerRunning && (
-              <span className="w-2 h-2 rounded-full bg-[#1685FF] animate-ping" />
+              <span className="w-2 h-2 rounded-full bg-[#2787FF] animate-ping" />
             )}
           </div>
-          <div className="font-semibold text-xs text-white">Topic Analyzer</div>
-          <p className="text-[10px] text-[#7F8BA0] mt-1 line-clamp-1">
+          <div className="font-semibold text-xs text-[#E8EDF7]">Topic Analyzer</div>
+          <p className="text-[10px] text-[#A1A9BA] mt-1 line-clamp-1">
             {isAnalyzerRunning
               ? 'Deriving intent & guardrails...'
               : isAnalyzerDone
@@ -151,33 +151,33 @@ export const AgentPipelineTracker: React.FC<AgentPipelineTrackerProps> = ({
           className={cn(
             'p-3.5 rounded-xl border transition-all relative overflow-hidden',
             isResearchRunning
-              ? 'bg-gradient-to-r from-[#0077B5]/15 to-[#1685FF]/15 border-[#1685FF] text-white shadow-[0_0_12px_rgba(22,133,255,0.15)]'
+              ? 'bg-[#2787FF]/15 border-[#2787FF] text-[#E8EDF7] shadow-[0_0_12px_rgba(39,135,255,0.15)]'
               : isResearchDone
-              ? 'bg-[#0B0F17] border-[#202C3D] text-[#D2D8E2]'
-              : 'bg-[#0B0F17]/40 border-[#202C3D]/50 text-[#7F8BA0]'
+              ? 'bg-[#000000] border-[#252B38] text-[#E8EDF7]'
+              : 'bg-[#000000]/40 border-[#252B38]/50 text-[#A1A9BA]'
           )}
         >
           {isResearchRunning && (
-            <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#1685FF] animate-pulse" />
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#2787FF] animate-pulse" />
           )}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <div
                 className={cn(
                   'w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold',
-                  isResearchDone ? 'bg-emerald-500/15 text-emerald-400' : 'bg-[#151F2E] text-[#7F8BA0]'
+                  isResearchDone ? 'bg-emerald-500/15 text-emerald-400' : 'bg-[#080C15] text-[#A1A9BA]'
                 )}
               >
                 {isResearchDone ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Search className="w-3.5 h-3.5" />}
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#7F8BA0]">Step 2</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#A1A9BA]">Step 2</span>
             </div>
             {isResearchRunning && (
-              <span className="w-2 h-2 rounded-full bg-[#1685FF] animate-ping" />
+              <span className="w-2 h-2 rounded-full bg-[#2787FF] animate-ping" />
             )}
           </div>
-          <div className="font-semibold text-xs text-white">Research Agent</div>
-          <p className="text-[10px] text-[#7F8BA0] mt-1 line-clamp-1">
+          <div className="font-semibold text-xs text-[#E8EDF7]">Research Agent</div>
+          <p className="text-[10px] text-[#A1A9BA] mt-1 line-clamp-1">
             {isResearchRunning
               ? 'Gathering domain facts...'
               : isResearchDone
@@ -191,33 +191,33 @@ export const AgentPipelineTracker: React.FC<AgentPipelineTrackerProps> = ({
           className={cn(
             'p-3.5 rounded-xl border transition-all relative overflow-hidden',
             isStrategistRunning
-              ? 'bg-gradient-to-r from-[#0077B5]/15 to-[#1685FF]/15 border-[#1685FF] text-white shadow-[0_0_12px_rgba(22,133,255,0.15)]'
+              ? 'bg-[#2787FF]/15 border-[#2787FF] text-[#E8EDF7] shadow-[0_0_12px_rgba(39,135,255,0.15)]'
               : isStrategistDone
-              ? 'bg-[#0B0F17] border-[#202C3D] text-[#D2D8E2]'
-              : 'bg-[#0B0F17]/40 border-[#202C3D]/50 text-[#7F8BA0]'
+              ? 'bg-[#000000] border-[#252B38] text-[#E8EDF7]'
+              : 'bg-[#000000]/40 border-[#252B38]/50 text-[#A1A9BA]'
           )}
         >
           {isStrategistRunning && (
-            <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#1685FF] animate-pulse" />
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#2787FF] animate-pulse" />
           )}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <div
                 className={cn(
                   'w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold',
-                  isStrategistDone ? 'bg-emerald-500/15 text-emerald-400' : 'bg-[#151F2E] text-[#7F8BA0]'
+                  isStrategistDone ? 'bg-emerald-500/15 text-emerald-400' : 'bg-[#080C15] text-[#A1A9BA]'
                 )}
               >
                 {isStrategistDone ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Clock className="w-3.5 h-3.5" />}
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#7F8BA0]">Step 3</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#A1A9BA]">Step 3</span>
             </div>
             {isStrategistRunning && (
-              <span className="w-2 h-2 rounded-full bg-[#1685FF] animate-ping" />
+              <span className="w-2 h-2 rounded-full bg-[#2787FF] animate-ping" />
             )}
           </div>
-          <div className="font-semibold text-xs text-white">Content Strategist</div>
-          <p className="text-[10px] text-[#7F8BA0] mt-1 line-clamp-1">
+          <div className="font-semibold text-xs text-[#E8EDF7]">Content Strategist</div>
+          <p className="text-[10px] text-[#A1A9BA] mt-1 line-clamp-1">
             {isStrategistRunning
               ? 'Formulating angles...'
               : isStrategistDone
@@ -231,33 +231,33 @@ export const AgentPipelineTracker: React.FC<AgentPipelineTrackerProps> = ({
           className={cn(
             'p-3.5 rounded-xl border transition-all relative overflow-hidden',
             isWriterRunning
-              ? 'bg-gradient-to-r from-[#0077B5]/15 to-[#1685FF]/15 border-[#1685FF] text-white shadow-[0_0_12px_rgba(22,133,255,0.15)]'
+              ? 'bg-[#2787FF]/15 border-[#2787FF] text-[#E8EDF7] shadow-[0_0_12px_rgba(39,135,255,0.15)]'
               : isWriterDone
-              ? 'bg-[#0B0F17] border-[#202C3D] text-[#D2D8E2]'
-              : 'bg-[#0B0F17]/40 border-[#202C3D]/50 text-[#7F8BA0]'
+              ? 'bg-[#000000] border-[#252B38] text-[#E8EDF7]'
+              : 'bg-[#000000]/40 border-[#252B38]/50 text-[#A1A9BA]'
           )}
         >
           {isWriterRunning && (
-            <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#1685FF] animate-pulse" />
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#2787FF] animate-pulse" />
           )}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <div
                 className={cn(
                   'w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold',
-                  isWriterDone ? 'bg-emerald-500/15 text-emerald-400' : 'bg-[#151F2E] text-[#7F8BA0]'
+                  isWriterDone ? 'bg-emerald-500/15 text-emerald-400' : 'bg-[#080C15] text-[#A1A9BA]'
                 )}
               >
                 {isWriterDone ? <CheckCircle2 className="w-3.5 h-3.5" /> : <PenTool className="w-3.5 h-3.5" />}
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#7F8BA0]">Step 4</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#A1A9BA]">Step 4</span>
             </div>
             {isWriterRunning && (
-              <span className="w-2 h-2 rounded-full bg-[#1685FF] animate-ping" />
+              <span className="w-2 h-2 rounded-full bg-[#2787FF] animate-ping" />
             )}
           </div>
-          <div className="font-semibold text-xs text-white">Writer Agent</div>
-          <p className="text-[10px] text-[#7F8BA0] mt-1 line-clamp-1">
+          <div className="font-semibold text-xs text-[#E8EDF7]">Writer Agent</div>
+          <p className="text-[10px] text-[#A1A9BA] mt-1 line-clamp-1">
             {isWriterRunning
               ? `Drafting iteration ${currentIteration}...`
               : isWriterDone
@@ -271,16 +271,16 @@ export const AgentPipelineTracker: React.FC<AgentPipelineTrackerProps> = ({
           className={cn(
             'p-3.5 rounded-xl border transition-all relative overflow-hidden',
             isCriticRunning
-              ? 'bg-gradient-to-r from-[#0077B5]/15 to-[#1685FF]/15 border-[#1685FF] text-white shadow-[0_0_12px_rgba(22,133,255,0.15)]'
+              ? 'bg-[#2787FF]/15 border-[#2787FF] text-[#E8EDF7] shadow-[0_0_12px_rgba(39,135,255,0.15)]'
               : isCriticDone
               ? approved
                 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                : 'bg-[#0B0F17] border-[#202C3D] text-[#D2D8E2]'
-              : 'bg-[#0B0F17]/40 border-[#202C3D]/50 text-[#7F8BA0]'
+                : 'bg-[#000000] border-[#252B38] text-[#E8EDF7]'
+              : 'bg-[#000000]/40 border-[#252B38]/50 text-[#A1A9BA]'
           )}
         >
           {isCriticRunning && (
-            <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#1685FF] animate-pulse" />
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#2787FF] animate-pulse" />
           )}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
@@ -291,19 +291,19 @@ export const AgentPipelineTracker: React.FC<AgentPipelineTrackerProps> = ({
                     ? 'bg-emerald-500/15 text-emerald-400'
                     : isCriticDone
                     ? 'bg-amber-500/15 text-amber-400'
-                    : 'bg-[#151F2E] text-[#7F8BA0]'
+                    : 'bg-[#080C15] text-[#A1A9BA]'
                 )}
               >
                 {isCriticDone ? <CheckSquare className="w-3.5 h-3.5" /> : <CheckSquare className="w-3.5 h-3.5" />}
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#7F8BA0]">Step 5</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#A1A9BA]">Step 5</span>
             </div>
             {isCriticRunning && (
-              <span className="w-2 h-2 rounded-full bg-[#1685FF] animate-ping" />
+              <span className="w-2 h-2 rounded-full bg-[#2787FF] animate-ping" />
             )}
           </div>
-          <div className="font-semibold text-xs text-white">Critic & Loop</div>
-          <p className="text-[10px] text-[#7F8BA0] mt-1 line-clamp-1">
+          <div className="font-semibold text-xs text-[#E8EDF7]">Critic & Loop</div>
+          <p className="text-[10px] text-[#A1A9BA] mt-1 line-clamp-1">
             {isCriticRunning
               ? 'Auditing topic fidelity...'
               : isCriticDone
@@ -317,16 +317,16 @@ export const AgentPipelineTracker: React.FC<AgentPipelineTrackerProps> = ({
 
       {/* Execution Log Metadata */}
       {latestExecution && (
-        <div className="p-3 rounded-xl bg-[#0B0F17] border border-[#202C3D] flex items-center justify-between text-xs text-[#7F8BA0]">
+        <div className="p-3 rounded-xl bg-[#000000] border border-[#252B38] flex items-center justify-between text-xs text-[#A1A9BA]">
           <div className="flex items-center gap-2">
-            <Clock className="w-3.5 h-3.5 text-[#1685FF]" />
+            <Clock className="w-3.5 h-3.5 text-[#2787FF]" />
             <span>
               Active Execution:{' '}
-              <strong className="text-[#F5F7FA]">{latestExecution.agentType} AGENT</strong> (Iteration{' '}
+              <strong className="text-[#E8EDF7]">{latestExecution.agentType} AGENT</strong> (Iteration{' '}
               {latestExecution.iteration})
             </span>
           </div>
-          <span className="font-mono text-[11px] text-[#7F8BA0]">
+          <span className="font-mono text-[11px] text-[#A1A9BA]">
             Started: {new Date(latestExecution.startedAt).toLocaleTimeString()}
           </span>
         </div>

@@ -137,7 +137,7 @@ export const ProjectPage: React.FC = () => {
         </p>
         <Link
           to="/create"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0A66C2] text-white font-semibold text-sm hover:bg-[#1685FF] transition-colors"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#2787FF] text-white font-semibold text-sm hover:bg-[#1E74E0] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Return to Configuration</span>
@@ -167,38 +167,38 @@ export const ProjectPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 relative z-20">
       {/* Top Navigation & Project Metadata */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-[#202C3D] gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-[#252B38] gap-4">
         <div>
           <Link
             to="/create"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#7F8BA0] hover:text-[#1685FF] transition-colors mb-2"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#A1A9BA] hover:text-[#2787FF] transition-colors mb-2"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Create Another Project</span>
           </Link>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#E8EDF7] tracking-tight">
             {project.title}
           </h1>
-          <div className="flex flex-wrap items-center gap-3 text-xs text-[#7F8BA0] mt-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-[#111A27] border border-[#202C3D] text-[#D2D8E2] font-medium">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-[#A1A9BA] mt-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-[#080C15] border border-[#252B38] text-[#E8EDF7] font-medium">
               {project.platform === 'LINKEDIN' ? (
                 <>
-                  <LinkedInIcon className="w-3.5 h-3.5 text-[#1685FF]" />
+                  <LinkedInIcon className="w-3.5 h-3.5 text-[#2787FF]" />
                   <span>LinkedIn Post Pack</span>
                 </>
               ) : (
                 <>
-                  <InstagramIcon className="w-3.5 h-3.5 text-[#E1306C]" />
+                  <InstagramIcon className="w-3.5 h-3.5 text-[#D21BCE]" />
                   <span>Instagram Reel Script</span>
                 </>
               )}
             </span>
             <span>&bull;</span>
-            <span>Tone: <strong className="text-[#F5F7FA]">{project.tone}</strong></span>
+            <span>Tone: <strong className="text-[#E8EDF7]">{project.tone}</strong></span>
             <span>&bull;</span>
-            <span>Audience: <strong className="text-[#F5F7FA]">{project.audience}</strong></span>
+            <span>Audience: <strong className="text-[#E8EDF7]">{project.audience}</strong></span>
             <span>&bull;</span>
-            <span>Max Review Cycles: <strong className="text-[#F5F7FA]">{project.maxIterations}</strong></span>
+            <span>Max Review Cycles: <strong className="text-[#E8EDF7]">{project.maxIterations}</strong></span>
           </div>
         </div>
 
@@ -206,7 +206,7 @@ export const ProjectPage: React.FC = () => {
           <button
             onClick={() => startGenMutation.mutate()}
             disabled={isRunning || startGenMutation.isPending}
-            className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#111A27] hover:bg-[#151F2E] hover:border-[#35445A] text-[#AAB4C5] hover:text-white border border-[#202C3D] transition-all duration-180 flex items-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-card focus:outline-none focus:ring-1 focus:ring-[#1685FF]/50"
+            className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#080C15] hover:bg-[#080C15] hover:border-[#34445F] text-[#A1A9BA] hover:text-[#E8EDF7] border border-[#252B38] transition-all duration-180 flex items-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-card focus:outline-none focus:ring-1 focus:ring-[#2787FF]/50"
           >
             <RefreshCw
               className={cn('w-3.5 h-3.5', (isRunning || startGenMutation.isPending) && 'animate-spin')}
@@ -230,8 +230,8 @@ export const ProjectPage: React.FC = () => {
           className={cn(
             'p-5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-card',
             generation.approved
-              ? 'bg-[#111A27]/85 backdrop-blur-md border-[#202C3D] text-[#D2D8E2]'
-              : 'bg-[#111A27]/85 backdrop-blur-md border-amber-500/30 text-amber-200'
+              ? 'bg-[#080C15] border-[#252B38] text-[#E8EDF7]'
+              : 'bg-[#080C15] border-amber-500/30 text-amber-200'
           )}
         >
           <div className="flex items-start gap-3">
@@ -241,12 +241,12 @@ export const ProjectPage: React.FC = () => {
               <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
             )}
             <div>
-              <h4 className="text-sm font-bold text-white">
+              <h4 className="text-sm font-bold text-[#E8EDF7]">
                 {generation.approved
                   ? `Pipeline Complete: Approved on Iteration ${generation.currentIteration}`
                   : `Maximum Review Iterations Reached (${generation.currentIteration}/${project.maxIterations})`}
               </h4>
-              <p className="text-xs mt-0.5 text-[#7F8BA0]">
+              <p className="text-xs mt-0.5 text-[#A1A9BA]">
                 {generation.approved
                   ? `The Critic Agent verified this content against ground-truth research with a quality score of ${latestReview?.score || 94}/100.`
                   : 'Maximum review iterations reached. This content is the latest generated draft and may need manual review before publication.'}
@@ -255,7 +255,7 @@ export const ProjectPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2 text-xs font-mono font-bold shrink-0">
-            <span className="px-3 py-1 rounded-xl bg-[#0B0F17] border border-[#202C3D] text-[#D2D8E2]">
+            <span className="px-3 py-1 rounded-xl bg-[#000000] border border-[#252B38] text-[#E8EDF7]">
               Score: {latestReview?.score || 0}/100
             </span>
           </div>
@@ -266,15 +266,15 @@ export const ProjectPage: React.FC = () => {
       {activeDraft && (
         <div className="space-y-6">
           {/* Tabs Header */}
-          <div className="flex items-center justify-between border-b border-[#202C3D] pb-2">
+          <div className="flex items-center justify-between border-b border-[#252B38] pb-2">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setActiveTab('content')}
                 className={cn(
-                  'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-[#1685FF]/50',
+                  'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-[#2787FF]/50',
                   activeTab === 'content'
-                    ? 'bg-[#0A66C2] text-white shadow-sm shadow-blue-500/20'
-                    : 'text-[#7F8BA0] hover:text-[#F5F7FA] hover:bg-[#151F2E]'
+                    ? 'bg-[#2787FF] text-white shadow-sm shadow-[#2787FF]/20'
+                    : 'text-[#A1A9BA] hover:text-[#E8EDF7] hover:bg-[#080C15]'
                 )}
               >
                 <FileText className="w-4 h-4" />
@@ -284,10 +284,10 @@ export const ProjectPage: React.FC = () => {
               <button
                 onClick={() => setActiveTab('critic')}
                 className={cn(
-                  'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-[#1685FF]/50',
+                  'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-[#2787FF]/50',
                   activeTab === 'critic'
-                    ? 'bg-[#0A66C2] text-white shadow-sm shadow-blue-500/20'
-                    : 'text-[#7F8BA0] hover:text-[#F5F7FA] hover:bg-[#151F2E]'
+                    ? 'bg-[#2787FF] text-white shadow-sm shadow-[#2787FF]/20'
+                    : 'text-[#A1A9BA] hover:text-[#E8EDF7] hover:bg-[#080C15]'
                 )}
               >
                 <ShieldCheck className="w-4 h-4" />
@@ -297,10 +297,10 @@ export const ProjectPage: React.FC = () => {
               <button
                 onClick={() => setActiveTab('sources')}
                 className={cn(
-                  'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-[#1685FF]/50',
+                  'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-[#2787FF]/50',
                   activeTab === 'sources'
-                    ? 'bg-[#0A66C2] text-white shadow-sm shadow-blue-500/20'
-                    : 'text-[#7F8BA0] hover:text-[#F5F7FA] hover:bg-[#151F2E]'
+                    ? 'bg-[#2787FF] text-white shadow-sm shadow-[#2787FF]/20'
+                    : 'text-[#A1A9BA] hover:text-[#E8EDF7] hover:bg-[#080C15]'
                 )}
               >
                 <Share2 className="w-4 h-4" />
@@ -311,10 +311,10 @@ export const ProjectPage: React.FC = () => {
                 <button
                   onClick={() => setActiveTab('history')}
                   className={cn(
-                    'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-[#1685FF]/50',
+                    'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-[#2787FF]/50',
                     activeTab === 'history'
-                      ? 'bg-[#0A66C2] text-white shadow-sm shadow-blue-500/20'
-                      : 'text-[#7F8BA0] hover:text-[#F5F7FA] hover:bg-[#151F2E]'
+                      ? 'bg-[#2787FF] text-white shadow-sm shadow-[#2787FF]/20'
+                      : 'text-[#A1A9BA] hover:text-[#E8EDF7] hover:bg-[#080C15]'
                   )}
                 >
                   <History className="w-4 h-4" />
@@ -325,12 +325,12 @@ export const ProjectPage: React.FC = () => {
 
             {/* Iteration Selector Pill */}
             {drafts.length > 1 && latestDraft && (
-              <div className="flex items-center gap-1.5 text-xs text-[#7F8BA0]">
+              <div className="flex items-center gap-1.5 text-xs text-[#A1A9BA]">
                 <span>Viewing:</span>
                 <select
                   value={selectedIteration || latestDraft.iteration}
                   onChange={(e) => setSelectedIteration(Number(e.target.value))}
-                  className="bg-[#0B0F17] border border-[#202C3D] rounded-xl px-2.5 py-1 text-xs text-[#F5F7FA] focus:outline-none focus:ring-1 focus:ring-[#1685FF]"
+                  className="bg-[#000000] border border-[#252B38] rounded-xl px-2.5 py-1 text-xs text-[#E8EDF7] focus:outline-none focus:ring-1 focus:ring-[#2787FF]"
                 >
                   {drafts.map((d) => (
                     <option key={d.iteration} value={d.iteration}>
@@ -372,14 +372,14 @@ export const ProjectPage: React.FC = () => {
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-white">
+                  <h3 className="text-base font-bold text-[#E8EDF7]">
                     Autonomous Multi-Agent Refinement Audit Trail
                   </h3>
-                  <p className="text-xs text-[#7F8BA0] mt-0.5">
+                  <p className="text-xs text-[#A1A9BA] mt-0.5">
                     Verified trail showing drafts, critic rejections, and how the Writer agent refined each cycle.
                   </p>
                 </div>
-                <span className="text-xs font-mono px-2.5 py-1 rounded-xl bg-[#111A27] border border-[#202C3D] text-[#D2D8E2]">
+                <span className="text-xs font-mono px-2.5 py-1 rounded-xl bg-[#080C15] border border-[#252B38] text-[#E8EDF7]">
                   {drafts.length} Cycles Completed
                 </span>
               </div>
@@ -390,29 +390,29 @@ export const ProjectPage: React.FC = () => {
                   return (
                     <React.Fragment key={draftItem.iteration}>
                       {idx > 0 && (
-                        <div className="flex items-center justify-center my-2 text-xs font-mono text-[#1685FF] font-semibold gap-2">
-                          <div className="h-px bg-[#202C3D] flex-1" />
-                          <span className="px-3 py-1 rounded-full bg-[#111A27] border border-[#1685FF]/30 flex items-center gap-1.5 shadow-sm text-[11px]">
-                            <ArrowDown className="w-3.5 h-3.5 text-[#1685FF] shrink-0" />
+                        <div className="flex items-center justify-center my-2 text-xs font-mono text-[#2787FF] font-semibold gap-2">
+                          <div className="h-px bg-[#252B38] flex-1" />
+                          <span className="px-3 py-1 rounded-full bg-[#080C15] border border-[#2787FF]/30 flex items-center gap-1.5 shadow-sm text-[11px]">
+                            <ArrowDown className="w-3.5 h-3.5 text-[#2787FF] shrink-0" />
                             AUTONOMOUS REVISION CYCLE &bull; ADDRESSING CRITIC FEEDBACK
                           </span>
-                          <div className="h-px bg-[#202C3D] flex-1" />
+                          <div className="h-px bg-[#252B38] flex-1" />
                         </div>
                       )}
 
-                      <div className="p-5 rounded-2xl bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] space-y-3.5 hover:border-[#35445A] transition-all shadow-card">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#202C3D] gap-2">
+                      <div className="p-5 rounded-2xl bg-[#080C15] border border-[#252B38] space-y-3.5 hover:border-[#34445F] transition-all shadow-card">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#252B38] gap-2">
                           <div className="flex items-center gap-2.5">
-                            <span className="px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-[#151F2E] text-[#1685FF] border border-[#202C3D]">
+                            <span className="px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-[#000000] text-[#2787FF] border border-[#252B38]">
                               Iteration {draftItem.iteration}
                             </span>
                             {draftItem.contentHash && (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-mono text-[#7F8BA0] bg-[#0B0F17] px-2 py-0.5 rounded-md border border-[#202C3D]">
-                                <Hash className="w-3 h-3 text-[#7F8BA0]" />
+                              <span className="inline-flex items-center gap-1 text-[11px] font-mono text-[#A1A9BA] bg-[#000000] px-2 py-0.5 rounded-md border border-[#252B38]">
+                                <Hash className="w-3 h-3 text-[#A1A9BA]" />
                                 SHA: {draftItem.contentHash.substring(0, 8)}
                               </span>
                             )}
-                            <span className="text-xs text-[#7F8BA0]">
+                            <span className="text-xs text-[#A1A9BA]">
                               {new Date(draftItem.createdAt).toLocaleTimeString()}
                             </span>
                           </div>
@@ -422,7 +422,7 @@ export const ProjectPage: React.FC = () => {
                               className={cn(
                                 'text-xs font-semibold px-3 py-1 rounded-full inline-flex items-center gap-1.5 self-start sm:self-auto',
                                 revItem.approved
-                                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                                   : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                               )}
                             >
@@ -472,7 +472,7 @@ export const ProjectPage: React.FC = () => {
                               setSelectedIteration(draftItem.iteration);
                               setActiveTab('content');
                             }}
-                            className="text-xs font-semibold text-[#1685FF] hover:text-[#0A66C2] transition-colors cursor-pointer inline-flex items-center gap-1"
+                            className="text-xs font-semibold text-[#2787FF] hover:text-[#1E74E0] transition-colors cursor-pointer inline-flex items-center gap-1"
                           >
                             <span>Inspect Full Draft {draftItem.iteration}</span>
                             <span>&rarr;</span>
@@ -484,7 +484,7 @@ export const ProjectPage: React.FC = () => {
                                 setSelectedIteration(draftItem.iteration);
                                 setActiveTab('critic');
                               }}
-                              className="text-xs font-semibold text-[#7F8BA0] hover:text-[#F5F7FA] transition-colors cursor-pointer"
+                              className="text-xs font-semibold text-[#A1A9BA] hover:text-[#E8EDF7] transition-colors cursor-pointer"
                             >
                               View Critic Review &rarr;
                             </button>

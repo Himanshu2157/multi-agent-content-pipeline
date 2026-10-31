@@ -332,50 +332,50 @@ export const HomePage: React.FC = () => {
     );
   };
 
-  // Dynamic Theme Colors based on Selected Platform (Instagram Reel: Red/Sunset, LinkedIn: Blue)
+  // Dynamic Theme Colors based on Selected Platform (Instagram Reel: Magenta, LinkedIn: Electric Blue)
   const isReel = platform === PLATFORMS.INSTAGRAM_REEL;
   const theme = {
-    accentText: isReel ? 'text-[#E1306C]' : 'text-[#1685FF]',
-    accentBorder: isReel ? 'border-[#E1306C]' : 'border-[#1685FF]',
-    accentBorderSubtle: isReel ? 'border-[#E1306C]/30' : 'border-[#1685FF]/30',
-    accentBorderHover: isReel ? 'hover:border-[#E1306C]/40' : 'hover:border-[#1685FF]/40',
-    accentBgSubtle: isReel ? 'bg-[#E1306C]/10' : 'bg-[#1685FF]/10',
+    accentText: isReel ? 'text-[#D21BCE]' : 'text-[#2787FF]',
+    accentBorder: isReel ? 'border-[#D21BCE]' : 'border-[#2787FF]',
+    accentBorderSubtle: isReel ? 'border-[#D21BCE]/30' : 'border-[#2787FF]/30',
+    accentBorderHover: isReel ? 'hover:border-[#D21BCE]/40' : 'hover:border-[#2787FF]/40',
+    accentBgSubtle: isReel ? 'bg-[#D21BCE]/10' : 'bg-[#2787FF]/10',
     accentRing: isReel
-      ? 'focus:ring-[#E1306C] focus:border-[#E1306C]'
-      : 'focus:ring-[#1685FF] focus:border-[#1685FF]',
-    accentSlider: isReel ? 'accent-[#E1306C]' : 'accent-[#1685FF]',
+      ? 'focus:ring-[#D21BCE] focus:border-[#D21BCE]'
+      : 'focus:ring-[#2787FF] focus:border-[#2787FF]',
+    accentSlider: isReel ? 'accent-[#D21BCE]' : 'accent-[#2787FF]',
     buttonGradient: isReel
-      ? 'bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] shadow-pink-500/25 hover:shadow-pink-500/40 focus:ring-[#E1306C]/50'
-      : 'bg-gradient-to-r from-[#0077B5] to-[#1685FF] shadow-blue-500/25 hover:shadow-blue-500/40 focus:ring-[#1685FF]/50',
+      ? 'bg-gradient-to-r from-[#2787FF] to-[#D21BCE] shadow-lg shadow-[#D21BCE]/25 hover:shadow-[#D21BCE]/40 focus:ring-[#D21BCE]/50'
+      : 'bg-[#2787FF] hover:bg-[#1E74E0] shadow-lg shadow-[#2787FF]/25 hover:shadow-[#2787FF]/40 focus:ring-[#2787FF]/50',
   };
 
-  // Dynamic Loading Screen Theme (Red/Sunset for Reel, Blue for LinkedIn)
+  // Dynamic Loading Screen Theme (Magenta for Reel, Electric Blue for LinkedIn)
   const isLoadingReel = loadingState?.platform === PLATFORMS.INSTAGRAM_REEL;
   const loadingTheme = {
-    glow1: isLoadingReel ? 'bg-[#E1306C]/15' : 'bg-[#1685FF]/15',
-    glow2: isLoadingReel ? 'bg-[#833AB4]/15' : 'bg-[#0077B5]/15',
+    glow1: isLoadingReel ? 'bg-[#D21BCE]/15' : 'bg-[#2787FF]/15',
+    glow2: isLoadingReel ? 'bg-[#D21BCE]/10' : 'bg-[#2787FF]/10',
     gradientPing: isLoadingReel
-      ? 'from-[#833AB4] via-[#E1306C] to-[#F77737]'
-      : 'from-[#0077B5] to-[#1685FF]',
-    spinBorder: isLoadingReel ? 'border-[#E1306C]/30' : 'border-[#1685FF]/30',
+      ? 'from-[#2787FF] to-[#D21BCE]'
+      : 'from-[#2787FF] to-[#1E74E0]',
+    spinBorder: isLoadingReel ? 'border-[#D21BCE]/30' : 'border-[#2787FF]/30',
     coreGrad: isLoadingReel
-      ? 'from-[#833AB4] via-[#E1306C] to-[#F77737] shadow-pink-500/30'
-      : 'from-[#0077B5] to-[#1685FF] shadow-blue-500/30',
-    coreIcon: isLoadingReel ? 'text-[#E1306C]' : 'text-[#1685FF]',
+      ? 'from-[#2787FF] to-[#D21BCE] shadow-[#D21BCE]/30'
+      : 'from-[#2787FF] to-[#1E74E0] shadow-[#2787FF]/30',
+    coreIcon: isLoadingReel ? 'text-[#D21BCE]' : 'text-[#2787FF]',
     badgeBorderText: isLoadingReel
-      ? 'border-[#E1306C]/30 text-[#E1306C]'
-      : 'border-[#1685FF]/30 text-[#1685FF]',
-    badgeIcon: isLoadingReel ? 'text-[#E1306C]' : 'text-[#1685FF]',
+      ? 'border-[#D21BCE]/30 text-[#D21BCE]'
+      : 'border-[#2787FF]/30 text-[#2787FF]',
+    badgeIcon: isLoadingReel ? 'text-[#D21BCE]' : 'text-[#2787FF]',
     stageCurrent: isLoadingReel
-      ? 'bg-[#151F2E] border-[#E1306C] text-white shadow-[0_0_12px_rgba(225,48,108,0.25)]'
-      : 'bg-[#151F2E] border-[#1685FF] text-white shadow-[0_0_12px_rgba(22,133,255,0.25)]',
-    stageCurrentNum: isLoadingReel ? 'text-[#E1306C]' : 'text-[#1685FF]',
-    actionDot: isLoadingReel ? 'bg-[#E1306C]' : 'bg-[#1685FF]',
-    actionText: isLoadingReel ? 'text-[#E1306C]' : 'text-[#1685FF]',
+      ? 'bg-[#080C15] border-[#D21BCE] text-[#E8EDF7] shadow-[0_0_12px_rgba(210,27,206,0.25)]'
+      : 'bg-[#080C15] border-[#2787FF] text-[#E8EDF7] shadow-[0_0_12px_rgba(39,135,255,0.25)]',
+    stageCurrentNum: isLoadingReel ? 'text-[#D21BCE]' : 'text-[#2787FF]',
+    actionDot: isLoadingReel ? 'bg-[#D21BCE]' : 'bg-[#2787FF]',
+    actionText: isLoadingReel ? 'text-[#D21BCE]' : 'text-[#2787FF]',
     progressBar: isLoadingReel
-      ? 'bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] shadow-[0_0_12px_rgba(225,48,108,0.5)]'
-      : 'bg-gradient-to-r from-[#0077B5] to-[#1685FF] shadow-[0_0_12px_rgba(22,133,255,0.5)]',
-    selection: isLoadingReel ? 'selection:bg-[#E1306C]/30' : 'selection:bg-[#1685FF]/30',
+      ? 'bg-gradient-to-r from-[#2787FF] to-[#D21BCE] shadow-[0_0_12px_rgba(210,27,206,0.5)]'
+      : 'bg-[#2787FF] shadow-[0_0_12px_rgba(39,135,255,0.5)]',
+    selection: isLoadingReel ? 'selection:bg-[#D21BCE]/30' : 'selection:bg-[#2787FF]/30',
   };
 
   return (
@@ -384,8 +384,8 @@ export const HomePage: React.FC = () => {
           DYNAMIC AGENT WORK LOADING SCREEN (3s to 6s BASED ON TOPIC STRENGTH)
           ============================================================ */}
       {loadingState?.isActive && (
-        <div className={cn("fixed inset-0 z-50 bg-[#0B0F17]/90 backdrop-blur-xl flex items-center justify-center p-4 animate-fadeIn", loadingTheme.selection)}>
-          <div className="max-w-xl w-full p-8 rounded-3xl bg-[#111A27]/95 border border-[#202C3D] shadow-2xl relative overflow-hidden text-center">
+        <div className={cn("fixed inset-0 z-50 bg-[#000000]/90 backdrop-blur-xl flex items-center justify-center p-4 animate-fadeIn", loadingTheme.selection)}>
+          <div className="max-w-xl w-full p-8 rounded-3xl bg-[#080C15] border border-[#252B38] shadow-2xl relative overflow-hidden text-center">
             {/* Background Ambient Glows */}
             <div className={cn("absolute -top-24 -right-24 w-60 h-60 rounded-full blur-3xl pointer-events-none", loadingTheme.glow1)} />
             <div className={cn("absolute -bottom-24 -left-24 w-60 h-60 rounded-full blur-3xl pointer-events-none", loadingTheme.glow2)} />
@@ -401,28 +401,28 @@ export const HomePage: React.FC = () => {
 
               {/* Inner Core */}
               <div className={cn("w-16 h-16 rounded-2xl bg-gradient-to-tr p-[2px] shadow-lg", loadingTheme.coreGrad)}>
-                <div className="w-full h-full bg-[#0B0F17] rounded-[14px] flex items-center justify-center">
+                <div className="w-full h-full bg-[#000000] rounded-[14px] flex items-center justify-center">
                   <Cpu className={cn("w-8 h-8 animate-pulse", loadingTheme.coreIcon)} />
                 </div>
               </div>
             </div>
 
             {/* Topic Complexity Gauge Badge */}
-            <div className={cn("inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#151F2E] border text-xs font-mono mb-3", loadingTheme.badgeBorderText)}>
+            <div className={cn("inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#080C15] border text-xs font-mono mb-3", loadingTheme.badgeBorderText)}>
               <Sparkles className={cn("w-3.5 h-3.5", loadingTheme.badgeIcon)} />
               <span>
                 TOPIC DEPTH: <strong>{loadingState.complexityScore}/100</strong>
               </span>
               <span>&bull;</span>
-              <span className="text-[#F5F7FA] font-sans font-medium">{loadingState.strengthLabel}</span>
+              <span className="text-[#E8EDF7] font-sans font-medium">{loadingState.strengthLabel}</span>
             </div>
 
             {/* Main Title */}
-            <h3 className="text-xl sm:text-2xl font-extrabold text-white mb-2 tracking-tight">
+            <h3 className="text-xl sm:text-2xl font-extrabold text-[#E8EDF7] mb-2 tracking-tight">
               Multi-Agent Swarm Initializing
             </h3>
-            <p className="text-xs text-[#7F8BA0] max-w-md mx-auto mb-6 leading-relaxed">
-              Topic allocated <strong className="text-[#D2D8E2]">{(loadingState.durationMs / 1000).toFixed(1)}s</strong> deep analysis &amp; adversarial calibration budget.
+            <p className="text-xs text-[#A1A9BA] max-w-md mx-auto mb-6 leading-relaxed">
+              Topic allocated <strong className="text-[#E8EDF7]">{(loadingState.durationMs / 1000).toFixed(1)}s</strong> deep analysis &amp; adversarial calibration budget.
             </p>
 
             {/* Active Stage Stepper */}
@@ -438,15 +438,15 @@ export const HomePage: React.FC = () => {
                       isCurrent
                         ? loadingTheme.stageCurrent
                         : isDone
-                        ? 'bg-[#0B0F17] border-emerald-500/40 text-[#D2D8E2]'
-                        : 'bg-[#0B0F17]/50 border-[#202C3D] text-[#7F8BA0]'
+                        ? 'bg-[#000000] border-emerald-500/40 text-[#E8EDF7]'
+                        : 'bg-[#000000]/60 border-[#252B38] text-[#A1A9BA]'
                     )}
                   >
                     <div className="flex items-center justify-center mb-1">
                       {isDone ? (
                         <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                       ) : (
-                        <span className={cn('text-[10px] font-mono font-bold', isCurrent ? loadingTheme.stageCurrentNum : 'text-[#7F8BA0]')}>
+                        <span className={cn('text-[10px] font-mono font-bold', isCurrent ? loadingTheme.stageCurrentNum : 'text-[#A1A9BA]')}>
                           0{idx + 1}
                         </span>
                       )}
@@ -458,13 +458,13 @@ export const HomePage: React.FC = () => {
             </div>
 
             {/* Real-time Agent Action Log */}
-            <div className="p-3.5 rounded-xl bg-[#0B0F17] border border-[#202C3D] text-left text-xs font-mono text-[#D2D8E2] mb-6 flex items-start gap-2.5 shadow-inner">
+            <div className="p-3.5 rounded-xl bg-[#000000] border border-[#252B38] text-left text-xs font-mono text-[#E8EDF7] mb-6 flex items-start gap-2.5 shadow-inner">
               <div className={cn("w-2 h-2 rounded-full mt-1 animate-ping shrink-0", loadingTheme.actionDot)} />
               <div className="min-w-0 flex-1">
                 <span className={cn("text-[10px] uppercase font-bold block mb-0.5", loadingTheme.actionText)}>
                   Active Agent &bull; {AGENT_WORK_STAGES[loadingState.currentStageIndex]?.agent}
                 </span>
-                <p className="text-xs text-[#AAB4C5] truncate">
+                <p className="text-xs text-[#A1A9BA] truncate">
                   {AGENT_WORK_STAGES[loadingState.currentStageIndex]?.action}
                 </p>
               </div>
@@ -472,11 +472,11 @@ export const HomePage: React.FC = () => {
 
             {/* Progress Bar & Percentage */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs font-mono text-[#7F8BA0]">
+              <div className="flex items-center justify-between text-xs font-mono text-[#A1A9BA]">
                 <span>Pipeline Allocation Progress</span>
-                <span className="text-white font-bold">{loadingState.progress}%</span>
+                <span className="text-[#E8EDF7] font-bold">{loadingState.progress}%</span>
               </div>
-              <div className="w-full h-2.5 bg-[#0B0F17] rounded-full overflow-hidden border border-[#202C3D] p-[1px]">
+              <div className="w-full h-2.5 bg-[#000000] rounded-full overflow-hidden border border-[#252B38] p-[1px]">
                 <div
                   className={cn("h-full rounded-full transition-all duration-75 ease-out", loadingTheme.progressBar)}
                   style={{ width: `${loadingState.progress}%` }}
@@ -488,12 +488,12 @@ export const HomePage: React.FC = () => {
       )}
 
       {/* Backend Status Bar */}
-      <div className="flex items-center justify-between pb-6 mb-8 border-b border-[#202C3D]">
+      <div className="flex items-center justify-between pb-6 mb-8 border-b border-[#252B38]">
         <div className="flex items-center gap-2">
-          <Activity className="w-4 h-4 text-[#7F8BA0]" />
-          <span className="text-xs font-medium text-[#7F8BA0]">Backend Connectivity:</span>
+          <Activity className="w-4 h-4 text-[#A1A9BA]" />
+          <span className="text-xs font-medium text-[#A1A9BA]">Backend Connectivity:</span>
           {isHealthLoading ? (
-            <span className="text-xs text-[#7F8BA0] animate-pulse">Checking health...</span>
+            <span className="text-xs text-[#A1A9BA] animate-pulse">Checking health...</span>
           ) : isHealthError ? (
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20">
               <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
@@ -507,8 +507,8 @@ export const HomePage: React.FC = () => {
           )}
         </div>
 
-        <div className="text-xs text-[#7F8BA0]">
-          Autonomous Architecture: <span className="text-[#D2D8E2] font-mono">LangGraph State Machine</span>
+        <div className="text-xs text-[#A1A9BA]">
+          Autonomous Architecture: <span className="text-[#E8EDF7] font-mono">LangGraph State Machine</span>
         </div>
       </div>
 
@@ -516,17 +516,17 @@ export const HomePage: React.FC = () => {
       <div className="mb-8">
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#7F8BA0] hover:text-[#1685FF] transition-colors mb-3"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#A1A9BA] hover:text-[#2787FF] transition-colors mb-3"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Overview &amp; Flowchart</span>
         </Link>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#E8EDF7] tracking-tight">
               Configure Content Generation
             </h1>
-            <p className="text-xs sm:text-sm text-[#7F8BA0] mt-1">
+            <p className="text-xs sm:text-sm text-[#A1A9BA] mt-1">
               Select a pre-ready testing scenario or customize your own parameters to trigger Content<span className="spectrum-gradient-text font-bold">Smith</span>'s multi-agent pipeline.
             </p>
           </div>
@@ -536,22 +536,22 @@ export const HomePage: React.FC = () => {
       {/* ============================================================
           PRE-READY TESTING TOPIC BUTTONS SECTION
           ============================================================ */}
-      <div className="mb-10 p-6 rounded-2xl bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] shadow-card">
+      <div className="mb-10 p-6 rounded-2xl bg-[#080C15] border border-[#252B38] shadow-card">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#1685FF] via-[#833AB4] to-[#E1306C] p-[1.5px] shadow-sm shadow-blue-500/10">
-              <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
-                <Sparkles className="w-4.5 h-4.5 text-[#1685FF]" />
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#2787FF] to-[#D21BCE] p-[1.5px] shadow-sm shadow-[#2787FF]/10">
+              <div className="w-full h-full bg-[#000000] rounded-[10px] flex items-center justify-center">
+                <Sparkles className="w-4.5 h-4.5 text-[#2787FF]" />
               </div>
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white">Pre-Ready Testing Scenarios</h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#1685FF]/15 text-[#1685FF] border border-[#1685FF]/30">
+                <h3 className="text-base font-bold text-[#E8EDF7]">Pre-Ready Testing Scenarios</h3>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#2787FF]/15 text-[#2787FF] border border-[#2787FF]/30">
                   1-Click Test &amp; Run
                 </span>
               </div>
-              <p className="text-xs text-[#7F8BA0] mt-0.5">
+              <p className="text-xs text-[#A1A9BA] mt-0.5">
                 Click any scenario below to automatically populate the configuration, or click <strong>Test &amp; Run</strong> to see live agent results immediately.
               </p>
             </div>
@@ -579,9 +579,9 @@ export const HomePage: React.FC = () => {
                   'group p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between relative overflow-hidden',
                   isSelected
                     ? isPresetReel
-                      ? 'bg-[#151F2E] border-[#E1306C] shadow-[0_0_20px_rgba(225,48,108,0.2)]'
-                      : 'bg-[#151F2E] border-[#1685FF] shadow-[0_0_20px_rgba(22,133,255,0.2)]'
-                    : 'bg-[#0B0F17]/90 border-[#202C3D] hover:border-[#35445A] hover:bg-[#111A27]'
+                      ? 'bg-[#080C15] border-[#D21BCE] shadow-[0_0_20px_rgba(210,27,206,0.2)]'
+                      : 'bg-[#080C15] border-[#2787FF] shadow-[0_0_20px_rgba(39,135,255,0.2)]'
+                    : 'bg-[#080C15] border-[#252B38] hover:border-[#34445F]'
                 )}
               >
                 {/* Active Indicator Top Bar */}
@@ -590,8 +590,8 @@ export const HomePage: React.FC = () => {
                     className={cn(
                       'absolute top-0 left-0 right-0 h-1',
                       isPresetReel
-                        ? 'bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737]'
-                        : 'bg-gradient-to-r from-[#0077B5] to-[#1685FF]'
+                        ? 'bg-gradient-to-r from-[#2787FF] to-[#D21BCE]'
+                        : 'bg-[#2787FF]'
                     )}
                   />
                 )}
@@ -603,21 +603,21 @@ export const HomePage: React.FC = () => {
                       className={cn(
                         'px-2 py-0.5 rounded text-[10px] font-semibold font-mono border',
                         isPresetReel
-                          ? 'bg-[#151F2E] text-[#E1306C] border-[#E1306C]/30'
-                          : 'bg-[#151F2E] text-[#1685FF] border-[#1685FF]/30'
+                          ? 'bg-[#000000] text-[#D21BCE] border-[#D21BCE]/30'
+                          : 'bg-[#000000] text-[#2787FF] border-[#2787FF]/30'
                       )}
                     >
                       {preset.badge}
                     </span>
-                    <span className="flex items-center gap-1 text-[11px] font-medium text-[#AAB4C5]">
+                    <span className="flex items-center gap-1 text-[11px] font-medium text-[#A1A9BA]">
                       {preset.platform === 'LINKEDIN' ? (
                         <>
-                          <LinkedInIcon className="w-3.5 h-3.5 text-[#0077B5]" />
+                          <LinkedInIcon className="w-3.5 h-3.5 text-[#2787FF]" />
                           <span>LinkedIn</span>
                         </>
                       ) : (
                         <>
-                          <InstagramIcon className="w-3.5 h-3.5 text-[#E1306C]" />
+                          <InstagramIcon className="w-3.5 h-3.5 text-[#D21BCE]" />
                           <span>Reel</span>
                         </>
                       )}
@@ -627,23 +627,23 @@ export const HomePage: React.FC = () => {
                   {/* Title */}
                   <h4
                     className={cn(
-                      'text-sm font-bold text-white transition-colors leading-snug mb-1.5',
-                      isPresetReel ? 'group-hover:text-[#E1306C]' : 'group-hover:text-[#1685FF]'
+                      'text-sm font-bold text-[#E8EDF7] transition-colors leading-snug mb-1.5',
+                      isPresetReel ? 'group-hover:text-[#D21BCE]' : 'group-hover:text-[#2787FF]'
                     )}
                   >
                     {preset.title}
                   </h4>
 
                   {/* Description */}
-                  <p className="text-[11px] text-[#7F8BA0] line-clamp-2 leading-relaxed mb-3">
+                  <p className="text-[11px] text-[#A1A9BA] line-clamp-2 leading-relaxed mb-3">
                     {preset.description}
                   </p>
                 </div>
 
                 {/* Card Action Footer */}
-                <div className="pt-3 border-t border-[#202C3D]/80 flex items-center justify-between gap-2 mt-auto">
-                  <span className="text-[10px] text-[#7F8BA0] font-medium">
-                    Tone: <strong className="text-[#D2D8E2]">{preset.tone.split(' ')[0]}</strong>
+                <div className="pt-3 border-t border-[#252B38] flex items-center justify-between gap-2 mt-auto">
+                  <span className="text-[10px] text-[#A1A9BA] font-medium">
+                    Tone: <strong className="text-[#E8EDF7]">{preset.tone.split(' ')[0]}</strong>
                   </span>
 
                   <button
@@ -656,8 +656,8 @@ export const HomePage: React.FC = () => {
                     className={cn(
                       'px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all flex items-center gap-1 cursor-pointer disabled:opacity-50',
                       isPresetReel
-                        ? 'bg-[#E1306C]/15 hover:bg-[#E1306C] text-[#E1306C] hover:text-white border-[#E1306C]/30'
-                        : 'bg-[#1685FF]/15 hover:bg-[#1685FF] text-[#1685FF] hover:text-white border-[#1685FF]/30'
+                        ? 'bg-[#D21BCE]/15 hover:bg-[#D21BCE] text-[#D21BCE] hover:text-white border-[#D21BCE]/30'
+                        : 'bg-[#2787FF]/15 hover:bg-[#2787FF] text-[#2787FF] hover:text-white border-[#2787FF]/30'
                     )}
                     title="Run this test scenario directly and view the result"
                   >
@@ -675,15 +675,15 @@ export const HomePage: React.FC = () => {
           MAIN CONFIGURATION & PIPELINE VISUALIZER GRID
           ============================================================ */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Input Form (Pipeline Parameters styled dynamically: Red for Instagram Reel, Blue for LinkedIn) */}
-        <div className={cn('lg:col-span-7 bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] transition-colors rounded-2xl p-6 sm:p-8 shadow-card', theme.accentBorderHover)}>
-          <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#202C3D]">
+        {/* Left Column: Input Form (Pipeline Parameters styled dynamically: Magenta for Instagram Reel, Electric Blue for LinkedIn) */}
+        <div className={cn('lg:col-span-7 bg-[#080C15] border border-[#252B38] transition-colors rounded-2xl p-6 sm:p-8 shadow-card', theme.accentBorderHover)}>
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#252B38]">
             <div>
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <h2 className="text-xl font-bold text-[#E8EDF7] flex items-center gap-2">
                 <Sliders className={cn('w-5 h-5', theme.accentText)} />
                 Pipeline Parameters
               </h2>
-              <p className="text-xs text-[#7F8BA0] mt-1">
+              <p className="text-xs text-[#A1A9BA] mt-1">
                 Customize topic details, target audience, and critic iterations.
               </p>
             </div>
@@ -708,7 +708,7 @@ export const HomePage: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Topic Input with Enter-to-Submit */}
             <div>
-              <label htmlFor="topic" className="block text-sm font-semibold text-[#D2D8E2] mb-2">
+              <label htmlFor="topic" className="block text-sm font-semibold text-[#E8EDF7] mb-2">
                 Content Topic or Thesis <span className={theme.accentText}>*</span>
               </label>
               <textarea
@@ -727,15 +727,15 @@ export const HomePage: React.FC = () => {
                 }}
                 placeholder="e.g. How autonomous AI coding agents are changing senior engineering workflows in 2026..."
                 className={cn(
-                  'w-full rounded-xl bg-[#0B0F17] border border-[#202C3D] px-4 py-3 text-sm text-[#F5F7FA] placeholder-[#7F8BA0] focus:outline-none focus:ring-1 transition-colors resize-none',
+                  'w-full rounded-xl bg-[#000000] border border-[#252B38] px-4 py-3 text-sm text-[#E8EDF7] placeholder-[#A1A9BA] focus:outline-none focus:ring-1 transition-colors resize-none',
                   theme.accentRing
                 )}
                 required
               />
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[11px] text-[#7F8BA0] mt-2 gap-1.5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[11px] text-[#A1A9BA] mt-2 gap-1.5">
                 <span>The Research Agent will automatically gather web sources and statistics for this topic.</span>
-                <span className="flex items-center gap-1.5 text-[10px] text-[#D2D8E2] bg-[#151F2E] px-2 py-0.5 rounded-md border border-[#202C3D] shrink-0 self-start sm:self-auto font-mono">
-                  <kbd className={cn('px-1 py-0.2 rounded bg-[#0B0F17] border border-[#202C3D] font-bold', theme.accentText)}>Enter ↵</kbd>
+                <span className="flex items-center gap-1.5 text-[10px] text-[#E8EDF7] bg-[#000000] px-2 py-0.5 rounded-md border border-[#252B38] shrink-0 self-start sm:self-auto font-mono">
+                  <kbd className={cn('px-1 py-0.2 rounded bg-[#080C15] border border-[#252B38] font-bold', theme.accentText)}>Enter ↵</kbd>
                   <span>to start pipeline</span>
                 </span>
               </div>
@@ -743,7 +743,7 @@ export const HomePage: React.FC = () => {
 
             {/* Platform Selection */}
             <div>
-              <label className="block text-sm font-semibold text-[#D2D8E2] mb-2">
+              <label className="block text-sm font-semibold text-[#E8EDF7] mb-2">
                 Target Platform <span className={theme.accentText}>*</span>
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -753,21 +753,21 @@ export const HomePage: React.FC = () => {
                   className={cn(
                     'p-4 rounded-xl border text-left transition-all relative flex flex-col justify-between cursor-pointer',
                     platform === PLATFORMS.LINKEDIN
-                      ? 'bg-gradient-to-r from-[#0077B5]/20 to-[#1685FF]/20 border-[#1685FF] text-white shadow-[0_0_15px_rgba(22,133,255,0.15)]'
-                      : 'bg-[#0B0F17] border-[#202C3D] text-[#AAB4C5] hover:border-[#35445A] hover:text-white'
+                      ? 'bg-[#2787FF]/15 border-[#2787FF] text-[#E8EDF7] shadow-[0_0_15px_rgba(39,135,255,0.15)]'
+                      : 'bg-[#000000] border-[#252B38] text-[#A1A9BA] hover:border-[#34445F] hover:text-[#E8EDF7]'
                   )}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#0077B5]/20 flex items-center justify-center">
-                      <LinkedInIcon className={cn('w-4.5 h-4.5', platform === PLATFORMS.LINKEDIN ? 'text-[#1685FF]' : 'text-[#7F8BA0]')} />
+                    <div className="w-8 h-8 rounded-lg bg-[#2787FF]/20 flex items-center justify-center">
+                      <LinkedInIcon className={cn('w-4.5 h-4.5', platform === PLATFORMS.LINKEDIN ? 'text-[#2787FF]' : 'text-[#A1A9BA]')} />
                     </div>
                     {platform === PLATFORMS.LINKEDIN && (
-                      <CheckCircle2 className="w-4 h-4 text-[#1685FF]" />
+                      <CheckCircle2 className="w-4 h-4 text-[#2787FF]" />
                     )}
                   </div>
                   <div>
                     <div className="font-semibold text-sm">LinkedIn</div>
-                    <div className="text-[11px] text-[#7F8BA0] mt-0.5">4–5 Multi-Angle Posts with CTAs</div>
+                    <div className="text-[11px] text-[#A1A9BA] mt-0.5">4–5 Multi-Angle Posts with CTAs</div>
                   </div>
                 </button>
 
@@ -777,21 +777,21 @@ export const HomePage: React.FC = () => {
                   className={cn(
                     'p-4 rounded-xl border text-left transition-all relative flex flex-col justify-between cursor-pointer',
                     platform === PLATFORMS.INSTAGRAM_REEL
-                      ? 'bg-gradient-to-r from-[#833AB4]/20 via-[#E1306C]/20 to-[#F77737]/20 border-[#E1306C] text-white shadow-[0_0_15px_rgba(225,48,108,0.15)]'
-                      : 'bg-[#0B0F17] border-[#202C3D] text-[#AAB4C5] hover:border-[#35445A] hover:text-white'
+                      ? 'bg-[#D21BCE]/15 border-[#D21BCE] text-[#E8EDF7] shadow-[0_0_15px_rgba(210,27,206,0.15)]'
+                      : 'bg-[#000000] border-[#252B38] text-[#A1A9BA] hover:border-[#34445F] hover:text-[#E8EDF7]'
                   )}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#E1306C]/20 flex items-center justify-center">
-                      <Video className={cn('w-4.5 h-4.5', platform === PLATFORMS.INSTAGRAM_REEL ? 'text-[#E1306C]' : 'text-[#7F8BA0]')} />
+                    <div className="w-8 h-8 rounded-lg bg-[#D21BCE]/20 flex items-center justify-center">
+                      <Video className={cn('w-4.5 h-4.5', platform === PLATFORMS.INSTAGRAM_REEL ? 'text-[#D21BCE]' : 'text-[#A1A9BA]')} />
                     </div>
                     {platform === PLATFORMS.INSTAGRAM_REEL && (
-                      <CheckCircle2 className="w-4 h-4 text-[#E1306C]" />
+                      <CheckCircle2 className="w-4 h-4 text-[#D21BCE]" />
                     )}
                   </div>
                   <div>
                     <div className="font-semibold text-sm">Instagram Reel</div>
-                    <div className="text-[11px] text-[#7F8BA0] mt-0.5">Scene-by-scene script &amp; visuals</div>
+                    <div className="text-[11px] text-[#A1A9BA] mt-0.5">Scene-by-scene script &amp; visuals</div>
                   </div>
                 </button>
               </div>
@@ -800,14 +800,14 @@ export const HomePage: React.FC = () => {
             {/* Tone & Audience */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-[#D2D8E2] mb-2">
+                <label className="block text-sm font-semibold text-[#E8EDF7] mb-2">
                   Tone
                 </label>
                 <select
                   value={tone}
                   onChange={(e) => setTone(e.target.value)}
                   className={cn(
-                    'w-full rounded-xl bg-[#0B0F17] border border-[#202C3D] px-3.5 py-2.5 text-sm text-[#F5F7FA] focus:outline-none focus:ring-1 transition-colors',
+                    'w-full rounded-xl bg-[#000000] border border-[#252B38] px-3.5 py-2.5 text-sm text-[#E8EDF7] focus:outline-none focus:ring-1 transition-colors',
                     theme.accentRing
                   )}
                 >
@@ -820,7 +820,7 @@ export const HomePage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-[#D2D8E2] mb-2">
+                <label className="block text-sm font-semibold text-[#E8EDF7] mb-2">
                   Target Audience
                 </label>
                 <input
@@ -829,7 +829,7 @@ export const HomePage: React.FC = () => {
                   onChange={(e) => setAudience(e.target.value)}
                   placeholder="e.g. Founders, Engineers, Creators"
                   className={cn(
-                    'w-full rounded-xl bg-[#0B0F17] border border-[#202C3D] px-3.5 py-2.5 text-sm text-[#F5F7FA] placeholder-[#7F8BA0] focus:outline-none focus:ring-1 transition-colors',
+                    'w-full rounded-xl bg-[#000000] border border-[#252B38] px-3.5 py-2.5 text-sm text-[#E8EDF7] placeholder-[#A1A9BA] focus:outline-none focus:ring-1 transition-colors',
                     theme.accentRing
                   )}
                 />
@@ -839,10 +839,10 @@ export const HomePage: React.FC = () => {
             {/* Max Iterations Slider */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-semibold text-[#D2D8E2]">
+                <label className="text-sm font-semibold text-[#E8EDF7]">
                   Maximum Review &amp; Refinement Iterations
                 </label>
-                <span className={cn('px-2.5 py-0.5 text-xs font-semibold rounded-md bg-[#151F2E] border font-mono', theme.accentText, theme.accentBorderSubtle)}>
+                <span className={cn('px-2.5 py-0.5 text-xs font-semibold rounded-md bg-[#000000] border border-[#252B38] font-mono', theme.accentText, theme.accentBorderSubtle)}>
                   {maxIterations} {maxIterations === 1 ? 'cycle' : 'cycles'}
                 </span>
               </div>
@@ -853,9 +853,9 @@ export const HomePage: React.FC = () => {
                 step={1}
                 value={maxIterations}
                 onChange={(e) => setMaxIterations(Number(e.target.value))}
-                className={cn('w-full h-2 bg-[#151F2E] rounded-lg cursor-pointer transition-colors', theme.accentSlider)}
+                className={cn('w-full h-2 bg-[#252B38] rounded-lg cursor-pointer transition-colors', theme.accentSlider)}
               />
-              <div className="flex justify-between text-[11px] text-[#7F8BA0] mt-1">
+              <div className="flex justify-between text-[11px] text-[#A1A9BA] mt-1">
                 <span>1 (Fastest, single review)</span>
                 <span>3 (Recommended)</span>
                 <span>5 (Maximum rigor)</span>
@@ -890,24 +890,24 @@ export const HomePage: React.FC = () => {
         {/* Right Column: Multi-Agent Architecture Visualizer & Recent Projects */}
         <div className="lg:col-span-5 space-y-6">
           {/* How Pipeline Works */}
-          <div className="bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] rounded-2xl p-6 shadow-card">
-            <h3 className="text-base font-bold text-white mb-5 flex items-center gap-2">
-              <Layers className="w-4.5 h-4.5 text-[#1685FF]" />
+          <div className="bg-[#080C15] border border-[#252B38] rounded-2xl p-6 shadow-card">
+            <h3 className="text-base font-bold text-[#E8EDF7] mb-5 flex items-center gap-2">
+              <Layers className="w-4.5 h-4.5 text-[#2787FF]" />
               How the Multi-Agent Pipeline Works
             </h3>
 
-            <div className="space-y-4 relative before:absolute before:left-5 before:top-4 before:bottom-4 before:w-[1.5px] before:bg-[#202C3D]">
+            <div className="space-y-4 relative before:absolute before:left-5 before:top-4 before:bottom-4 before:w-[1.5px] before:bg-[#252B38]">
               {/* Agent 1 */}
               <div className="flex items-start gap-4 relative">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0077B5] to-[#1685FF] p-[1.5px] shrink-0 z-10 shadow-sm shadow-blue-500/10">
-                  <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
-                    <Search className="w-4.5 h-4.5 text-[#1685FF]" />
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#2787FF] to-[#1E74E0] p-[1.5px] shrink-0 z-10 shadow-sm shadow-[#2787FF]/10">
+                  <div className="w-full h-full bg-[#000000] rounded-[10px] flex items-center justify-center">
+                    <Search className="w-4.5 h-4.5 text-[#2787FF]" />
                   </div>
                 </div>
                 <div>
-                  <div className="text-[11px] font-bold text-[#1685FF] uppercase tracking-wider">Agent 1</div>
-                  <div className="text-sm font-semibold text-white">Research Specialist</div>
-                  <p className="text-xs text-[#7F8BA0] mt-0.5 leading-relaxed">
+                  <div className="text-[11px] font-bold text-[#2787FF] uppercase tracking-wider">Agent 1</div>
+                  <div className="text-sm font-semibold text-[#E8EDF7]">Research Specialist</div>
+                  <p className="text-xs text-[#A1A9BA] mt-0.5 leading-relaxed">
                     Gathers real-world sources, key statistics, and checks counter-claims. Zero fabricated claims or fake URLs.
                   </p>
                 </div>
@@ -915,15 +915,15 @@ export const HomePage: React.FC = () => {
 
               {/* Agent 2 */}
               <div className="flex items-start gap-4 relative">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#833AB4] to-[#E1306C] p-[1.5px] shrink-0 z-10 shadow-sm shadow-pink-500/10">
-                  <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
-                    <PenTool className="w-4.5 h-4.5 text-[#E1306C]" />
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#2787FF] to-[#D21BCE] p-[1.5px] shrink-0 z-10 shadow-sm shadow-[#D21BCE]/10">
+                  <div className="w-full h-full bg-[#000000] rounded-[10px] flex items-center justify-center">
+                    <PenTool className="w-4.5 h-4.5 text-[#D21BCE]" />
                   </div>
                 </div>
                 <div>
-                  <div className="text-[11px] font-bold text-[#E1306C] uppercase tracking-wider">Agent 2</div>
-                  <div className="text-sm font-semibold text-white">Platform Writer Agent</div>
-                  <p className="text-xs text-[#7F8BA0] mt-0.5 leading-relaxed">
+                  <div className="text-[11px] font-bold text-[#D21BCE] uppercase tracking-wider">Agent 2</div>
+                  <div className="text-sm font-semibold text-[#E8EDF7]">Platform Writer Agent</div>
+                  <p className="text-xs text-[#A1A9BA] mt-0.5 leading-relaxed">
                     Drafts 4–5 distinct angles for LinkedIn or timed scripts for Instagram Reels grounded in verified research.
                   </p>
                 </div>
@@ -931,15 +931,15 @@ export const HomePage: React.FC = () => {
 
               {/* Agent 3 */}
               <div className="flex items-start gap-4 relative">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#5B51D8] to-[#833AB4] p-[1.5px] shrink-0 z-10 shadow-sm shadow-purple-500/10">
-                  <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
-                    <CheckSquare className="w-4.5 h-4.5 text-[#B845C8]" />
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#2787FF] to-[#D21BCE] p-[1.5px] shrink-0 z-10 shadow-sm shadow-[#D21BCE]/10">
+                  <div className="w-full h-full bg-[#000000] rounded-[10px] flex items-center justify-center">
+                    <CheckSquare className="w-4.5 h-4.5 text-[#D21BCE]" />
                   </div>
                 </div>
                 <div>
-                  <div className="text-[11px] font-bold text-[#B845C8] uppercase tracking-wider">Agent 3</div>
-                  <div className="text-sm font-semibold text-white">Critic &amp; Quality Reviewer</div>
-                  <p className="text-xs text-[#7F8BA0] mt-0.5 leading-relaxed">
+                  <div className="text-[11px] font-bold text-[#D21BCE] uppercase tracking-wider">Agent 3</div>
+                  <div className="text-sm font-semibold text-[#E8EDF7]">Critic &amp; Quality Reviewer</div>
+                  <p className="text-xs text-[#A1A9BA] mt-0.5 leading-relaxed">
                     Critiques factual backing, platform suitability, hooks, and clarity. Flags unsupported claims.
                   </p>
                 </div>
@@ -947,15 +947,15 @@ export const HomePage: React.FC = () => {
 
               {/* Feedback Loop */}
               <div className="flex items-start gap-4 relative">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#E1306C] to-[#F77737] p-[1.5px] shrink-0 z-10 shadow-sm shadow-orange-500/10">
-                  <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
-                    <Repeat className="w-4.5 h-4.5 text-[#F77737]" />
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#D21BCE] to-[#2787FF] p-[1.5px] shrink-0 z-10 shadow-sm shadow-[#2787FF]/10">
+                  <div className="w-full h-full bg-[#000000] rounded-[10px] flex items-center justify-center">
+                    <Repeat className="w-4.5 h-4.5 text-[#2787FF]" />
                   </div>
                 </div>
                 <div>
-                  <div className="text-[11px] font-bold text-[#F77737] uppercase tracking-wider">Autonomous Loop</div>
-                  <div className="text-sm font-semibold text-white">Self-Refinement Cycle</div>
-                  <p className="text-xs text-[#7F8BA0] mt-0.5 leading-relaxed">
+                  <div className="text-[11px] font-bold text-[#2787FF] uppercase tracking-wider">Autonomous Loop</div>
+                  <div className="text-sm font-semibold text-[#E8EDF7]">Self-Refinement Cycle</div>
+                  <p className="text-xs text-[#A1A9BA] mt-0.5 leading-relaxed">
                     Critic feedback routes back to the Writer Agent. It rewrites flawed drafts until approved or max iterations reached.
                   </p>
                 </div>
@@ -965,13 +965,13 @@ export const HomePage: React.FC = () => {
 
           {/* Recent Completed Projects / View Existing Results */}
           {recentProjects.length > 0 && (
-            <div className="bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] rounded-2xl p-6 shadow-card">
-              <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#202C3D]">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-[#1685FF]" />
+            <div className="bg-[#080C15] border border-[#252B38] rounded-2xl p-6 shadow-card">
+              <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#252B38]">
+                <h3 className="text-sm font-bold text-[#E8EDF7] flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-[#2787FF]" />
                   <span>Recent Generated Projects</span>
                 </h3>
-                <span className="text-[11px] font-mono text-[#7F8BA0]">
+                <span className="text-[11px] font-mono text-[#A1A9BA]">
                   {recentProjects.length} {recentProjects.length === 1 ? 'project' : 'projects'}
                 </span>
               </div>
@@ -981,21 +981,21 @@ export const HomePage: React.FC = () => {
                   <Link
                     key={p.id}
                     to={`/project/${p.id}`}
-                    className="p-3 rounded-xl bg-[#0B0F17]/80 hover:bg-[#151F2E] border border-[#202C3D] hover:border-[#1685FF]/50 transition-all flex items-center justify-between gap-3 group"
+                    className="p-3 rounded-xl bg-[#000000] hover:bg-[#080C15] border border-[#252B38] hover:border-[#34445F] transition-all flex items-center justify-between gap-3 group"
                   >
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[10px] font-semibold text-[#1685FF]">
+                        <span className="text-[10px] font-semibold text-[#2787FF]">
                           {p.platform === 'LINKEDIN' ? 'LinkedIn' : 'Instagram Reel'}
                         </span>
-                        <span className="text-[10px] text-[#7F8BA0]">&bull;</span>
-                        <span className="text-[10px] text-[#7F8BA0] truncate">{p.tone}</span>
+                        <span className="text-[10px] text-[#A1A9BA]">&bull;</span>
+                        <span className="text-[10px] text-[#A1A9BA] truncate">{p.tone}</span>
                       </div>
-                      <h5 className="text-xs font-semibold text-white truncate group-hover:text-[#1685FF] transition-colors">
+                      <h5 className="text-xs font-semibold text-[#E8EDF7] truncate group-hover:text-[#2787FF] transition-colors">
                         {p.title}
                       </h5>
                     </div>
-                    <ExternalLink className="w-4 h-4 text-[#7F8BA0] group-hover:text-[#1685FF] group-hover:translate-x-0.5 transition-all shrink-0" />
+                    <ExternalLink className="w-4 h-4 text-[#A1A9BA] group-hover:text-[#2787FF] group-hover:translate-x-0.5 transition-all shrink-0" />
                   </Link>
                 ))}
               </div>
@@ -1003,12 +1003,12 @@ export const HomePage: React.FC = () => {
           )}
 
           {/* Guarantee Pill */}
-          <div className="p-4 rounded-xl bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] text-xs text-[#7F8BA0] flex items-center justify-between shadow-card">
+          <div className="p-4 rounded-xl bg-[#080C15] border border-[#252B38] text-xs text-[#A1A9BA] flex items-center justify-between shadow-card">
             <span className="flex items-center gap-2">
-              <FileText className="w-3.5 h-3.5 text-[#1685FF]" />
+              <FileText className="w-3.5 h-3.5 text-[#2787FF]" />
               <span>Product Guarantee:</span>
             </span>
-            <span className="font-semibold text-[#F5F7FA]">No fabricated facts &bull; Full iteration history</span>
+            <span className="font-semibold text-[#E8EDF7]">No fabricated facts &bull; Full iteration history</span>
           </div>
         </div>
       </div>

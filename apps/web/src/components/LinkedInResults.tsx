@@ -52,16 +52,16 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
   return (
     <div className="space-y-6">
       {/* Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#111A27] border border-[#202C3D] shadow-card">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#080C15] border border-[#252B38] shadow-card">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0077B5] to-[#1685FF] p-[1.5px] shadow-sm shadow-blue-500/10 shrink-0">
-            <div className="w-full h-full bg-[#0B0F17] rounded-[10px] flex items-center justify-center">
-              <LinkedInIcon className="w-5 h-5 text-[#1685FF]" />
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#2787FF] to-[#1E74E0] p-[1.5px] shadow-sm shadow-[#2787FF]/10 shrink-0">
+            <div className="w-full h-full bg-[#000000] rounded-[10px] flex items-center justify-center">
+              <LinkedInIcon className="w-5 h-5 text-[#2787FF]" />
             </div>
           </div>
           <div>
-            <h3 className="text-sm font-bold text-white">LinkedIn Content Package</h3>
-            <p className="text-xs text-[#7F8BA0]">
+            <h3 className="text-sm font-bold text-[#E8EDF7]">LinkedIn Content Package</h3>
+            <p className="text-xs text-[#A1A9BA]">
               {posts.length} Distinct Angles Generated &bull; Verifiable Citations Grounded
             </p>
           </div>
@@ -69,7 +69,7 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
 
         <button
           onClick={handleCopyAll}
-          className="px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-[#0077B5] to-[#1685FF] hover:opacity-95 hover:shadow-btn-hover text-white transition-all duration-180 flex items-center gap-2 shrink-0 cursor-pointer shadow-md shadow-blue-500/20 focus:outline-none focus:ring-2 focus:ring-[#1685FF]/50"
+          className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#2787FF] hover:bg-[#1E74E0] hover:shadow-btn-hover text-white transition-all duration-180 flex items-center gap-2 shrink-0 cursor-pointer shadow-md shadow-[#2787FF]/20 focus:outline-none focus:ring-2 focus:ring-[#2787FF]/50"
         >
           {copiedAll ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
           <span>{copiedAll ? 'Copied All Posts!' : 'Copy All 5 Posts'}</span>
@@ -85,15 +85,15 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
           return (
             <div
               key={post.id || idx}
-              className="bg-[#111A27]/85 backdrop-blur-md border border-[#202C3D] rounded-2xl p-6 shadow-card hover:border-[#35445A] transition-all duration-180"
+              className="bg-[#080C15] border border-[#252B38] rounded-2xl p-6 shadow-card hover:border-[#34445F] transition-all duration-180"
             >
               {/* Post Header */}
-              <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#202C3D]">
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#252B38]">
                 <div className="flex items-center gap-2.5">
-                  <span className="w-6 h-6 rounded-lg bg-[#151F2E] text-[#D2D8E2] border border-[#202C3D] text-xs font-semibold flex items-center justify-center">
+                  <span className="w-6 h-6 rounded-lg bg-[#000000] text-[#E8EDF7] border border-[#252B38] text-xs font-semibold flex items-center justify-center">
                     {idx + 1}
                   </span>
-                  <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#151F2E] text-[#1685FF] border border-[#202C3D]">
+                  <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#000000] text-[#2787FF] border border-[#252B38]">
                     {post.angle}
                   </span>
                 </div>
@@ -101,7 +101,7 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setEditingId(isEditing ? null : post.id)}
-                    className="p-2 rounded-lg text-[#7F8BA0] hover:text-white hover:bg-[#151F2E] transition-colors text-xs flex items-center gap-1.5 cursor-pointer"
+                    className="p-2 rounded-lg text-[#A1A9BA] hover:text-[#E8EDF7] hover:bg-[#000000] transition-colors text-xs flex items-center gap-1.5 cursor-pointer"
                     title={isEditing ? 'Done Editing' : 'Edit Post Text'}
                   >
                     <Edit3 className="w-3.5 h-3.5" />
@@ -110,7 +110,7 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
 
                   <button
                     onClick={() => handleCopyPost(post)}
-                    className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#151F2E] hover:bg-[#182436] hover:border-[#35445A] text-[#D2D8E2] hover:text-white transition-all duration-180 flex items-center gap-1.5 cursor-pointer border border-[#202C3D] focus:outline-none focus:ring-1 focus:ring-[#1685FF]/50"
+                    className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#000000] hover:bg-[#080C15] hover:border-[#34445F] text-[#E8EDF7] hover:text-white transition-all duration-180 flex items-center gap-1.5 cursor-pointer border border-[#252B38] focus:outline-none focus:ring-1 focus:ring-[#2787FF]/50"
                   >
                     {isCopied ? (
                       <>
@@ -128,11 +128,11 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
               </div>
 
               {/* Hook Banner */}
-              <div className="mb-4 p-4 rounded-xl bg-[#0B0F17] border border-[#202C3D]">
-                <span className="text-[10px] font-semibold text-[#1685FF] uppercase tracking-wider block mb-1">
+              <div className="mb-4 p-4 rounded-xl bg-[#000000] border border-[#252B38]">
+                <span className="text-[10px] font-semibold text-[#2787FF] uppercase tracking-wider block mb-1">
                   Scroll-Stopping Hook
                 </span>
-                <p className="text-sm font-semibold text-white leading-snug">
+                <p className="text-sm font-semibold text-[#E8EDF7] leading-snug">
                   {post.hook}
                 </p>
               </div>
@@ -144,10 +144,10 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
                     rows={8}
                     value={post.body}
                     onChange={(e) => handleTextChange(post.id, e.target.value)}
-                    className="w-full rounded-xl bg-[#0B0F17] border border-[#202C3D] p-3 text-sm text-[#F5F7FA] focus:outline-none focus:ring-1 focus:ring-[#1685FF]"
+                    className="w-full rounded-xl bg-[#000000] border border-[#252B38] p-3 text-sm text-[#E8EDF7] focus:outline-none focus:ring-1 focus:ring-[#2787FF]"
                   />
                 ) : (
-                  <div className="text-sm text-[#D2D8E2] leading-relaxed whitespace-pre-wrap font-sans">
+                  <div className="text-sm text-[#E8EDF7] leading-relaxed whitespace-pre-wrap font-sans">
                     {post.body}
                   </div>
                 )}
@@ -155,12 +155,12 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
 
               {/* CTA */}
               {post.cta && (
-                <div className="pt-3 border-t border-[#202C3D] flex items-center justify-between text-xs text-[#7F8BA0]">
+                <div className="pt-3 border-t border-[#252B38] flex items-center justify-between text-xs text-[#A1A9BA]">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-[#1685FF]">CTA:</span>
-                    <span className="italic text-[#AAB4C5]">{post.cta}</span>
+                    <span className="font-semibold text-[#2787FF]">CTA:</span>
+                    <span className="italic text-[#A1A9BA]">{post.cta}</span>
                   </div>
-                  <div className="hidden sm:flex items-center gap-3 text-[#5A6472]">
+                  <div className="hidden sm:flex items-center gap-3 text-[#A1A9BA]">
                     <ThumbsUp className="w-3.5 h-3.5" />
                     <MessageSquare className="w-3.5 h-3.5" />
                     <Share2 className="w-3.5 h-3.5" />

@@ -22,7 +22,7 @@ export const ScatteredHeading: React.FC<ScatteredHeadingProps> = ({
   text,
   as: Tag = 'h3',
   className = '',
-  accent = '#1685FF',
+  accent = '#2787FF',
   repelRadius = 95,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -42,6 +42,11 @@ export const ScatteredHeading: React.FC<ScatteredHeadingProps> = ({
     targetScatter: 0,
     mouse: { x: -9999, y: -9999, active: false },
     active: true,
+    lines: [] as string[],
+    startY: 0,
+    lineHeight: 0,
+    font: '',
+    fontSize: 0,
   });
 
   useEffect(() => {
@@ -74,7 +79,7 @@ export const ScatteredHeading: React.FC<ScatteredHeadingProps> = ({
       if (!og) return;
 
       const words = text.split(/\s+/);
-      const font = `800 ${fontSize}px "Geist", "Plus Jakarta Sans", system-ui, sans-serif`;
+      const font = `800 ${fontSize}px "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
       og.font = font;
 
       // Word wrapping
@@ -92,8 +97,15 @@ export const ScatteredHeading: React.FC<ScatteredHeadingProps> = ({
       if (currentLine) lines.push(currentLine);
 
       const totalH = Math.max(76, Math.round(lines.length * lineHeight + 28));
+      const startY = totalH / 2 - ((lines.length - 1) * lineHeight) / 2;
+
       s.W = W;
       s.H = totalH;
+      s.lines = lines;
+      s.startY = startY;
+      s.lineHeight = lineHeight;
+      s.font = font;
+      s.fontSize = fontSize;
       setContainerHeight(totalH);
 
       cv.width = W * dpr;
@@ -104,14 +116,19 @@ export const ScatteredHeading: React.FC<ScatteredHeadingProps> = ({
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       gtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
+      // Enable font smoothing and subpixel antialiasing
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      gtx.imageSmoothingEnabled = true;
+      gtx.imageSmoothingQuality = 'high';
+
       off.width = W;
       off.height = totalH;
       og.font = font;
       og.textAlign = 'center';
       og.textBaseline = 'middle';
-      og.fillStyle = '#FFFFFF';
+      og.fillStyle = '#E8EDF7';
 
-      const startY = totalH / 2 - ((lines.length - 1) * lineHeight) / 2;
       lines.forEach((line, idx) => {
         og.fillText(line, W / 2, startY + idx * lineHeight);
       });
@@ -162,6 +179,16 @@ export const ScatteredHeading: React.FC<ScatteredHeadingProps> = ({
     };
 
     build();
+
+    // Re-measure and render once fonts (Plus Jakarta Sans) are fully loaded
+    if (typeof document !== 'undefined' && 'fonts' in document) {
+      document.fonts.ready.then(() => {
+        if (alive) {
+          build();
+          onScroll();
+        }
+      });
+    }
 
     // Scroll progress evaluation (directional: gathers on entrance towards center line, stays intact above)
     const onScroll = () => {
@@ -234,7 +261,7 @@ export const ScatteredHeading: React.FC<ScatteredHeadingProps> = ({
       if (!alive) return;
 
       if (isVisible) {
-        const { W, H, N, P } = s;
+        const { W, H, N, P, lines, startY, lineHeight, font } = s;
         const t = (now - s.t0) / 1000;
         const R = repelRadius;
         const R2 = R * R;
@@ -255,8 +282,72 @@ export const ScatteredHeading: React.FC<ScatteredHeadingProps> = ({
         ctx.clearRect(0, 0, W, H);
         gtx.clearRect(0, 0, W, H);
 
-        ctx.fillStyle = '#FFFFFF';
+        // Gather progress (1 = fully gathered/unscattered, 0 = scattered)
+        const gatherProgress = Math.min(1, Math.max(0, (0.35 - sc) / 0.35));
+        const textAlpha = Math.pow(gatherProgress, 1.4) * entranceFade;
+        const dotsAlpha = Math.max(0, 1 - Math.pow(gatherProgress, 1.8)) * entranceFade;
+
+        // -------------------------------------------------------------
+        // 1. REFINED FONT LAYER (Rendered cleanly when unscattered)
+        // -------------------------------------------------------------
+        if (textAlpha > 0.005 && lines && lines.length > 0) {
+          ctx.save();
+          ctx.font = font;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = '#E8EDF7';
+          ctx.globalAlpha = textAlpha;
+
+          lines.forEach((line, idx) => {
+            ctx.fillText(line, W / 2, startY + idx * lineHeight);
+          });
+
+          // Interactive cursor cutout: when hovering over the refined text,
+          // erase text right under cursor so the scattering particles can be seen!
+          if (s.mouse.active && R > 0) {
+            ctx.globalCompositeOperation = 'destination-out';
+            const maskGrad = ctx.createRadialGradient(
+              s.mouse.x, s.mouse.y, 0,
+              s.mouse.x, s.mouse.y, R
+            );
+            maskGrad.addColorStop(0, 'rgba(0, 0, 0, 1)');
+            maskGrad.addColorStop(0.65, 'rgba(0, 0, 0, 0.75)');
+            maskGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = maskGrad;
+            ctx.beginPath();
+            ctx.arc(s.mouse.x, s.mouse.y, R, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+
+          // Ambient subtle glow sweep on refined font
+          if (!reduce && entranceFade > 0.1 && textAlpha > 0.1) {
+            const sweepX = sweep * W;
+            const sweepWidth = W * 0.28;
+            const sweepGrad = gtx.createLinearGradient(sweepX - sweepWidth, 0, sweepX + sweepWidth, 0);
+            sweepGrad.addColorStop(0, 'rgba(39, 135, 255, 0)');
+            sweepGrad.addColorStop(0.5, 'rgba(39, 135, 255, 0.35)');
+            sweepGrad.addColorStop(1, 'rgba(39, 135, 255, 0)');
+            gtx.save();
+            gtx.font = font;
+            gtx.textAlign = 'center';
+            gtx.textBaseline = 'middle';
+            gtx.fillStyle = sweepGrad;
+            gtx.globalAlpha = textAlpha * 0.75;
+            lines.forEach((line, idx) => {
+              gtx.fillText(line, W / 2, startY + idx * lineHeight);
+            });
+            gtx.restore();
+          }
+        }
+
+        // -------------------------------------------------------------
+        // 2. SCATTERED / REPEL PARTICLES LAYER
+        // -------------------------------------------------------------
+        ctx.fillStyle = '#E8EDF7';
         gtx.fillStyle = accent;
+
+        const baseDotRadius = Math.max(0.9, 1.35 - sc * 0.35);
 
         for (let i = 0; i < N; i++) {
           const o = i * 10;
@@ -307,20 +398,31 @@ export const ScatteredHeading: React.FC<ScatteredHeadingProps> = ({
           const x = P[o];
           const y = P[o + 1];
 
-          // High-density dot sizing: when gathered, dots form crisp, solid letters
-          const alpha = Math.max(0, (1 - sc * 0.65) * entranceFade);
-          const dotRadius = Math.max(0.85, 1.35 - sc * 0.35);
+          // A particle is rendered if dotsAlpha > 0 (during scatter/unscatter)
+          // or if the particle is currently being displaced away from home by mouse hover!
+          const displacement = Math.hypot(x - hx, y - hy);
+          const mouseDisplacedAlpha = s.mouse.active && displacement > 1.2
+            ? Math.min(1, displacement / 10) * entranceFade
+            : 0;
 
-          ctx.globalAlpha = alpha;
-          ctx.fillRect(x - dotRadius, y - dotRadius, dotRadius * 2, dotRadius * 2);
+          const pAlpha = Math.max(dotsAlpha, mouseDisplacedAlpha);
 
-          // Glowing electric sweep through gathered letters
-          if (sc < 0.85 && !reduce && entranceFade > 0.1) {
-            const sweepDist = Math.max(0, 1 - Math.abs(x / W - sweep) * 5.5);
-            const glowAlpha = sweepDist * (1 - sc) * 0.95 * entranceFade;
-            if (glowAlpha > 0.02) {
-              gtx.globalAlpha = glowAlpha;
-              gtx.fillRect(x - 2, y - 2, 4, 4);
+          if (pAlpha > 0.01) {
+            ctx.globalAlpha = pAlpha;
+            ctx.beginPath();
+            ctx.arc(x, y, baseDotRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Glowing electric sweep through in-flight particles
+            if (sc < 0.85 && !reduce && entranceFade > 0.1) {
+              const sweepDist = Math.max(0, 1 - Math.abs(x / W - sweep) * 5.5);
+              const glowAlpha = sweepDist * (1 - sc) * 0.85 * entranceFade * pAlpha;
+              if (glowAlpha > 0.02) {
+                gtx.globalAlpha = glowAlpha;
+                gtx.beginPath();
+                gtx.arc(x, y, 2.5, 0, Math.PI * 2);
+                gtx.fill();
+              }
             }
           }
         }
