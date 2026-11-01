@@ -31,26 +31,39 @@ export const CriticReport: React.FC<CriticReportProps> = ({ review, iteration })
 
   return (
     <div className="bg-[#080C15] border border-[#252B38] rounded-2xl p-6 shadow-card">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-6 border-b border-[#252B38]">
-        <div>
-          <div className="flex items-center gap-2">
-            <Award className="w-5 h-5 text-amber-400" />
-            <h3 className="font-bold text-[#E8EDF7] text-base">Critic & Quality Review Report</h3>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 mb-6 border-b border-[#252B38]">
+        <div className="flex items-center gap-4">
+          <div className="relative h-16 w-16 shrink-0">
+            <div
+              className="score-ring h-full w-full rounded-full"
+              style={{ '--score-angle': `${Math.min(Math.max(review.score, 0), 100)}%` } as React.CSSProperties}
+              aria-hidden="true"
+            />
+            <div className="absolute inset-[3px] flex flex-col items-center justify-center rounded-full bg-[#080C15]">
+              <span className="font-display text-lg font-bold leading-none text-[#E8EDF7]">{Math.round(review.score)}</span>
+              <span className="mt-0.5 font-mono text-[8px] uppercase tracking-wider text-[#737D91]">score</span>
+            </div>
           </div>
-          <p className="text-xs text-[#A1A9BA] mt-0.5">
-            Automated topic fidelity verification and platform fitness assessment (Iteration {iteration})
-          </p>
+          <div>
+            <div className="flex items-center gap-2">
+              <Award className="w-4 h-4 text-amber-400" />
+              <h3 className="font-display font-semibold text-[#E8EDF7] text-base">Critic &amp; quality review report</h3>
+            </div>
+            <p className="text-xs text-[#A1A9BA] mt-1">
+              Topic fidelity verification &amp; platform fitness assessment (iteration {iteration})
+            </p>
+          </div>
         </div>
 
         {review.approved ? (
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold self-start sm:self-auto">
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>Critic Approved ({review.score}/100)</span>
+            <span>Critic approved</span>
           </div>
         ) : (
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold self-start sm:self-auto">
             <AlertCircle className="w-4 h-4 text-amber-400" />
-            <span>Revision Required ({review.score}/100)</span>
+            <span>Revision required</span>
           </div>
         )}
       </div>

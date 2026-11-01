@@ -38,20 +38,108 @@
 
   /* Restrained standard transition */
   --transition-smooth: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, color 180ms ease;
+
+  /* Signature gradients */
+  --gradient-spectrum: linear-gradient(135deg, #2787FF 0%, #A836D9 55%, #D21BCE 100%);
+  --gradient-panel: linear-gradient(180deg, rgba(17, 24, 39, 0.72) 0%, rgba(8, 12, 21, 0.94) 100%);
 }
 
-body {
-  background-color: #000000;
-  color: #E8EDF7;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    scrollbar-color: #34445F #000000;
+  }
+
+  body {
+    background-color: #000000;
+    color: #E8EDF7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'ss01' 1, 'cv11' 1, 'liga' 1;
+    background-image:
+      radial-gradient(60rem 40rem at 15% -10%, rgba(39, 135, 255, 0.07), transparent 60%),
+      radial-gradient(50rem 38rem at 92% 6%, rgba(210, 27, 206, 0.05), transparent 62%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background-color: rgba(39, 135, 255, 0.28);
+    color: #EAF2FF;
+  }
+
+  /* Visible, consistent keyboard focus everywhere */
+  :focus-visible {
+    outline: 2px solid #2787FF;
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3, h4 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Respect sticky header when jumping to anchors */
+  [id] {
+    scroll-margin-top: 6.5rem;
+  }
 }
 
 code, pre {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 }
 
-/* Official Card Surface & Depth Standards */
+/* ============================================================
+   CUSTOM SCROLLBARS
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #252B38;
+  border: 2px solid #000000;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #34445F;
+}
+
+/* ============================================================
+   SKIP LINK
+   ============================================================ */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  transform: translateY(-160%);
+  border-radius: 0.75rem;
+  border: 1px solid #34445F;
+  background: #080C15;
+  color: #E8EDF7;
+  padding: 0.6rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: transform 180ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* ============================================================
+   SURFACES
+   ============================================================ */
 .card-surface {
   background-color: #080C15;
   border: 1px solid #252B38;
@@ -70,12 +158,68 @@ code, pre {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.60);
 }
 
-/* Interactive transitions */
+/* Elevated studio panel: hairline top light + deep soft shadow */
+.panel {
+  position: relative;
+  background-image: var(--gradient-panel);
+  border: 1px solid rgba(52, 68, 95, 0.55);
+  border-radius: 1.25rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 24px 48px -24px rgba(0, 0, 0, 0.9);
+}
+
+.panel-hover {
+  transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.panel-hover:hover {
+  border-color: rgba(39, 135, 255, 0.38);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 32px 60px -26px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(39, 135, 255, 0.06);
+  transform: translateY(-2px);
+}
+
+/* Faint dotted grid used behind hero / feature sections */
+.bg-dot-grid {
+  background-image: radial-gradient(rgba(148, 163, 184, 0.16) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: center;
+}
+
+/* ============================================================
+   TYPOGRAPHY HELPERS
+   ============================================================ */
+.font-display {
+  font-family: 'Space Grotesk', 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-feature-settings: 'ss01' 1;
+}
+
+.eyebrow {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #8FA6C6;
+}
+
+.gradient-text {
+  background: var(--gradient-spectrum);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
 .interactive-transition {
   transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, color 180ms ease;
 }
 
-/* Primary Button Styling */
 .btn-primary {
   background-color: #2787FF;
   color: #FFFFFF;
@@ -141,7 +285,9 @@ code, pre {
   transform: translateY(-1px);
 }
 
-/* Ambient Floating Background Orbs */
+/* ============================================================
+   AMBIENT FLOATING BACKGROUND ORBS
+   ============================================================ */
 @keyframes float-ambient-1 {
   0%, 100% {
     transform: translate(0px, 0px) scale(1);
@@ -183,13 +329,46 @@ code, pre {
 
 /* Cybernetic Wireframe Lattice Pattern */
 .bg-cyber-grid {
-  background-image: 
+  background-image:
     linear-gradient(to right, rgba(32, 44, 61, 0.22) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(32, 44, 61, 0.22) 1px, transparent 1px);
   background-size: 56px 56px;
 }
 
-/* Accessibility: prefers-reduced-motion */
+/* ============================================================
+   MISC EFFECTS
+   ============================================================ */
+/* Soft animated sheen for "live" elements */
+.shimmer-line {
+  background: linear-gradient(
+    90deg,
+    rgba(39, 135, 255, 0) 0%,
+    rgba(39, 135, 255, 0.55) 50%,
+    rgba(210, 27, 206, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2.4s linear infinite;
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+/* Thin gradient hairline separator */
+.hairline-gradient {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(39, 135, 255, 0.35), rgba(210, 27, 206, 0.25), transparent);
+}
+
+/* Circular conic score ring utility */
+.score-ring {
+  background: conic-gradient(#2787FF var(--score-angle, 90%), rgba(37, 43, 56, 1) 0);
+}
+
+/* ============================================================
+   ACCESSIBILITY: PREFERS-REDUCED-MOTION
+   ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;
@@ -198,4 +377,3 @@ code, pre {
     scroll-behavior: auto !important;
   }
 }
-

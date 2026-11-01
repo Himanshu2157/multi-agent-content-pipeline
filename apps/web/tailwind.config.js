@@ -6,6 +6,11 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
+        display: ['"Space Grotesk"', '"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+      },
       colors: {
         /* Official ContentSmith Design System Palette */
         brand: {
@@ -84,12 +89,81 @@ export default {
           foreground: '#FFFFFF',
         },
       },
+      spacing: {
+        4.5: '1.125rem',
+        18: '4.5rem',
+        22: '5.5rem',
+      },
+      borderRadius: {
+        '4xl': '2rem',
+      },
+      transitionDuration: {
+        180: '180ms',
+        250: '250ms',
+        400: '400ms',
+      },
+      transitionTimingFunction: {
+        smooth: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        spring: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+      },
+      animation: {
+        fadeIn: 'fadeIn 420ms cubic-bezier(0.22, 1, 0.36, 1) both',
+        fadeUp: 'fadeUp 620ms cubic-bezier(0.22, 1, 0.36, 1) both',
+        slideDown: 'slideDown 260ms cubic-bezier(0.22, 1, 0.36, 1) both',
+        marquee: 'marquee 38s linear infinite',
+        shimmer: 'shimmer 2.4s linear infinite',
+        'pulse-soft': 'pulseSoft 3.2s ease-in-out infinite',
+        'spin-slow': 'spin 8s linear infinite',
+        'float-1': 'float1 18s ease-in-out infinite',
+        'float-2': 'float2 22s ease-in-out infinite',
+        'float-3': 'float3 26s ease-in-out infinite',
+      },
+      keyframes: {
+        fadeIn: {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        fadeUp: {
+          from: { opacity: '0', transform: 'translateY(14px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideDown: {
+          from: { opacity: '0', transform: 'translateY(-8px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        marquee: {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-50%)' },
+        },
+        shimmer: {
+          from: { backgroundPosition: '200% 0' },
+          to: { backgroundPosition: '-200% 0' },
+        },
+        pulseSoft: {
+          '0%, 100%': { opacity: '0.35', transform: 'scale(1)' },
+          '50%': { opacity: '0.7', transform: 'scale(1.06)' },
+        },
+        float1: {
+          '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
+          '50%': { transform: 'translate(40px, -30px) scale(1.1)' },
+        },
+        float2: {
+          '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
+          '50%': { transform: 'translate(-50px, 40px) scale(1.15)' },
+        },
+        float3: {
+          '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
+          '50%': { transform: 'translate(30px, 50px) scale(1.08)' },
+        },
+      },
       boxShadow: {
         'card': '0 4px 20px rgba(0, 0, 0, 0.40)',
         'card-hover': '0 8px 30px rgba(0, 0, 0, 0.60)',
         'btn-hover': '0 4px 18px rgba(39, 135, 255, 0.35)',
         'glow-blue': '0 0 25px rgba(39, 135, 255, 0.20)',
         'glow-magenta': '0 0 25px rgba(210, 27, 206, 0.20)',
+        'inner-hairline': 'inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+        'panel': '0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 24px 48px -24px rgba(0, 0, 0, 0.9)',
       },
     },
   },

@@ -66,14 +66,14 @@ export const AgentPipelineTracker: React.FC<AgentPipelineTrackerProps> = ({
             </div>
           </div>
           <div>
-            <h3 className="font-bold text-[#E8EDF7] text-base">Multi-Agent Content Pipeline</h3>
+            <h3 className="font-display font-semibold text-[#E8EDF7] text-base">Multi-agent content pipeline</h3>
             <p className="text-xs text-[#A1A9BA]">
-              Autonomous execution &bull; Strict Topic Fidelity &bull; Self-correcting loop
+              Autonomous execution &bull; strict topic fidelity &bull; self-correcting loop
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3" aria-live="polite">
           <div className="px-3 py-1.5 rounded-xl bg-[#000000] border border-[#252B38] text-xs font-mono text-[#E8EDF7] flex items-center gap-2">
             <Repeat className="w-3.5 h-3.5 text-[#2787FF]" />
             <span>

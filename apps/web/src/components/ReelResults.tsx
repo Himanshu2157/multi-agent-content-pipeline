@@ -69,7 +69,7 @@ ${content.cta ? content.cta : 'Save this video and share your thoughts in the co
             </div>
           </div>
           <div>
-            <h3 className="text-base font-bold text-[#E8EDF7]">{content.title}</h3>
+            <h3 className="font-display text-base font-semibold text-[#E8EDF7]">{content.title}</h3>
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-[#A1A9BA] mt-1">
               <span className="flex items-center gap-1 text-[#2787FF] font-semibold bg-[#000000] px-2.5 py-0.5 rounded-lg border border-[#252B38]">
                 <Clock className="w-3.5 h-3.5" />
@@ -90,10 +90,10 @@ ${content.cta ? content.cta : 'Save this video and share your thoughts in the co
 
         <button
           onClick={handleCopyScript}
-          className="px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-[#2787FF] to-[#D21BCE] hover:opacity-95 hover:shadow-btn-hover text-white transition-all duration-180 flex items-center gap-2 shrink-0 cursor-pointer shadow-md shadow-[#D21BCE]/20 focus:outline-none focus:ring-2 focus:ring-[#D21BCE]/50"
+          className="px-4 py-2.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-[#2787FF] to-[#D21BCE] hover:opacity-95 hover:shadow-btn-hover text-white transition-all duration-180 flex items-center gap-2 shrink-0 cursor-pointer shadow-md shadow-[#D21BCE]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D21BCE]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080C15]"
         >
           {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-          <span>{copied ? 'Production Script Copied!' : 'Copy Video Script'}</span>
+          <span aria-live="polite">{copied ? 'Production script copied!' : 'Copy video script'}</span>
         </button>
       </div>
 
@@ -123,7 +123,7 @@ ${content.cta ? content.cta : 'Save this video and share your thoughts in the co
             </div>
 
             {/* Scene Card */}
-            <div className="flex-1 bg-[#080C15] border border-[#252B38] rounded-2xl p-5 hover:border-[#34445F] transition-all duration-180 shadow-card space-y-3.5">
+            <div className="flex-1 bg-[#080C15] border border-[#252B38] rounded-2xl p-5 hover:border-[#34445F] hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-250 shadow-card space-y-3.5">
               <div className="flex items-center justify-between pb-3 border-b border-[#252B38]">
                 <span className="px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-[#000000] text-[#D21BCE] border border-[#252B38] font-mono">
                   {section.timestamp}

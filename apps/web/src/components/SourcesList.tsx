@@ -9,13 +9,13 @@ interface SourcesListProps {
 export const SourcesList: React.FC<SourcesListProps> = ({ research }) => {
   return (
     <div className="bg-[#080C15] border border-[#252B38] rounded-2xl p-6 shadow-card">
-      <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#252B38]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-4 border-b border-[#252B38]">
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-5 h-5 text-[#2787FF]" />
-          <h3 className="font-bold text-[#E8EDF7] text-base">Verified Research & Sources</h3>
+          <h3 className="font-display font-semibold text-[#E8EDF7] text-base">Verified research &amp; sources</h3>
         </div>
-        <span className="text-xs text-[#A1A9BA] font-medium">
-          {research.sources.length} Verified Sources &bull; {research.facts.length} Grounded Claims
+        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#A1A9BA]">
+          {research.sources.length} sources &bull; {research.facts.length} grounded claims
         </span>
       </div>
 
@@ -27,14 +27,14 @@ export const SourcesList: React.FC<SourcesListProps> = ({ research }) => {
 
       {/* Verified Claims */}
       <div className="mb-5">
-        <h4 className="text-xs font-semibold text-[#A1A9BA] uppercase tracking-wider mb-2.5">
-          Grounded Facts Used in Content
+        <h4 className="font-mono text-[10px] font-semibold text-[#A1A9BA] uppercase tracking-[0.16em] mb-2.5">
+          Grounded facts used in content
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
           {research.facts.map((fact, idx) => (
             <div
               key={idx}
-              className="p-3.5 rounded-xl bg-[#000000] border border-[#252B38] flex flex-col justify-between"
+              className="p-3.5 rounded-xl bg-[#000000] border border-[#252B38] hover:border-[#34445F] transition-colors flex flex-col justify-between"
             >
               <p className="text-xs text-[#E8EDF7] mb-2 leading-snug">"{fact.claim}"</p>
               <div className="flex items-center justify-between pt-2 border-t border-[#252B38] text-[11px]">
@@ -58,8 +58,8 @@ export const SourcesList: React.FC<SourcesListProps> = ({ research }) => {
 
       {/* Source Links */}
       <div>
-        <h4 className="text-xs font-semibold text-[#A1A9BA] uppercase tracking-wider mb-2.5">
-          Citations & Publications
+        <h4 className="font-mono text-[10px] font-semibold text-[#A1A9BA] uppercase tracking-[0.16em] mb-2.5">
+          Citations &amp; publications
         </h4>
         <div className="space-y-2">
           {research.sources.map((src, idx) => (
@@ -68,7 +68,7 @@ export const SourcesList: React.FC<SourcesListProps> = ({ research }) => {
               href={src.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between p-3 rounded-xl bg-[#000000] border border-[#252B38] hover:border-[#34445F] hover:bg-[#080C15] transition-all group"
+              className="flex items-center justify-between p-3 rounded-xl bg-[#000000] border border-[#252B38] hover:border-[#34445F] hover:bg-[#080C15] transition-all group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2787FF]/60"
             >
               <div className="flex items-center gap-2.5 overflow-hidden">
                 <span className="w-5 h-5 rounded-md bg-[#080C15] text-[#E8EDF7] text-[10px] font-semibold flex items-center justify-center shrink-0">

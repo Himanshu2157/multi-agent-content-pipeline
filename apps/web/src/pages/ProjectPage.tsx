@@ -121,8 +121,8 @@ export const ProjectPage: React.FC = () => {
   if (isProjectLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20 flex flex-col items-center justify-center">
-        <div className="w-10 h-10 border-4 border-brand-500 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-forge-400 text-sm">Loading project context...</p>
+        <div className="w-10 h-10 rounded-full border-2 border-[#252B38] border-t-[#2787FF] animate-spin mb-4" />
+        <p className="text-[#A1A9BA] text-sm">Loading project context…</p>
       </div>
     );
   }
@@ -131,13 +131,13 @@ export const ProjectPage: React.FC = () => {
     return (
       <div className="max-w-2xl mx-auto px-4 py-20 text-center">
         <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-        <h2 className="text-xl font-bold text-white mb-2">Project Not Found</h2>
-        <p className="text-forge-400 text-sm mb-6">
+        <h2 className="font-display text-xl font-semibold text-[#E8EDF7] mb-2">Project not found</h2>
+        <p className="text-[#A1A9BA] text-sm mb-6">
           The requested content project does not exist or may have been deleted.
         </p>
         <Link
           to="/create"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#2787FF] text-white font-semibold text-sm hover:bg-[#1E74E0] transition-colors"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#2787FF] text-white font-semibold text-sm hover:bg-[#1E74E0] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2787FF]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#000000]"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Return to Configuration</span>
@@ -176,7 +176,7 @@ export const ProjectPage: React.FC = () => {
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Create Another Project</span>
           </Link>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#E8EDF7] tracking-tight">
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#E8EDF7] tracking-[-0.02em]">
             {project.title}
           </h1>
           <div className="flex flex-wrap items-center gap-3 text-xs text-[#A1A9BA] mt-2">
@@ -206,7 +206,7 @@ export const ProjectPage: React.FC = () => {
           <button
             onClick={() => startGenMutation.mutate()}
             disabled={isRunning || startGenMutation.isPending}
-            className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#080C15] hover:bg-[#080C15] hover:border-[#34445F] text-[#A1A9BA] hover:text-[#E8EDF7] border border-[#252B38] transition-all duration-180 flex items-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-card focus:outline-none focus:ring-1 focus:ring-[#2787FF]/50"
+            className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#080C15] hover:bg-[#0E1422] hover:border-[#34445F] text-[#A1A9BA] hover:text-[#E8EDF7] border border-[#252B38] transition-all duration-180 flex items-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2787FF]/60"
           >
             <RefreshCw
               className={cn('w-3.5 h-3.5', (isRunning || startGenMutation.isPending) && 'animate-spin')}
@@ -241,7 +241,7 @@ export const ProjectPage: React.FC = () => {
               <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
             )}
             <div>
-              <h4 className="text-sm font-bold text-[#E8EDF7]">
+              <h4 className="font-display text-sm font-semibold text-[#E8EDF7]">
                 {generation.approved
                   ? `Pipeline Complete: Approved on Iteration ${generation.currentIteration}`
                   : `Maximum Review Iterations Reached (${generation.currentIteration}/${project.maxIterations})`}
@@ -266,12 +266,14 @@ export const ProjectPage: React.FC = () => {
       {activeDraft && (
         <div className="space-y-6">
           {/* Tabs Header */}
-          <div className="flex items-center justify-between border-b border-[#252B38] pb-2">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-[#252B38] pb-2">
+            <div className="flex items-center gap-1.5 overflow-x-auto w-full lg:w-auto pb-1 -mb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="tablist" aria-label="Project result views">
               <button
                 onClick={() => setActiveTab('content')}
+                role="tab"
+                aria-selected={activeTab === 'content'}
                 className={cn(
-                  'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-[#2787FF]/50',
+                  'shrink-0 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2787FF]/60',
                   activeTab === 'content'
                     ? 'bg-[#2787FF] text-white shadow-sm shadow-[#2787FF]/20'
                     : 'text-[#A1A9BA] hover:text-[#E8EDF7] hover:bg-[#080C15]'
@@ -283,8 +285,10 @@ export const ProjectPage: React.FC = () => {
 
               <button
                 onClick={() => setActiveTab('critic')}
+                role="tab"
+                aria-selected={activeTab === 'critic'}
                 className={cn(
-                  'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-[#2787FF]/50',
+                  'shrink-0 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2787FF]/60',
                   activeTab === 'critic'
                     ? 'bg-[#2787FF] text-white shadow-sm shadow-[#2787FF]/20'
                     : 'text-[#A1A9BA] hover:text-[#E8EDF7] hover:bg-[#080C15]'
@@ -296,8 +300,10 @@ export const ProjectPage: React.FC = () => {
 
               <button
                 onClick={() => setActiveTab('sources')}
+                role="tab"
+                aria-selected={activeTab === 'sources'}
                 className={cn(
-                  'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-[#2787FF]/50',
+                  'shrink-0 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2787FF]/60',
                   activeTab === 'sources'
                     ? 'bg-[#2787FF] text-white shadow-sm shadow-[#2787FF]/20'
                     : 'text-[#A1A9BA] hover:text-[#E8EDF7] hover:bg-[#080C15]'
@@ -310,8 +316,10 @@ export const ProjectPage: React.FC = () => {
               {drafts.length > 1 && (
                 <button
                   onClick={() => setActiveTab('history')}
+                  role="tab"
+                  aria-selected={activeTab === 'history'}
                   className={cn(
-                    'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-[#2787FF]/50',
+                    'shrink-0 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-180 cursor-pointer flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2787FF]/60',
                     activeTab === 'history'
                       ? 'bg-[#2787FF] text-white shadow-sm shadow-[#2787FF]/20'
                       : 'text-[#A1A9BA] hover:text-[#E8EDF7] hover:bg-[#080C15]'
@@ -330,7 +338,8 @@ export const ProjectPage: React.FC = () => {
                 <select
                   value={selectedIteration || latestDraft.iteration}
                   onChange={(e) => setSelectedIteration(Number(e.target.value))}
-                  className="bg-[#000000] border border-[#252B38] rounded-xl px-2.5 py-1 text-xs text-[#E8EDF7] focus:outline-none focus:ring-1 focus:ring-[#2787FF]"
+                  aria-label="Select iteration to view"
+                  className="bg-[#000000] border border-[#252B38] rounded-xl px-2.5 py-1 text-xs text-[#E8EDF7] hover:border-[#34445F] focus:outline-none focus:ring-2 focus:ring-[#2787FF]/60"
                 >
                   {drafts.map((d) => (
                     <option key={d.iteration} value={d.iteration}>
@@ -372,8 +381,8 @@ export const ProjectPage: React.FC = () => {
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-[#E8EDF7]">
-                    Autonomous Multi-Agent Refinement Audit Trail
+                  <h3 className="font-display text-base font-semibold text-[#E8EDF7]">
+                    Autonomous multi-agent refinement audit trail
                   </h3>
                   <p className="text-xs text-[#A1A9BA] mt-0.5">
                     Verified trail showing drafts, critic rejections, and how the Writer agent refined each cycle.

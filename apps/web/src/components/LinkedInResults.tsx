@@ -69,10 +69,10 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
 
         <button
           onClick={handleCopyAll}
-          className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#2787FF] hover:bg-[#1E74E0] hover:shadow-btn-hover text-white transition-all duration-180 flex items-center gap-2 shrink-0 cursor-pointer shadow-md shadow-[#2787FF]/20 focus:outline-none focus:ring-2 focus:ring-[#2787FF]/50"
+          className="px-4 py-2.5 rounded-xl text-xs font-semibold bg-[#2787FF] hover:bg-[#1E74E0] hover:shadow-btn-hover text-white transition-all duration-180 flex items-center gap-2 shrink-0 cursor-pointer shadow-md shadow-[#2787FF]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2787FF]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080C15]"
         >
           {copiedAll ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-          <span>{copiedAll ? 'Copied All Posts!' : 'Copy All 5 Posts'}</span>
+          <span aria-live="polite">{copiedAll ? 'Copied all posts!' : `Copy all ${posts.length} posts`}</span>
         </button>
       </div>
 
@@ -83,10 +83,11 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
           const isEditing = editingId === post.id;
 
           return (
-            <div
+            <article
               key={post.id || idx}
-              className="bg-[#080C15] border border-[#252B38] rounded-2xl p-6 shadow-card hover:border-[#34445F] transition-all duration-180"
+              className="group relative overflow-hidden bg-[#080C15] border border-[#252B38] rounded-2xl p-6 shadow-card hover:border-[#34445F] hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-250"
             >
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#2787FF]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
               {/* Post Header */}
               <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#252B38]">
                 <div className="flex items-center gap-2.5">
@@ -110,7 +111,8 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
 
                   <button
                     onClick={() => handleCopyPost(post)}
-                    className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#000000] hover:bg-[#080C15] hover:border-[#34445F] text-[#E8EDF7] hover:text-white transition-all duration-180 flex items-center gap-1.5 cursor-pointer border border-[#252B38] focus:outline-none focus:ring-1 focus:ring-[#2787FF]/50"
+                    aria-label={`Copy LinkedIn post ${idx + 1}`}
+                    className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#000000] hover:bg-[#080C15] hover:border-[#34445F] text-[#E8EDF7] hover:text-white transition-all duration-180 flex items-center gap-1.5 cursor-pointer border border-[#252B38] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2787FF]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080C15]"
                   >
                     {isCopied ? (
                       <>
@@ -128,9 +130,9 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
               </div>
 
               {/* Hook Banner */}
-              <div className="mb-4 p-4 rounded-xl bg-[#000000] border border-[#252B38]">
-                <span className="text-[10px] font-semibold text-[#2787FF] uppercase tracking-wider block mb-1">
-                  Scroll-Stopping Hook
+              <div className="mb-4 p-4 rounded-xl bg-gradient-to-r from-[#2787FF]/[0.06] to-transparent border border-[#252B38] border-l-2 border-l-[#2787FF]">
+                <span className="text-[10px] font-mono font-semibold text-[#2787FF] uppercase tracking-[0.16em] block mb-1">
+                  Scroll-stopping hook
                 </span>
                 <p className="text-sm font-semibold text-[#E8EDF7] leading-snug">
                   {post.hook}
@@ -168,7 +170,7 @@ export const LinkedInResults: React.FC<LinkedInResultsProps> = ({ content }) => 
                   </div>
                 </div>
               )}
-            </div>
+            </article>
           );
         })}
       </div>

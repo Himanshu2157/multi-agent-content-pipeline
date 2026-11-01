@@ -384,8 +384,14 @@ export const HomePage: React.FC = () => {
           DYNAMIC AGENT WORK LOADING SCREEN (3s to 6s BASED ON TOPIC STRENGTH)
           ============================================================ */}
       {loadingState?.isActive && (
-        <div className={cn("fixed inset-0 z-50 bg-[#000000]/90 backdrop-blur-xl flex items-center justify-center p-4 animate-fadeIn", loadingTheme.selection)}>
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Multi-agent pipeline running"
+          className={cn("fixed inset-0 z-50 bg-[#000000]/90 backdrop-blur-xl flex items-center justify-center p-4 animate-fadeIn", loadingTheme.selection)}
+        >
           <div className="max-w-xl w-full p-8 rounded-3xl bg-[#080C15] border border-[#252B38] shadow-2xl relative overflow-hidden text-center">
+            <div className="absolute inset-x-0 top-0 h-px shimmer-line" />
             {/* Background Ambient Glows */}
             <div className={cn("absolute -top-24 -right-24 w-60 h-60 rounded-full blur-3xl pointer-events-none", loadingTheme.glow1)} />
             <div className={cn("absolute -bottom-24 -left-24 w-60 h-60 rounded-full blur-3xl pointer-events-none", loadingTheme.glow2)} />
@@ -418,8 +424,8 @@ export const HomePage: React.FC = () => {
             </div>
 
             {/* Main Title */}
-            <h3 className="text-xl sm:text-2xl font-extrabold text-[#E8EDF7] mb-2 tracking-tight">
-              Multi-Agent Swarm Initializing
+            <h3 className="font-display text-xl sm:text-2xl font-bold text-[#E8EDF7] mb-2 tracking-tight">
+              Multi-agent swarm initializing
             </h3>
             <p className="text-xs text-[#A1A9BA] max-w-md mx-auto mb-6 leading-relaxed">
               Topic allocated <strong className="text-[#E8EDF7]">{(loadingState.durationMs / 1000).toFixed(1)}s</strong> deep analysis &amp; adversarial calibration budget.
@@ -458,7 +464,7 @@ export const HomePage: React.FC = () => {
             </div>
 
             {/* Real-time Agent Action Log */}
-            <div className="p-3.5 rounded-xl bg-[#000000] border border-[#252B38] text-left text-xs font-mono text-[#E8EDF7] mb-6 flex items-start gap-2.5 shadow-inner">
+            <div aria-live="polite" className="p-3.5 rounded-xl bg-[#000000] border border-[#252B38] text-left text-xs font-mono text-[#E8EDF7] mb-6 flex items-start gap-2.5 shadow-inner">
               <div className={cn("w-2 h-2 rounded-full mt-1 animate-ping shrink-0", loadingTheme.actionDot)} />
               <div className="min-w-0 flex-1">
                 <span className={cn("text-[10px] uppercase font-bold block mb-0.5", loadingTheme.actionText)}>
@@ -521,15 +527,20 @@ export const HomePage: React.FC = () => {
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Overview &amp; Flowchart</span>
         </Link>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#E8EDF7] tracking-tight">
-              Configure Content Generation
+            <div className="eyebrow text-[#2787FF] mb-2">Pipeline studio · Step 01</div>
+            <h1 className="font-display text-3xl sm:text-4xl font-bold text-[#E8EDF7] tracking-[-0.03em]">
+              Configure content generation
             </h1>
-            <p className="text-xs sm:text-sm text-[#A1A9BA] mt-1">
+            <p className="text-sm text-[#A1A9BA] mt-2 max-w-2xl leading-relaxed">
               Select a pre-ready testing scenario or customize your own parameters to trigger Content<span className="spectrum-gradient-text font-bold">Smith</span>'s multi-agent pipeline.
             </p>
           </div>
+          <span className="hidden sm:inline-flex items-center gap-2 self-start sm:self-auto rounded-full border border-[#252B38] bg-[#080C15] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-[#A1A9BA]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#2787FF] shadow-[0_0_8px_#2787FF]" />
+            3 agents · 5 steps
+          </span>
         </div>
       </div>
 
@@ -546,7 +557,7 @@ export const HomePage: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-[#E8EDF7]">Pre-Ready Testing Scenarios</h3>
+                <h3 className="font-display text-base font-semibold text-[#E8EDF7]">Pre-ready testing scenarios</h3>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#2787FF]/15 text-[#2787FF] border border-[#2787FF]/30">
                   1-Click Test &amp; Run
                 </span>
@@ -574,14 +585,23 @@ export const HomePage: React.FC = () => {
             return (
               <div
                 key={preset.id}
+                role="button"
+                tabIndex={0}
+                aria-pressed={isSelected}
                 onClick={() => handleSelectPreset(preset)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleSelectPreset(preset);
+                  }
+                }}
                 className={cn(
-                  'group p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between relative overflow-hidden',
+                  'group p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between relative overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2787FF]/70',
                   isSelected
                     ? isPresetReel
-                      ? 'bg-[#080C15] border-[#D21BCE] shadow-[0_0_20px_rgba(210,27,206,0.2)]'
-                      : 'bg-[#080C15] border-[#2787FF] shadow-[0_0_20px_rgba(39,135,255,0.2)]'
-                    : 'bg-[#080C15] border-[#252B38] hover:border-[#34445F]'
+                      ? 'bg-[#080C15] border-[#D21BCE]/70 shadow-[0_0_24px_rgba(210,27,206,0.16)]'
+                      : 'bg-[#080C15] border-[#2787FF]/70 shadow-[0_0_24px_rgba(39,135,255,0.16)]'
+                    : 'bg-[#080C15] border-[#252B38] hover:border-[#34445F] hover:-translate-y-0.5'
                 )}
               >
                 {/* Active Indicator Top Bar */}
@@ -652,6 +672,8 @@ export const HomePage: React.FC = () => {
                       e.stopPropagation();
                       handleRunPresetNow(preset);
                     }}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    aria-label={`Test and run preset: ${preset.title}`}
                     disabled={isSubmitting}
                     className={cn(
                       'px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all flex items-center gap-1 cursor-pointer disabled:opacity-50',
@@ -679,9 +701,9 @@ export const HomePage: React.FC = () => {
         <div className={cn('lg:col-span-7 bg-[#080C15] border border-[#252B38] transition-colors rounded-2xl p-6 sm:p-8 shadow-card', theme.accentBorderHover)}>
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#252B38]">
             <div>
-              <h2 className="text-xl font-bold text-[#E8EDF7] flex items-center gap-2">
+              <h2 className="font-display text-xl font-semibold text-[#E8EDF7] flex items-center gap-2">
                 <Sliders className={cn('w-5 h-5', theme.accentText)} />
-                Pipeline Parameters
+                Pipeline parameters
               </h2>
               <p className="text-xs text-[#A1A9BA] mt-1">
                 Customize topic details, target audience, and critic iterations.
@@ -727,7 +749,7 @@ export const HomePage: React.FC = () => {
                 }}
                 placeholder="e.g. How autonomous AI coding agents are changing senior engineering workflows in 2026..."
                 className={cn(
-                  'w-full rounded-xl bg-[#000000] border border-[#252B38] px-4 py-3 text-sm text-[#E8EDF7] placeholder-[#A1A9BA] focus:outline-none focus:ring-1 transition-colors resize-none',
+                  'w-full rounded-xl bg-[#000000] border border-[#252B38] px-4 py-3.5 text-sm text-[#E8EDF7] placeholder-[#5F6A7D] hover:border-[#34445F] focus:outline-none focus:ring-2 transition-colors resize-none',
                   theme.accentRing
                 )}
                 required
@@ -751,7 +773,7 @@ export const HomePage: React.FC = () => {
                   type="button"
                   onClick={() => setPlatform(PLATFORMS.LINKEDIN)}
                   className={cn(
-                    'p-4 rounded-xl border text-left transition-all relative flex flex-col justify-between cursor-pointer',
+                    'p-4 rounded-xl border text-left transition-all relative flex flex-col justify-between cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2787FF]/70',
                     platform === PLATFORMS.LINKEDIN
                       ? 'bg-[#2787FF]/15 border-[#2787FF] text-[#E8EDF7] shadow-[0_0_15px_rgba(39,135,255,0.15)]'
                       : 'bg-[#000000] border-[#252B38] text-[#A1A9BA] hover:border-[#34445F] hover:text-[#E8EDF7]'
@@ -775,7 +797,7 @@ export const HomePage: React.FC = () => {
                   type="button"
                   onClick={() => setPlatform(PLATFORMS.INSTAGRAM_REEL)}
                   className={cn(
-                    'p-4 rounded-xl border text-left transition-all relative flex flex-col justify-between cursor-pointer',
+                    'p-4 rounded-xl border text-left transition-all relative flex flex-col justify-between cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2787FF]/70',
                     platform === PLATFORMS.INSTAGRAM_REEL
                       ? 'bg-[#D21BCE]/15 border-[#D21BCE] text-[#E8EDF7] shadow-[0_0_15px_rgba(210,27,206,0.15)]'
                       : 'bg-[#000000] border-[#252B38] text-[#A1A9BA] hover:border-[#34445F] hover:text-[#E8EDF7]'
@@ -807,7 +829,7 @@ export const HomePage: React.FC = () => {
                   value={tone}
                   onChange={(e) => setTone(e.target.value)}
                   className={cn(
-                    'w-full rounded-xl bg-[#000000] border border-[#252B38] px-3.5 py-2.5 text-sm text-[#E8EDF7] focus:outline-none focus:ring-1 transition-colors',
+                    'w-full rounded-xl bg-[#000000] border border-[#252B38] px-3.5 py-2.5 text-sm text-[#E8EDF7] hover:border-[#34445F] focus:outline-none focus:ring-2 transition-colors',
                     theme.accentRing
                   )}
                 >
@@ -829,7 +851,7 @@ export const HomePage: React.FC = () => {
                   onChange={(e) => setAudience(e.target.value)}
                   placeholder="e.g. Founders, Engineers, Creators"
                   className={cn(
-                    'w-full rounded-xl bg-[#000000] border border-[#252B38] px-3.5 py-2.5 text-sm text-[#E8EDF7] placeholder-[#A1A9BA] focus:outline-none focus:ring-1 transition-colors',
+                    'w-full rounded-xl bg-[#000000] border border-[#252B38] px-3.5 py-2.5 text-sm text-[#E8EDF7] placeholder-[#5F6A7D] hover:border-[#34445F] focus:outline-none focus:ring-2 transition-colors',
                     theme.accentRing
                   )}
                 />
@@ -866,8 +888,9 @@ export const HomePage: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
+              aria-busy={isSubmitting}
               className={cn(
-                'w-full py-4 px-6 rounded-xl font-bold text-sm hover:opacity-95 text-white shadow-lg transition-all duration-180 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-2 hover:scale-[1.01]',
+                'w-full py-4 px-6 rounded-xl font-bold text-sm tracking-wide text-white shadow-lg transition-all duration-180 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080C15] hover:scale-[1.01]',
                 theme.buttonGradient
               )}
             >
@@ -891,9 +914,9 @@ export const HomePage: React.FC = () => {
         <div className="lg:col-span-5 space-y-6">
           {/* How Pipeline Works */}
           <div className="bg-[#080C15] border border-[#252B38] rounded-2xl p-6 shadow-card">
-            <h3 className="text-base font-bold text-[#E8EDF7] mb-5 flex items-center gap-2">
+            <h3 className="font-display text-base font-semibold text-[#E8EDF7] mb-5 flex items-center gap-2">
               <Layers className="w-4.5 h-4.5 text-[#2787FF]" />
-              How the Multi-Agent Pipeline Works
+              How the multi-agent pipeline works
             </h3>
 
             <div className="space-y-4 relative before:absolute before:left-5 before:top-4 before:bottom-4 before:w-[1.5px] before:bg-[#252B38]">
