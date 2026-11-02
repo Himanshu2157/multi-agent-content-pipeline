@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: contentforge-api
+    runtime: node
+    region: ohio
+    plan: free
+    rootDir: .
+    buildCommand: npm install && npx prisma generate --schema=packages/database/prisma/schema.prisma && npm run build --workspace=packages/shared && npm run build --workspace=packages/database && npm run build --workspace=apps/api
+    startCommand: node apps/api/dist/server.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: CLIENT_URL
+        value: https://content-smith-umber.vercel.app
+      - key: LLM_PROVIDER
+        value: mock
+      - key: LLM_API_KEY
+        sync: false
+      - key: LLM_MODEL
+        value: gpt-4o-mini
+      - key: SEARCH_PROVIDER
+        value: mock
+      - key: SEARCH_API_KEY
+        sync: false
