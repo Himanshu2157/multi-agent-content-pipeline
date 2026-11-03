@@ -20,7 +20,7 @@ const allowedOrigins = Array.from(
 
 const corsOptions = {
   origin: allowedOrigins,
-  methods: ['GET', 'POST', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: false,
   optionsSuccessStatus: 204,
