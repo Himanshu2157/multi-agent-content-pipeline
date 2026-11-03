@@ -7,16 +7,30 @@ import { healthRouter } from './routes/health.routes.js';
 import { projectRouter } from './routes/project.routes.js';
 import { generationRouter } from './routes/generation.routes.js';
 
+const allowedOrigins = Array.from(
+  new Set(
+    [env.CLIENT_URL, 'http://localhost:5173', 'http://localhost:3000']
+      .flatMap((value) => value.split(','))
+      .map((value) => value.trim())
+      .filter(Boolean)
+  )
+);
+
+const corsOptions = {
+  origin: allowedOrigins,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false,
+  optionsSuccessStatus: 204,
+  maxAge: 86400,
+};
+
 export function createApp() {
   const app = express();
 
   // Middleware
-  app.use(
-    cors({
-      origin: [env.CLIENT_URL, 'http://localhost:5173', 'http://localhost:3000'],
-      credentials: true,
-    })
-  );
+  app.use(cors(corsOptions));
+  app.options('*', cors(corsOptions));
   app.use(express.json({ limit: '10mb' }));
   app.use(requestLogger);
 

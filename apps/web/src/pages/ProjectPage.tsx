@@ -14,7 +14,7 @@ import {
   Sparkles,
   Hash,
 } from 'lucide-react';
-import { api } from '../services/api.js';
+import { api, API_BASE } from '../services/api.js';
 import { AgentPipelineTracker } from '../components/AgentPipelineTracker.js';
 import { LinkedInResults } from '../components/LinkedInResults.js';
 import { ReelResults } from '../components/ReelResults.js';
@@ -99,7 +99,7 @@ export const ProjectPage: React.FC = () => {
   useEffect(() => {
     if (!currentGenId) return;
 
-    const eventSource = new EventSource(`/api/generations/${currentGenId}/events`);
+    const eventSource = new EventSource(`${API_BASE}/generations/${currentGenId}/events`);
 
     eventSource.onmessage = (event) => {
       try {
