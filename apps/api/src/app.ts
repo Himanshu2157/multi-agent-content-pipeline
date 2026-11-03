@@ -7,11 +7,13 @@ import { healthRouter } from './routes/health.routes.js';
 import { projectRouter } from './routes/project.routes.js';
 import { generationRouter } from './routes/generation.routes.js';
 
+const normalizeOrigin = (value: string) => value.trim().replace(/\/+$/, '');
+
 const allowedOrigins = Array.from(
   new Set(
     [env.CLIENT_URL, 'http://localhost:5173', 'http://localhost:3000']
       .flatMap((value) => value.split(','))
-      .map((value) => value.trim())
+      .map(normalizeOrigin)
       .filter(Boolean)
   )
 );
